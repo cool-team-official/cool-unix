@@ -6,7 +6,17 @@
 
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
-import { forInObject, get, has, parsePt, useCache, isDark, ctx, hasTextColor } from "@/cool";
+import {
+	forInObject,
+	get,
+	has,
+	parsePt,
+	useCache,
+	isDark,
+	ctx,
+	hasTextColor,
+	isNull
+} from "@/cool";
 import { icons } from "@/icons";
 import { useSize } from "../../hooks";
 
@@ -97,7 +107,7 @@ const icon = computed<Icon>(() => {
 
 // 图标颜色
 const color = computed(() => {
-	if (props.color != "") {
+	if (props.color != "" && !isNull(props.color)) {
 		switch (props.color) {
 			case "primary":
 				return ctx.color["primary-500"] as string;
