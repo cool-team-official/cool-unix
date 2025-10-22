@@ -76,6 +76,7 @@ import type { ClTreeProps, ClTreePassThrough } from "./components/cl-tree/props"
 import type { ClTreeItemProps, ClTreeItemPassThrough } from "./components/cl-tree-item/props";
 import type { ClUploadProps, ClUploadPassThrough } from "./components/cl-upload/props";
 import type { ClWaterfallProps, ClWaterfallPassThrough } from "./components/cl-waterfall/props";
+import type { ClWatermarkProps, ClWatermarkPassThrough } from "./components/cl-watermark/props";
 
 export {};
 
@@ -156,5 +157,6 @@ declare module "vue" {
 		"cl-tree-item": (typeof import('./components/cl-tree-item/cl-tree-item.uvue')['default']) & import('vue').DefineComponent<ClTreeItemProps>;
 		"cl-upload": (typeof import('./components/cl-upload/cl-upload.uvue')['default']) & import('vue').DefineComponent<ClUploadProps>;
 		"cl-waterfall": (typeof import('./components/cl-waterfall/cl-waterfall.uvue')['default']) & import('vue').DefineComponent<ClWaterfallProps>;
+		"cl-watermark": (typeof import('./components/cl-watermark/cl-watermark.uvue')['default']) & import('vue').DefineComponent<ClWatermarkProps>;
 	}
 }

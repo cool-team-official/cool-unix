@@ -1,0 +1,147 @@
+<template>
+	<cl-page>
+		<view class="p-3">
+			<demo-item :label="t('自定义样式')">
+				<view class="flex">
+					<cl-watermark
+						:text="customText"
+						:font-size="fontSize"
+						:color="color"
+						:dark-color="darkColor"
+						:opacity="opacity"
+						:rotate="rotate"
+						:width="width"
+						:height="height"
+						:gap-x="gapX"
+						:gap-y="gapY"
+						:font-weight="fontWeight"
+					>
+						<view
+							class="flex flex-col p-4 rounded-xl bg-surface-50 dark:bg-surface-800 h-[400rpx]"
+						>
+							<cl-text>
+								明月几时有？把酒问青天。 不知天上宫阙，今夕是何年。
+								我欲乘风归去，又恐琼楼玉宇，高处不胜寒。 起舞弄清影，何似在人间。
+							</cl-text>
+						</view>
+					</cl-watermark>
+				</view>
+
+				<cl-list border class="mt-3">
+					<cl-list-item :label="t('水印文本')">
+						<cl-input
+							v-model="customText"
+							placeholder="请输入水印文本"
+							:pt="{ className: 'w-[300rpx]' }"
+						/>
+					</cl-list-item>
+
+					<cl-list-item :label="t('字体大小')">
+						<view class="w-[300rpx]">
+							<cl-slider v-model="fontSize" :min="12" :max="32" :step="1"></cl-slider>
+						</view>
+					</cl-list-item>
+
+					<!-- #ifndef APP -->
+					<cl-list-item :label="t('透明度')">
+						<view class="w-[300rpx]">
+							<cl-slider
+								v-model="opacity"
+								:min="0.1"
+								:max="1"
+								:step="0.05"
+							></cl-slider>
+						</view>
+					</cl-list-item>
+					<!-- #endif -->
+
+					<cl-list-item :label="t('旋转角度')">
+						<view class="w-[300rpx]">
+							<cl-slider
+								v-model="rotate"
+								:min="-180"
+								:max="180"
+								:step="5"
+							></cl-slider>
+						</view>
+					</cl-list-item>
+
+					<cl-list-item :label="t('水印宽度')">
+						<view class="w-[300rpx]">
+							<cl-slider v-model="width" :min="80" :max="300" :step="10"></cl-slider>
+						</view>
+					</cl-list-item>
+
+					<cl-list-item :label="t('水印高度')">
+						<view class="w-[300rpx]">
+							<cl-slider v-model="height" :min="40" :max="200" :step="10"></cl-slider>
+						</view>
+					</cl-list-item>
+
+					<cl-list-item :label="t('水平间距')">
+						<view class="w-[300rpx]">
+							<cl-slider v-model="gapX" :min="20" :max="200" :step="10"></cl-slider>
+						</view>
+					</cl-list-item>
+
+					<cl-list-item :label="t('垂直间距')">
+						<view class="w-[300rpx]">
+							<cl-slider v-model="gapY" :min="20" :max="200" :step="10"></cl-slider>
+						</view>
+					</cl-list-item>
+
+					<cl-list-item :label="t('字体粗细')">
+						<cl-tabs
+							v-model="fontWeight"
+							:list="fontWeightList"
+							:height="60"
+							show-slider
+						></cl-tabs>
+					</cl-list-item>
+				</cl-list>
+			</demo-item>
+
+			<demo-item :label="t('图片保护')">
+				<view class="flex">
+					<cl-watermark text="© Cool UI" :width="200" :height="80" :opacity="0.9">
+						<image
+							src="https://unix.cool-js.com/images/demo/avatar.jpg"
+							mode="aspectFit"
+							class="w-full"
+						></image>
+					</cl-watermark>
+				</view>
+			</demo-item>
+		</view>
+	</cl-page>
+</template>
+
+<script lang="ts" setup>
+import DemoItem from "../components/item.uvue";
+import { ref } from "vue";
+import { t } from "@/locale";
+import type { ClTabsItem } from "@/uni_modules/cool-ui";
+
+const customText = ref("Cool UI");
+const fontSize = ref(16);
+const color = ref("rgba(0, 0, 0, 0.15)");
+const darkColor = ref("rgba(255, 255, 255, 0.15)");
+const opacity = ref(1);
+const rotate = ref(-22);
+const width = ref(120);
+const height = ref(64);
+const gapX = ref(100);
+const gapY = ref(100);
+const fontWeight = ref("normal");
+
+const fontWeightList = [
+	{
+		label: t("正常"),
+		value: "normal"
+	},
+	{
+		label: t("加粗"),
+		value: "bold"
+	}
+] as ClTabsItem[];
+</script>

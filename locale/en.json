@@ -324,6 +324,10 @@
     "Signature"
   ],
   [
+    "水印",
+    "Watermark"
+  ],
+  [
     "图片裁剪",
     "Image Cropping"
   ],
@@ -2498,5 +2502,81 @@
   [
     "Calendar 日历",
     "Calendar Calendar"
+  ],
+  [
+    "这是一段需要保护的内容",
+    "This is content that needs to be protected"
+  ],
+  [
+    "水印会覆盖在内容上方，防止内容被盗用",
+    "Watermarks will be overlaid on the content to prevent unauthorized use"
+  ],
+  [
+    "可自定义的水印内容区域",
+    "Customizable watermark content area"
+  ],
+  [
+    "水印文本",
+    "Watermark Text"
+  ],
+  [
+    "字体大小",
+    "Font Size"
+  ],
+  [
+    "透明度",
+    "Opacity"
+  ],
+  [
+    "旋转角度",
+    "Rotation Angle"
+  ],
+  [
+    "水印宽度",
+    "Watermark Width"
+  ],
+  [
+    "水印高度",
+    "Watermark Height"
+  ],
+  [
+    "水平间距",
+    "Horizontal Spacing"
+  ],
+  [
+    "垂直间距",
+    "Vertical Spacing"
+  ],
+  [
+    "字体粗细",
+    "Font Weight"
+  ],
+  [
+    "正常",
+    "Normal"
+  ],
+  [
+    "加粗",
+    "Bold"
+  ],
+  [
+    "多行文本水印",
+    "Multi-line Text Watermark"
+  ],
+  [
+    "重要文档",
+    "Important Document"
+  ],
+  [
+    "这是一份重要的文档内容，需要添加水印保护。",
+    "This is an important document that requires watermark protection."
+  ],
+  [
+    "水印可以防止内容被未授权的复制和传播。",
+    "Watermarks can prevent unauthorized copying and distribution of content."
+  ],
+  [
+    "图片保护",
+    "Image Protection"
   ]
 ]

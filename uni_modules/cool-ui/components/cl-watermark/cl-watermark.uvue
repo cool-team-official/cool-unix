@@ -1,0 +1,277 @@
+<template>
+	<view class="cl-watermark" :class="[pt.className]">
+		<view class="cl-watermark__content" :class="[pt.container?.className]">
+			<slot></slot>
+		</view>
+
+		<canvas
+			ref="canvasRef"
+			type="2d"
+			:canvas-id="canvasId"
+			:id="canvasId"
+			class="cl-watermark__canvas"
+			:style="{
+				width: containerWidth + 'px',
+				height: containerHeight + 'px',
+				zIndex
+			}"
+		></canvas>
+	</view>
+</template>
+
+<script lang="ts" setup>
+import {
+	ref,
+	computed,
+	onMounted,
+	watch,
+	getCurrentInstance,
+	nextTick,
+	shallowRef,
+	onUnmounted
+} from "vue";
+import { getDevicePixelRatio, isDark, parsePt, uuid } from "@/cool";
+import type { PassThroughProps } from "../../types";
+
+defineOptions({
+	name: "cl-watermark"
+});
+
+const props = defineProps({
+	// 透传样式
+	pt: {
+		type: Object,
+		default: () => ({})
+	},
+	// 水印文本
+	text: {
+		type: String,
+		default: "Watermark"
+	},
+	// 水印字体大小
+	fontSize: {
+		type: Number,
+		default: 16
+	},
+	// 水印文字颜色(浅色模式)
+	color: {
+		type: String,
+		default: "rgba(0, 0, 0, 0.15)"
+	},
+	// 水印文字颜色(深色模式)
+	darkColor: {
+		type: String,
+		default: "rgba(255, 255, 255, 0.15)"
+	},
+	// 水印透明度
+	opacity: {
+		type: Number,
+		default: 1
+	},
+	// 水印旋转角度
+	rotate: {
+		type: Number,
+		default: -22
+	},
+	// 水印宽度
+	width: {
+		type: Number,
+		default: 120
+	},
+	// 水印高度
+	height: {
+		type: Number,
+		default: 64
+	},
+	// 水印之间的水平间距
+	gapX: {
+		type: Number,
+		default: 100
+	},
+	// 水印之间的垂直间距
+	gapY: {
+		type: Number,
+		default: 100
+	},
+	// 水印层级
+	zIndex: {
+		type: Number,
+		default: 9
+	},
+	// 字体粗细
+	fontWeight: {
+		type: String,
+		default: "normal"
+	},
+	// 字体样式
+	fontFamily: {
+		type: String,
+		default: "sans-serif"
+	}
+});
+
+// 透传样式类型定义
+type PassThrough = {
+	className?: string;
+	container?: PassThroughProps;
+};
+
+// 解析透传样式配置
+const pt = computed(() => parsePt<PassThrough>(props.pt));
+
+// 获取当前实例
+const { proxy } = getCurrentInstance()!;
+
+// 创建canvas实例
+const canvasRef = shallowRef<UniElement | null>(null);
+// 创建canvas ID
+const canvasId = `cl-watermark-${uuid()}`;
+
+// 容器高度
+const containerWidth = ref(0);
+
+// 容器宽度
+const containerHeight = ref(0);
+
+// 计算当前水印颜色
+const currentColor = computed(() => {
+	if (isDark.value) {
+		return props.darkColor;
+	}
+	return props.color;
+});
+
+/**
+ * 获取容器尺寸
+ */
+function getContainerSize(): Promise<void> {
+	return new Promise((resolve) => {
+		uni.createSelectorQuery()
+			.in(proxy)
+			.select(".cl-watermark")
+			.boundingClientRect((rect) => {
+				containerHeight.value = (rect as NodeInfo).height ?? 0;
+				containerWidth.value = (rect as NodeInfo).width ?? 0;
+
+				resolve();
+			})
+			.exec();
+	});
+}
+
+/**
+ * 绘制水印 - 使用Canvas
+ */
+async function drawWatermark() {
+	await nextTick();
+
+	// 获取容器尺寸
+	await getContainerSize();
+	if (containerWidth.value <= 0 || containerHeight.value <= 0) return;
+
+	uni.createCanvasContextAsync({
+		id: canvasId,
+		component: proxy,
+		success: (canvasContext: CanvasContext) => {
+			const drawCtx = canvasContext.getContext("2d")!;
+
+			// 设置canvas尺寸
+			drawCtx.canvas.width = containerWidth.value;
+			drawCtx.canvas.height = containerHeight.value;
+
+			// 清空画布
+			drawCtx.reset();
+			drawCtx.clearRect(0, 0, containerWidth.value, containerHeight.value);
+
+			// 缩放画布以适配高分屏
+			const ratio = getDevicePixelRatio();
+			drawCtx.scale(ratio, ratio);
+
+			// 设置全局透明度
+			drawCtx.globalAlpha = props.opacity;
+
+			// 设置字体
+			drawCtx.font = `${props.fontWeight} ${props.fontSize}px ${props.fontFamily}`;
+			drawCtx.fillStyle = currentColor.value;
+			drawCtx.textAlign = "center";
+			drawCtx.textBaseline = "middle";
+
+			// 计算水印单元的总宽高（包含间距）
+			const cellWidth = props.width + props.gapX;
+			const cellHeight = props.height + props.gapY;
+
+			// 计算需要多少行和列
+			const cols = Math.ceil(containerWidth.value / cellWidth) + 1;
+			const rows = Math.ceil(containerHeight.value / cellHeight) + 1;
+
+			// 遍历绘制水印
+			for (let row = 0; row < rows; row++) {
+				for (let col = 0; col < cols; col++) {
+					const x = col * cellWidth + props.width / 2;
+					const y = row * cellHeight + props.height / 2;
+
+					drawCtx.save();
+					drawCtx.translate(x, y);
+					drawCtx.rotate((props.rotate * Math.PI) / 180);
+					drawCtx.fillText(props.text, 0, 0);
+					drawCtx.restore();
+				}
+			}
+		}
+	});
+}
+
+// 监听深色模式变化
+const stopWatchDark = watch(isDark, () => {
+	drawWatermark();
+});
+
+// 监听属性变化
+const stopWatchProps = watch(
+	computed(() => [
+		props.text,
+		props.fontSize,
+		props.color,
+		props.darkColor,
+		props.opacity,
+		props.rotate,
+		props.width,
+		props.height,
+		props.gapX,
+		props.gapY,
+		props.fontWeight,
+		props.fontFamily
+	]),
+	() => {
+		drawWatermark();
+	}
+);
+
+onMounted(() => {
+	drawWatermark();
+});
+
+onUnmounted(() => {
+	stopWatchDark();
+	stopWatchProps();
+});
+
+defineExpose({
+	refresh: drawWatermark
+});
+</script>
+
+<style lang="scss" scoped>
+.cl-watermark {
+	@apply relative w-full h-full;
+
+	&__content {
+		@apply relative w-full h-full;
+		z-index: 1;
+	}
+
+	&__canvas {
+		@apply absolute top-0 left-0 pointer-events-none;
+	}
+}
+</style>

@@ -449,6 +449,12 @@
 					}
 				},
 				{
+					"path": "other/watermark",
+					"style": {
+						"navigationBarTitleText": "Watermark 水印"
+					}
+				},
+				{
 					"path": "other/day-uts",
 					"style": {
 						"navigationBarTitleText": "DayUts 日期"
