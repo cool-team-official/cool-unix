@@ -180,12 +180,16 @@ async function drawWatermark() {
 			drawCtx.canvas.height = containerHeight.value;
 
 			// 清空画布
+			// #ifdef APP
 			drawCtx.reset();
+			// #endif
 			drawCtx.clearRect(0, 0, containerWidth.value, containerHeight.value);
 
 			// 缩放画布以适配高分屏
+			// #ifdef APP
 			const ratio = getDevicePixelRatio();
 			drawCtx.scale(ratio, ratio);
+			// #endif
 
 			// 设置全局透明度
 			drawCtx.globalAlpha = props.opacity;
