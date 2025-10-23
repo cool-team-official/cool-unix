@@ -7,24 +7,24 @@ import Long from "kotlin.Long"; // Kotlin Long 类型
 /**
  * 缓动函数类型定义
  */
-export type EasingFunction = (progress: number) => number;
+export type EasingFunction = (progress : number) => number;
 
 /**
  * 动画属性配置
  */
 export type AnimationAttribute = {
 	/** 起始值 */
-	fromValue: string;
+	fromValue : string;
 	/** 结束值 */
-	toValue: string;
+	toValue : string;
 	/** 单位 (px, %, deg等) */
-	unit: string;
+	unit : string;
 	/** 当前值 */
-	currentValue: string;
+	currentValue : string;
 	/** 当前进度 (0-1) */
-	progress: number;
+	progress : number;
 	/** 属性名称 */
-	propertyName: string;
+	propertyName : string;
 };
 
 /**
@@ -32,23 +32,23 @@ export type AnimationAttribute = {
  */
 export type AnimationOptions = {
 	/** 动画持续时间(毫秒) */
-	duration?: number;
+	duration ?: number;
 	/** 循环次数 (-1为无限循环) */
-	loop?: number;
+	loop ?: number;
 	/** 是否往返播放 */
-	alternate?: boolean;
+	alternate ?: boolean;
 	/** 是否按属性顺序依次执行动画 */
-	sequential?: boolean;
+	sequential ?: boolean;
 	/** 缓动函数名称 */
-	timingFunction?: string;
+	timingFunction ?: string;
 	/** 自定义贝塞尔曲线参数 */
-	bezier?: number[];
+	bezier ?: number[];
 	/** 动画完成回调 */
-	complete?: () => void;
+	complete ?: () => void;
 	/** 动画开始回调 */
-	start?: () => void;
+	start ?: () => void;
 	/** 每帧回调 */
-	frame?: (progress: number) => void;
+	frame ?: (progress : number) => void;
 };
 
 // 贝塞尔曲线计算常量
@@ -59,7 +59,7 @@ const BEZIER_SAMPLE_STEP = 1.0 / (BEZIER_SPLINE_SIZE - 1.0); // 样本步长
  * 贝塞尔曲线系数A
  * 三次贝塞尔曲线的三次项系数
  */
-function getBezierCoefficientA(x1: number, x2: number): number {
+function getBezierCoefficientA(x1 : number, x2 : number) : number {
 	return 1.0 - 3.0 * x2 + 3.0 * x1; // B(t) = (1-t)³P₀ + 3(1-t)²tP₁ + 3(1-t)t²P₂ + t³P₃ 中的 t³ 系数
 }
 
@@ -67,7 +67,7 @@ function getBezierCoefficientA(x1: number, x2: number): number {
  * 贝塞尔曲线系数B
  * 三次贝塞尔曲线的二次项系数
  */
-function getBezierCoefficientB(x1: number, x2: number): number {
+function getBezierCoefficientB(x1 : number, x2 : number) : number {
 	return 3.0 * x2 - 6.0 * x1; // 二次项系数
 }
 
@@ -75,7 +75,7 @@ function getBezierCoefficientB(x1: number, x2: number): number {
  * 贝塞尔曲线系数C
  * 三次贝塞尔曲线的一次项系数
  */
-function getBezierCoefficientC(x1: number): number {
+function getBezierCoefficientC(x1 : number) : number {
 	return 3.0 * x1; // 一次项系数
 }
 
@@ -86,7 +86,7 @@ function getBezierCoefficientC(x1: number): number {
  * @param x1 控制点1的x坐标
  * @param x2 控制点2的x坐标
  */
-function calculateBezierValue(t: number, x1: number, x2: number): number {
+function calculateBezierValue(t : number, x1 : number, x2 : number) : number {
 	const a = getBezierCoefficientA(x1, x2); // 获取三次项系数
 	const b = getBezierCoefficientB(x1, x2); // 获取二次项系数
 	const c = getBezierCoefficientC(x1); // 获取一次项系数
@@ -100,7 +100,7 @@ function calculateBezierValue(t: number, x1: number, x2: number): number {
  * @param x1 控制点1的x坐标
  * @param x2 控制点2的x坐标
  */
-function getBezierSlope(t: number, x1: number, x2: number): number {
+function getBezierSlope(t : number, x1 : number, x2 : number) : number {
 	const a = getBezierCoefficientA(x1, x2); // 三次项系数
 	const b = getBezierCoefficientB(x1, x2); // 二次项系数
 	const c = getBezierCoefficientC(x1); // 一次项系数
@@ -117,14 +117,14 @@ function getBezierSlope(t: number, x1: number, x2: number): number {
  * @param x2 控制点2的x坐标
  */
 function binarySearchBezierT(
-	targetX: number,
-	startT: number,
-	endT: number,
-	x1: number,
-	x2: number
-): number {
-	let currentX: number; // 当前计算的x值
-	let currentT: number; // 当前的t参数
+	targetX : number,
+	startT : number,
+	endT : number,
+	x1 : number,
+	x2 : number
+) : number {
+	let currentX : number; // 当前计算的x值
+	let currentT : number; // 当前的t参数
 	let iterations = 0; // 迭代次数计数器
 	const maxIterations = 10; // 最大迭代次数，避免无限循环
 	const precision = 0.0000001; // 精度要求
@@ -154,11 +154,11 @@ function binarySearchBezierT(
  * @param x2 控制点2的x坐标
  */
 function newtonRaphsonBezierT(
-	targetX: number,
-	initialGuess: number,
-	x1: number,
-	x2: number
-): number {
+	targetX : number,
+	initialGuess : number,
+	x1 : number,
+	x2 : number
+) : number {
 	let t = initialGuess; // 当前t值，从初始猜测开始
 	const maxIterations = 4; // 最大迭代次数，牛顿法收敛快
 
@@ -182,13 +182,13 @@ function newtonRaphsonBezierT(
  * @param x2 控制点2的x坐标 (0-1)
  * @param y2 控制点2的y坐标 (0-1)
  */
-function createBezierEasing(x1: number, y1: number, x2: number, y2: number): EasingFunction | null {
+function createBezierEasing(x1 : number, y1 : number, x2 : number, y2 : number) : EasingFunction | null {
 	// 验证控制点坐标范围，x坐标必须在0-1之间
 	if (!(0 <= x1 && x1 <= 1 && 0 <= x2 && x2 <= 1)) {
 		return null; // 参数无效时返回null
 	}
 
-	const sampleValues: number[] = []; // 预计算的样本值数组
+	const sampleValues : number[] = []; // 预计算的样本值数组
 
 	// 预计算样本值以提高性能，仅对非线性曲线进行预计算
 	if (x1 != y1 || x2 != y2) {
@@ -204,7 +204,7 @@ function createBezierEasing(x1: number, y1: number, x2: number, y2: number): Eas
 	 * 使用预计算样本进行快速查找和插值
 	 * @param x 输入的x值 (0-1)
 	 */
-	function getTParameterForX(x: number): number {
+	function getTParameterForX(x : number) : number {
 		let intervalStart = 0.0; // 区间起始位置
 		let currentSample = 1; // 当前样本索引
 		const lastSample = BEZIER_SPLINE_SIZE - 1; // 最后一个样本索引
@@ -235,7 +235,7 @@ function createBezierEasing(x1: number, y1: number, x2: number, y2: number): Eas
 	}
 
 	// 返回缓动函数，这是最终的缓动函数接口
-	return function (progress: number): number {
+	return function (progress : number) : number {
 		// 线性情况直接返回，优化性能
 		if (x1 == y1 && x2 == y2) {
 			return progress;
@@ -253,7 +253,7 @@ function createBezierEasing(x1: number, y1: number, x2: number, y2: number): Eas
  * 颜色工具函数：标准化颜色值格式
  * 处理不同格式的颜色输入，确保返回有效的颜色值
  */
-function getDefaultColor(colorValue: string): string {
+function getDefaultColor(colorValue : string) : string {
 	// 简化的颜色处理，实际项目中可能需要更完整的颜色转换
 	if (colorValue.startsWith("#")) {
 		// 十六进制颜色格式
@@ -269,23 +269,94 @@ function getDefaultColor(colorValue: string): string {
 
 /**
  * 十六进制颜色转RGB对象
- * 将#RRGGBB格式的颜色转换为{r,g,b,a}对象，用于颜色动画插值
- * @param hex 十六进制颜色值，如"#FF0000"
+ * 将#RRGGBB或#RRGGBBAA格式的颜色转换为{r,g,b,a}对象，用于颜色动画插值
+ * @param hex 十六进制颜色值，如"#FF0000"（6位）或"#FF0000B3"（8位带透明度）
  * @returns 包含r,g,b,a属性的颜色对象
  */
-function hexToRgb(hex: string): UTSJSONObject {
-	// 使用正则表达式解析十六进制颜色，支持带#和不带#的格式
-	const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-	if (result != null) {
-		// 解析成功
+function hexToRgb(hex : string) : UTSJSONObject {
+	// 移除 # 号
+	const cleanHex = hex.replace('#', '');
+
+	if (cleanHex.length == 6) {
+		// 6位十六进制：#FFFFFF
+		const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex);
+		if (result != null) {
+			// 解析成功
+			return {
+				r: parseInt(result[1] ?? "0", 16), // 红色分量，16进制转10进制
+				g: parseInt(result[2] ?? "0", 16), // 绿色分量
+				b: parseInt(result[3] ?? "0", 16), // 蓝色分量
+				a: 1.0 // 透明度，默认不透明
+			} as UTSJSONObject;
+		}
+	} else if (cleanHex.length == 8) {
+		// 8位十六进制：#FFFFFFB3
+		const result = /^([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(cleanHex);
+		if (result != null) {
+			return {
+				r: parseInt(result[1] ?? "0", 16),
+				g: parseInt(result[2] ?? "0", 16),
+				b: parseInt(result[3] ?? "0", 16),
+				a: parseInt(result[4] ?? "FF", 16) / 255 // 将0-255转换为0-1
+			} as UTSJSONObject;
+		}
+	}
+
+	// 解析失败返回黑色
+	return {
+		r: 0,
+		g: 0,
+		b: 0,
+		a: 1.0
+	} as UTSJSONObject;
+}
+
+/**
+ * RGB/RGBA颜色转RGB对象
+ * 将rgb(r,g,b)或rgba(r,g,b,a)格式的颜色转换为{r,g,b,a}对象，用于颜色动画插值
+ * @param rgba RGB/RGBA颜色值，如"rgb(255,0,0)"或"rgba(255,0,0,0.5)"
+ * @returns 包含r,g,b,a属性的颜色对象
+ */
+function rgbaToRgb(rgba : string) : UTSJSONObject {
+	// 匹配 rgb(r,g,b) 或 rgba(r,g,b,a)
+	const match = rgba.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)\s*(?:,\s*([\d.]+))?\s*\)/);
+	if (match != null) {
 		return {
-			r: parseInt(result[1] ?? "0", 16), // 红色分量，16进制转10进制
-			g: parseInt(result[2] ?? "0", 16), // 绿色分量
-			b: parseInt(result[3] ?? "0", 16), // 蓝色分量
-			a: 1.0 // 透明度，默认不透明
+			r: parseInt(match[1] ?? "0"),
+			g: parseInt(match[2] ?? "0"),
+			b: parseInt(match[3] ?? "0"),
+			a: (match[4] != null) ? parseFloat(match[4]!) : 1.0
 		} as UTSJSONObject;
 	}
-	// 解析失败时返回黑色
+
+	// 解析失败返回黑色
+	return {
+		r: 0,
+		g: 0,
+		b: 0,
+		a: 1.0
+	} as UTSJSONObject;
+}
+
+/**
+ * 通用颜色格式转RGB对象
+ * 自动识别颜色格式并转换为{r,g,b,a}对象，支持十六进制、RGB、RGBA格式
+ * @param colorValue 颜色值，支持格式：
+ *   - 十六进制：#FFFFFF、#FFFFFFB3
+ *   - RGB：rgb(255,255,255)
+ *   - RGBA：rgba(255,255,255,0.7)
+ * @returns 包含r,g,b,a属性的颜色对象
+ */
+function colorToRgb(colorValue : string) : UTSJSONObject {
+	const trimmed = colorValue.trim();
+
+	if (trimmed.startsWith("#")) {
+		return hexToRgb(trimmed);
+	} else if (trimmed.startsWith("rgb")) {
+		return rgbaToRgb(trimmed);
+	}
+
+	// 默认返回黑色
 	return {
 		r: 0,
 		g: 0,
@@ -330,70 +401,70 @@ export class AnimationEngine {
 	]);
 
 	/** 目标DOM元素，动画作用的对象 */
-	private targetElement: UniElement | null = null;
+	private targetElement : UniElement | null = null;
 
 	/** 动画持续时间(毫秒)，默认500ms */
-	private animationDuration: number = 500;
+	private animationDuration : number = 500;
 
 	/** 动画是否正在运行，用于控制动画循环 */
-	private isRunning: boolean = false;
+	private isRunning : boolean = false;
 
 	/** 动画是否暂停，暂停时保留当前进度 */
-	private isPaused: boolean = false;
+	private isPaused : boolean = false;
 
 	/** 当前动画进度 (0-1)，用于恢复暂停的动画 */
-	private currentProgress: number = 0;
+	private currentProgress : number = 0;
 
 	/** 是否反向播放，影响动画方向 */
-	private isReversed: boolean = false;
+	private isReversed : boolean = false;
 
 	/** 是否往返播放模式，控制动画是否来回播放 */
-	private isAlternate: boolean = false;
+	private isAlternate : boolean = false;
 	/** 往返播放时是否处于反向状态 */
-	private isAlternateReversed: boolean = false;
+	private isAlternateReversed : boolean = false;
 
 	/** 循环播放次数 (-1为无限循环) */
-	private loopCount: number = 1;
+	private loopCount : number = 1;
 	/** 当前已完成的循环次数 */
-	private currentLoop: number = 0;
+	private currentLoop : number = 0;
 
 	/** 动画是否正在停止，用于提前终止动画 */
-	private isStopping: boolean = true;
+	private isStopping : boolean = true;
 
 	/** 当前执行的属性索引(顺序执行模式)，用于控制属性依次动画 */
-	private currentAttributeIndex: number = 0;
+	private currentAttributeIndex : number = 0;
 
 	/** 回调函数，提供动画生命周期钩子 */
-	private onComplete: () => void = () => {}; // 动画完成回调
-	private onStart: () => void = () => {}; // 动画开始回调
-	private onFrame: (progress: number) => void = () => {}; // 每帧回调
+	private onComplete : () => void = () => { }; // 动画完成回调
+	private onStart : () => void = () => { }; // 动画开始回调
+	private onFrame : (progress : number) => void = () => { }; // 每帧回调
 
 	/** 动画属性列表，存储所有要动画的CSS属性 */
-	private animationAttributes: AnimationAttribute[] = [];
+	private animationAttributes : AnimationAttribute[] = [];
 
 	/** 动画开始时间戳，用于计算动画进度 */
-	private startTimestamp: number = 0;
+	private startTimestamp : number = 0;
 
 	/** 当前使用的缓动函数，将线性进度转换为缓动进度 */
-	private currentEasingFunction: EasingFunction | null = null;
+	private currentEasingFunction : EasingFunction | null = null;
 
 	/** 是否按属性顺序依次执行动画，而非并行执行 */
-	private isSequentialMode: boolean = false;
+	private isSequentialMode : boolean = false;
 
 	// 平台相关的动画控制器
 	// Android平台使用Choreographer提供高性能动画
 	// #ifdef APP-ANDROID
-	private choreographer: Choreographer | null = null; // Android系统帧同步器
-	private frameCallback: FrameCallback | null = null; // 帧回调处理器
+	private choreographer : Choreographer | null = null; // Android系统帧同步器
+	private frameCallback : FrameCallback | null = null; // 帧回调处理器
 	// #endif
 
 	// iOS/小程序平台使用定时器
 	// #ifdef APP-IOS
-	private displayLinkTimer: number = 0; // iOS定时器ID
+	private displayLinkTimer : number = 0; // iOS定时器ID
 	// #endif
 
 	// Web平台使用requestAnimationFrame
-	private animationFrameId: number | null = null; // 动画帧ID
+	private animationFrameId : number | null = null; // 动画帧ID
 
 	/**
 	 * 创建动画引擎实例
@@ -401,7 +472,7 @@ export class AnimationEngine {
 	 * @param element 目标DOM元素，null时仅做计算不应用样式
 	 * @param options 动画配置选项，包含持续时间、缓动函数等
 	 */
-	constructor(element: UniElement | null, options: AnimationOptions) {
+	constructor(element : UniElement | null, options : AnimationOptions) {
 		this.targetElement = element; // 保存目标元素引用
 
 		// 设置动画参数，使用选项值或默认值
@@ -455,7 +526,7 @@ export class AnimationEngine {
 	 * @param propertyName CSS属性名称，用于判断是否需要默认单位
 	 * @returns 单位字符串
 	 */
-	private extractUnit(value?: string, propertyName?: string): string {
+	private extractUnit(value ?: string, propertyName ?: string) : string {
 		if (value == null) return "px"; // 默认单位为px
 		const unit = value.replace(/[\d|\-|\+|\.]/g, ""); // 移除数字、负号、正号、小数点，保留单位
 
@@ -473,7 +544,7 @@ export class AnimationEngine {
 	 * @param name 缓动函数名称
 	 * @param bezierParams 贝塞尔曲线参数 [x1, y1, x2, y2]
 	 */
-	addCustomEasing(name: string, bezierParams: number[]): AnimationEngine {
+	addCustomEasing(name : string, bezierParams : number[]) : AnimationEngine {
 		if (bezierParams.length == 4) {
 			// 验证参数数量
 			this.easingPresets.set(name, bezierParams); // 添加到预设映射中
@@ -486,7 +557,7 @@ export class AnimationEngine {
 	 * 控制动画从结束值向起始值播放
 	 * @param reverse 是否反向播放，null表示切换当前状态
 	 */
-	setReverse(reverse: boolean | null = null): AnimationEngine {
+	setReverse(reverse : boolean | null = null) : AnimationEngine {
 		if (reverse != null) {
 			this.isReversed = reverse; // 设置指定状态
 		} else {
@@ -500,7 +571,7 @@ export class AnimationEngine {
 	 * 控制动画重复执行的次数
 	 * @param count 循环次数，-1表示无限循环
 	 */
-	setLoopCount(count: number): AnimationEngine {
+	setLoopCount(count : number) : AnimationEngine {
 		this.loopCount = count; // 设置循环次数
 		return this; // 支持链式调用
 	}
@@ -510,7 +581,7 @@ export class AnimationEngine {
 	 * 控制动画从开始到结束的总时长
 	 * @param duration 持续时间(毫秒)
 	 */
-	setDuration(duration: number): AnimationEngine {
+	setDuration(duration : number) : AnimationEngine {
 		this.animationDuration = duration; // 设置动画持续时间
 		return this; // 支持链式调用
 	}
@@ -520,7 +591,7 @@ export class AnimationEngine {
 	 * 控制动画是否在每次循环时反向播放
 	 * @param alternate 是否往返播放
 	 */
-	setAlternate(alternate: boolean): AnimationEngine {
+	setAlternate(alternate : boolean) : AnimationEngine {
 		this.isAlternate = alternate; // 设置往返播放标志
 		return this; // 支持链式调用
 	}
@@ -530,7 +601,7 @@ export class AnimationEngine {
 	 * 控制多个属性是同时动画还是依次动画
 	 * @param sequential 是否按属性顺序依次执行
 	 */
-	setSequential(sequential: boolean): AnimationEngine {
+	setSequential(sequential : boolean) : AnimationEngine {
 		this.isSequentialMode = sequential; // 设置执行模式
 		return this; // 支持链式调用
 	}
@@ -544,11 +615,11 @@ export class AnimationEngine {
 	 * @param unique 是否唯一，true时同名属性会被替换
 	 */
 	addAttribute(
-		propertyName: string,
-		fromValue: string,
-		toValue: string,
-		unique: boolean = true
-	): AnimationEngine {
+		propertyName : string,
+		fromValue : string,
+		toValue : string,
+		unique : boolean = true
+	) : AnimationEngine {
 		const isColor = this.isColorProperty(propertyName); // 检测是否为颜色属性
 		const unit = isColor ? "" : this.extractUnit(fromValue, propertyName); // 提取单位
 
@@ -562,7 +633,7 @@ export class AnimationEngine {
 
 		// 查找是否已存在同名属性，用于决定是替换还是新增
 		let existingIndex = this.animationAttributes.findIndex(
-			(attr: AnimationAttribute): boolean => attr.propertyName == propertyName
+			(attr : AnimationAttribute) : boolean => attr.propertyName == propertyName
 		);
 
 		if (!unique) {
@@ -570,7 +641,7 @@ export class AnimationEngine {
 		}
 
 		// 创建新的动画属性对象
-		const newAttribute: AnimationAttribute = {
+		const newAttribute : AnimationAttribute = {
 			fromValue: processedFromValue, // 处理后的起始值
 			toValue: processedToValue, // 处理后的结束值
 			unit: unit, // 单位
@@ -591,14 +662,14 @@ export class AnimationEngine {
 	/**
 	 * 快捷方法：添加变换属性
 	 */
-	transform(property: string, fromValue: string, toValue: string): AnimationEngine {
+	transform(property : string, fromValue : string, toValue : string) : AnimationEngine {
 		return this.addAttribute(property, fromValue, toValue);
 	}
 
 	/**
 	 * 快捷方法：添加位移动画
 	 */
-	translate(fromX: string, fromY: string, toX: string, toY: string): AnimationEngine {
+	translate(fromX : string, fromY : string, toX : string, toY : string) : AnimationEngine {
 		this.addAttribute("translateX", fromX, toX);
 		this.addAttribute("translateY", fromY, toY);
 		return this;
@@ -610,7 +681,7 @@ export class AnimationEngine {
 	 * @param toX 结束X位置
 	 * @returns
 	 */
-	translateX(fromX: string, toX: string): AnimationEngine {
+	translateX(fromX : string, toX : string) : AnimationEngine {
 		return this.addAttribute("translateX", fromX, toX);
 	}
 
@@ -620,28 +691,28 @@ export class AnimationEngine {
 	 * @param toY 结束Y位置
 	 * @returns
 	 */
-	translateY(fromY: string, toY: string): AnimationEngine {
+	translateY(fromY : string, toY : string) : AnimationEngine {
 		return this.addAttribute("translateY", fromY, toY);
 	}
 
 	/**
 	 * 快捷方法：添加缩放动画
 	 */
-	scale(fromScale: string, toScale: string): AnimationEngine {
+	scale(fromScale : string, toScale : string) : AnimationEngine {
 		return this.addAttribute("scale", fromScale, toScale);
 	}
 
 	/**
 	 * 快捷方法：添加旋转动画
 	 */
-	rotate(fromDegree: string, toDegree: string): AnimationEngine {
+	rotate(fromDegree : string, toDegree : string) : AnimationEngine {
 		return this.addAttribute("rotate", fromDegree, toDegree);
 	}
 
 	/**
 	 * 快捷方法：添加透明度动画
 	 */
-	opacity(fromOpacity: string, toOpacity: string): AnimationEngine {
+	opacity(fromOpacity : string, toOpacity : string) : AnimationEngine {
 		return this.addAttribute("opacity", fromOpacity, toOpacity);
 	}
 
@@ -652,7 +723,7 @@ export class AnimationEngine {
 	 * @param endValue 结束值
 	 * @param progress 进度 (0-1)
 	 */
-	private interpolateValue(startValue: number, endValue: number, progress: number): number {
+	private interpolateValue(startValue : number, endValue : number, progress : number) : number {
 		return startValue + (endValue - startValue) * progress; // 线性插值公式：start + (end - start) * progress
 	}
 
@@ -661,7 +732,7 @@ export class AnimationEngine {
 	 * 检测CSS属性名是否与颜色相关，用于特殊的颜色动画处理
 	 * @param propertyName 属性名称
 	 */
-	private isColorProperty(propertyName: string): boolean {
+	private isColorProperty(propertyName : string) : boolean {
 		return (
 			propertyName.indexOf("background") > -1 || // 背景颜色相关
 			propertyName.indexOf("color") > -1 || // 文字颜色相关
@@ -676,7 +747,7 @@ export class AnimationEngine {
 	 * @param propertyName CSS属性名称
 	 * @returns 是否为transform属性
 	 */
-	private isTransformProperty(propertyName: string): boolean {
+	private isTransformProperty(propertyName : string) : boolean {
 		return (
 			propertyName == "scaleX" || // X轴缩放
 			propertyName == "scaleY" || // Y轴缩放
@@ -700,12 +771,12 @@ export class AnimationEngine {
 	 * @param attribute 动画属性对象
 	 */
 	private setElementProperty(
-		propertyName: string,
-		currentValue: number,
-		unit: string,
-		progress: number,
-		attribute: AnimationAttribute
-	): void {
+		propertyName : string,
+		currentValue : number,
+		unit : string,
+		progress : number,
+		attribute : AnimationAttribute
+	) : void {
 		if (this.targetElement == null) return; // 没有目标元素时直接返回
 
 		const element = this.targetElement; // 获取目标元素引用
@@ -752,8 +823,8 @@ export class AnimationEngine {
 			default:
 				// 颜色属性处理，需要进行RGBA插值
 				if (this.isColorProperty(propertyName)) {
-					const startColor = hexToRgb(attribute.fromValue); // 解析起始颜色
-					const endColor = hexToRgb(attribute.toValue); // 解析结束颜色
+					const startColor = colorToRgb(attribute.fromValue); // 解析起始颜色
+					const endColor = colorToRgb(attribute.toValue); // 解析结束颜色
 
 					// 提取起始颜色的RGBA分量，兼容不同的JSON对象访问方式
 					const startR =
@@ -830,7 +901,7 @@ export class AnimationEngine {
 	 * Web平台动画运行方法 (H5/iOS/Harmony)
 	 * 使用requestAnimationFrame实现流畅的动画循环
 	 */
-	private runWebAnimation(): void {
+	private runWebAnimation() : void {
 		// #ifdef H5 || APP-IOS || APP-HARMONY
 		const self = this; // 保存this引用，避免在内部函数中this指向改变
 		self.startTimestamp = 0; // 重置开始时间戳
@@ -840,7 +911,7 @@ export class AnimationEngine {
 			cancelAnimationFrame(self.animationFrameId);
 		}
 
-		function animationLoop(): void {
+		function animationLoop() : void {
 			// 初始化开始时间，首次执行时记录时间戳
 			if (self.startTimestamp <= 0) {
 				self.startTimestamp = Date.now();
@@ -885,7 +956,7 @@ export class AnimationEngine {
 	 * 根据执行模式更新所有或当前属性的动画值
 	 * @param progress 当前进度 (0-1)
 	 */
-	private updateAnimationFrame(progress: number): void {
+	private updateAnimationFrame(progress : number) : void {
 		if (this.targetElement == null) return; // 没有目标元素时直接返回
 
 		if (!this.isSequentialMode) {
@@ -910,7 +981,7 @@ export class AnimationEngine {
 	 * @param attribute 动画属性
 	 * @param progress 进度
 	 */
-	private updateSingleAttribute(attribute: AnimationAttribute, progress: number): void {
+	private updateSingleAttribute(attribute : AnimationAttribute, progress : number) : void {
 		attribute.progress = progress; // 更新属性的进度记录
 
 		if (!this.isColorProperty(attribute.propertyName)) {
@@ -949,7 +1020,7 @@ export class AnimationEngine {
 	/**
 	 * 处理动画完成
 	 */
-	private handleAnimationComplete(): void {
+	private handleAnimationComplete() : void {
 		// 顺序模式下检查是否还有未执行的属性
 		if (
 			this.isSequentialMode &&
@@ -997,7 +1068,7 @@ export class AnimationEngine {
 	/**
 	 * 根据平台重新启动动画
 	 */
-	private restartAnimation(): void {
+	private restartAnimation() : void {
 		// 重置开始时间戳，确保循环动画正确计时
 		this.startTimestamp = 0;
 
@@ -1016,7 +1087,7 @@ export class AnimationEngine {
 	/**
 	 * Android平台动画运行方法
 	 */
-	private runAndroidAnimation(): void {
+	private runAndroidAnimation() : void {
 		// #ifdef APP-ANDROID
 		const self = this;
 		self.startTimestamp = 0;
@@ -1036,7 +1107,7 @@ export class AnimationEngine {
 		 */
 		class frameCallback extends Choreographer.FrameCallback {
 			// @ts-ignore
-			override doFrame(frameTimeNanos: Long) {
+			override doFrame(frameTimeNanos : Long) {
 				// 检查动画是否应该停止
 				if (!self.isRunning || self.isStopping) {
 					return;
@@ -1090,7 +1161,7 @@ export class AnimationEngine {
 	/**
 	 * 小程序平台动画运行方法
 	 */
-	private runMPAnimation(): void {
+	private runMPAnimation() : void {
 		// #ifdef MP
 		const self = this;
 		self.startTimestamp = 0;
@@ -1100,7 +1171,7 @@ export class AnimationEngine {
 			clearTimeout(self.displayLinkTimer);
 		}
 
-		function animationLoop(): void {
+		function animationLoop() : void {
 			// 初始化开始时间
 			if (self.startTimestamp <= 0) {
 				self.startTimestamp = Date.now();
@@ -1142,7 +1213,7 @@ export class AnimationEngine {
 	/**
 	 * 开始播放动画
 	 */
-	play(): AnimationEngine {
+	play() : AnimationEngine {
 		if (this.isRunning) return this;
 
 		// 初始化动画状态
@@ -1170,7 +1241,7 @@ export class AnimationEngine {
 	 * 异步播放动画，支持await
 	 * @returns Promise，动画完成时resolve
 	 */
-	playAsync(): Promise<void> {
+	playAsync() : Promise<void> {
 		return new Promise<void>((resolve) => {
 			const originalComplete = this.onComplete;
 			this.onComplete = () => {
@@ -1185,7 +1256,7 @@ export class AnimationEngine {
 	 * 停止动画
 	 * 会立即停止动画并跳转到结束状态
 	 */
-	stop(): AnimationEngine {
+	stop() : AnimationEngine {
 		this.isStopping = true;
 		this.currentProgress = 0;
 		this.currentAttributeIndex = this.animationAttributes.length;
@@ -1219,7 +1290,7 @@ export class AnimationEngine {
 	 * 暂停动画
 	 * 保留当前状态，可以通过play()恢复
 	 */
-	pause(): AnimationEngine {
+	pause() : AnimationEngine {
 		this.isPaused = true;
 		return this;
 	}
@@ -1227,7 +1298,7 @@ export class AnimationEngine {
 	/**
 	 * 恢复暂停的动画
 	 */
-	resume(): AnimationEngine {
+	resume() : AnimationEngine {
 		if (this.isPaused) {
 			this.isPaused = false;
 			this.play();
@@ -1239,7 +1310,7 @@ export class AnimationEngine {
 	 * 清空应用到元素上的动画样式
 	 * 只清空实际被动画引擎设置过的CSS属性
 	 */
-	private clearElementStyles(): void {
+	private clearElementStyles() : void {
 		if (this.targetElement == null) return;
 
 		const element = this.targetElement;
@@ -1261,7 +1332,7 @@ export class AnimationEngine {
 	/**
 	 * 重置动画到初始状态，清空所有内容
 	 */
-	reset(): AnimationEngine {
+	reset() : AnimationEngine {
 		// 停止当前动画
 		this.stop();
 
@@ -1285,9 +1356,9 @@ export class AnimationEngine {
 		this.currentEasingFunction = null;
 
 		// 重置回调函数
-		this.onComplete = () => {};
-		this.onStart = () => {};
-		this.onFrame = () => {};
+		this.onComplete = () => { };
+		this.onStart = () => { };
+		this.onFrame = () => { };
 
 		// 清理平台相关的动画控制器
 		// #ifdef WEB || APP-IOS || APP-HARMONY
@@ -1318,28 +1389,28 @@ export class AnimationEngine {
 	/**
 	 * 获取当前动画进度
 	 */
-	getProgress(): number {
+	getProgress() : number {
 		return this.currentProgress;
 	}
 
 	/**
 	 * 获取动画是否正在运行
 	 */
-	isAnimating(): boolean {
+	isAnimating() : boolean {
 		return this.isRunning;
 	}
 
 	/**
 	 * 获取当前循环次数
 	 */
-	getCurrentLoop(): number {
+	getCurrentLoop() : number {
 		return this.currentLoop;
 	}
 
 	/**
 	 * 清除所有动画属性
 	 */
-	clearAttributes(): AnimationEngine {
+	clearAttributes() : AnimationEngine {
 		this.animationAttributes = [];
 		return this;
 	}
@@ -1347,7 +1418,7 @@ export class AnimationEngine {
 	/**
 	 * 获取动画属性数量
 	 */
-	getAttributeCount(): number {
+	getAttributeCount() : number {
 		return this.animationAttributes.length;
 	}
 
@@ -1355,7 +1426,7 @@ export class AnimationEngine {
 	 * 淡入动画
 	 * @param duration 持续时间
 	 */
-	fadeIn(duration: number = 300): AnimationEngine {
+	fadeIn(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).opacity("0", "1");
 	}
 
@@ -1363,7 +1434,7 @@ export class AnimationEngine {
 	 * 淡出动画
 	 * @param duration 持续时间
 	 */
-	fadeOut(duration: number = 300): AnimationEngine {
+	fadeOut(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).opacity("1", "0");
 	}
 
@@ -1371,7 +1442,7 @@ export class AnimationEngine {
 	 * 滑入动画(从左)
 	 * @param duration 持续时间
 	 */
-	slideInLeft(duration: number = 300): AnimationEngine {
+	slideInLeft(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).translateX("-100%", "0%").opacity("0", "1");
 	}
 
@@ -1379,7 +1450,7 @@ export class AnimationEngine {
 	 * 滑入动画(从右)
 	 * @param duration 持续时间
 	 */
-	slideInRight(duration: number = 300): AnimationEngine {
+	slideInRight(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).translateX("100%", "0%").opacity("0", "1");
 	}
 
@@ -1387,7 +1458,7 @@ export class AnimationEngine {
 	 * 滑入动画(从上)
 	 * @param duration 持续时间
 	 */
-	slideInUp(duration: number = 300): AnimationEngine {
+	slideInUp(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("translateY", "-100%", "0%")
 			.opacity("0", "1");
@@ -1397,7 +1468,7 @@ export class AnimationEngine {
 	 * 滑入动画(从下)
 	 * @param duration 持续时间
 	 */
-	slideInDown(duration: number = 300): AnimationEngine {
+	slideInDown(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("translateY", "100%", "0%")
 			.opacity("0", "1");
@@ -1407,7 +1478,7 @@ export class AnimationEngine {
 	 * 缩放动画(放大)
 	 * @param duration 持续时间
 	 */
-	zoomIn(duration: number = 300): AnimationEngine {
+	zoomIn(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).scale("0", "1").opacity("0", "1");
 	}
 
@@ -1415,7 +1486,7 @@ export class AnimationEngine {
 	 * 缩放动画(缩小)
 	 * @param duration 持续时间
 	 */
-	zoomOut(duration: number = 300): AnimationEngine {
+	zoomOut(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).scale("1", "0").opacity("1", "0");
 	}
 
@@ -1424,7 +1495,7 @@ export class AnimationEngine {
 	 * @param duration 持续时间
 	 * @param degrees 旋转角度
 	 */
-	rotateIn(duration: number = 500, degrees: number = 360): AnimationEngine {
+	rotateIn(duration : number = 500, degrees : number = 360) : AnimationEngine {
 		return this.setDuration(duration).rotate("0deg", `${degrees}deg`).opacity("0", "1");
 	}
 
@@ -1433,7 +1504,7 @@ export class AnimationEngine {
 	 * @param duration 持续时间
 	 * @param degrees 旋转角度
 	 */
-	rotateOut(duration: number = 500, degrees: number = 360): AnimationEngine {
+	rotateOut(duration : number = 500, degrees : number = 360) : AnimationEngine {
 		return this.setDuration(duration).rotate("0deg", `${degrees}deg`).opacity("1", "0");
 	}
 
@@ -1441,7 +1512,7 @@ export class AnimationEngine {
 	 * 弹跳动画
 	 * @param duration 持续时间
 	 */
-	bounce(duration: number = 600): AnimationEngine {
+	bounce(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.addCustomEasing("bounce", [0.68, -0.55, 0.265, 1.55])
 			.scale("1", "1.1")
@@ -1453,7 +1524,7 @@ export class AnimationEngine {
 	 * 摇摆动画
 	 * @param duration 持续时间
 	 */
-	shake(duration: number = 500): AnimationEngine {
+	shake(duration : number = 500) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("translateX", "0px", "10px")
 			.setAlternate(true)
@@ -1464,7 +1535,7 @@ export class AnimationEngine {
 	 * 链式动画：支持多个动画依次执行
 	 * @param animations 动画配置函数数组
 	 */
-	sequence(animations: ((engine: AnimationEngine) => AnimationEngine)[]): AnimationEngine {
+	sequence(animations : ((engine : AnimationEngine) => AnimationEngine)[]) : AnimationEngine {
 		const self = this;
 
 		if (animations.length == 0) {
@@ -1481,9 +1552,9 @@ export class AnimationEngine {
 
 		// 递归设置后续动画
 		function setNextAnimation(
-			currentEngine: AnimationEngine,
-			remainingAnimations: ((engine: AnimationEngine) => AnimationEngine)[]
-		): void {
+			currentEngine : AnimationEngine,
+			remainingAnimations : ((engine : AnimationEngine) => AnimationEngine)[]
+		) : void {
 			if (remainingAnimations.length == 0) {
 				return;
 			}
@@ -1516,7 +1587,7 @@ export class AnimationEngine {
 	 * 滑出动画(向左)
 	 * @param duration 持续时间
 	 */
-	slideOutLeft(duration: number = 300): AnimationEngine {
+	slideOutLeft(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).translateX("0%", "-100%").opacity("1", "0");
 	}
 
@@ -1524,7 +1595,7 @@ export class AnimationEngine {
 	 * 滑出动画(向右)
 	 * @param duration 持续时间
 	 */
-	slideOutRight(duration: number = 300): AnimationEngine {
+	slideOutRight(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration).translateX("0%", "100%").opacity("1", "0");
 	}
 
@@ -1532,7 +1603,7 @@ export class AnimationEngine {
 	 * 滑出动画(向上)
 	 * @param duration 持续时间
 	 */
-	slideOutUp(duration: number = 300): AnimationEngine {
+	slideOutUp(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("translateY", "0%", "-100%")
 			.opacity("1", "0");
@@ -1542,7 +1613,7 @@ export class AnimationEngine {
 	 * 滑出动画(向下)
 	 * @param duration 持续时间
 	 */
-	slideOutDown(duration: number = 300): AnimationEngine {
+	slideOutDown(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("translateY", "0%", "100%")
 			.opacity("1", "0");
@@ -1552,7 +1623,7 @@ export class AnimationEngine {
 	 * 翻转动画(水平)
 	 * @param duration 持续时间
 	 */
-	flipX(duration: number = 600): AnimationEngine {
+	flipX(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("rotateX", "0deg", "180deg")
 			.addCustomEasing("ease-in-out", [0.25, 0.1, 0.25, 1.0]);
@@ -1562,7 +1633,7 @@ export class AnimationEngine {
 	 * 翻转动画(垂直)
 	 * @param duration 持续时间
 	 */
-	flipY(duration: number = 600): AnimationEngine {
+	flipY(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("rotateY", "0deg", "180deg")
 			.addCustomEasing("ease-in-out", [0.25, 0.1, 0.25, 1.0]);
@@ -1572,7 +1643,7 @@ export class AnimationEngine {
 	 * 弹性进入动画
 	 * @param duration 持续时间
 	 */
-	elasticIn(duration: number = 600): AnimationEngine {
+	elasticIn(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.scale("0", "1")
 			.opacity("0", "1")
@@ -1583,7 +1654,7 @@ export class AnimationEngine {
 	 * 弹性退出动画
 	 * @param duration 持续时间
 	 */
-	elasticOut(duration: number = 600): AnimationEngine {
+	elasticOut(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.scale("1", "0")
 			.opacity("1", "0")
@@ -1594,7 +1665,7 @@ export class AnimationEngine {
 	 * 回弹动画
 	 * @param duration 持续时间
 	 */
-	rubberBand(duration: number = 1000): AnimationEngine {
+	rubberBand(duration : number = 1000) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("scaleX", "1", "1.25")
 			.addAttribute("scaleY", "1", "0.75")
@@ -1607,7 +1678,7 @@ export class AnimationEngine {
 	 * 摆动动画
 	 * @param duration 持续时间
 	 */
-	swing(duration: number = 1000): AnimationEngine {
+	swing(duration : number = 1000) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("rotate", "0deg", "15deg")
 			.setAlternate(true)
@@ -1619,7 +1690,7 @@ export class AnimationEngine {
 	 * 抖动动画
 	 * @param duration 持续时间
 	 */
-	wobble(duration: number = 1000): AnimationEngine {
+	wobble(duration : number = 1000) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("translateX", "0px", "25px")
 			.addAttribute("rotate", "0deg", "5deg")
@@ -1631,7 +1702,7 @@ export class AnimationEngine {
 	 * 滚动进入动画
 	 * @param duration 持续时间
 	 */
-	rollIn(duration: number = 600): AnimationEngine {
+	rollIn(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.translateX("-100%", "0%")
 			.rotate("-120deg", "0deg")
@@ -1642,7 +1713,7 @@ export class AnimationEngine {
 	 * 滚动退出动画
 	 * @param duration 持续时间
 	 */
-	rollOut(duration: number = 600): AnimationEngine {
+	rollOut(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.translateX("0%", "100%")
 			.rotate("0deg", "120deg")
@@ -1653,7 +1724,7 @@ export class AnimationEngine {
 	 * 灯光效果动画
 	 * @param duration 持续时间
 	 */
-	lightSpeed(duration: number = 500): AnimationEngine {
+	lightSpeed(duration : number = 500) : AnimationEngine {
 		return this.setDuration(duration)
 			.translateX("-100%", "0%")
 			.addAttribute("skewX", "-30deg", "0deg")
@@ -1665,7 +1736,7 @@ export class AnimationEngine {
 	 * 浮动动画
 	 * @param duration 持续时间
 	 */
-	float(duration: number = 3000): AnimationEngine {
+	float(duration : number = 3000) : AnimationEngine {
 		return this.setDuration(duration)
 			.translateY("0px", "-10px")
 			.setAlternate(true)
@@ -1677,7 +1748,7 @@ export class AnimationEngine {
 	 * 呼吸动画
 	 * @param duration 持续时间
 	 */
-	breathe(duration: number = 2000): AnimationEngine {
+	breathe(duration : number = 2000) : AnimationEngine {
 		return this.setDuration(duration)
 			.scale("1", "1.1")
 			.setAlternate(true)
@@ -1689,7 +1760,7 @@ export class AnimationEngine {
 	 * 发光动画
 	 * @param duration 持续时间
 	 */
-	glow(duration: number = 1500): AnimationEngine {
+	glow(duration : number = 1500) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute(
 				"boxShadow",
@@ -1706,7 +1777,7 @@ export class AnimationEngine {
 	 * @param duration 持续时间
 	 * @param progress 进度百分比 (0-100)
 	 */
-	progressBar(duration: number = 1000, progress: number = 100): AnimationEngine {
+	progressBar(duration : number = 1000, progress : number = 100) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("width", "0%", `${progress}%`)
 			.addCustomEasing("ease-out", [0.25, 0.46, 0.45, 0.94]);
@@ -1716,7 +1787,7 @@ export class AnimationEngine {
 	 * 模态框进入动画
 	 * @param duration 持续时间
 	 */
-	modalIn(duration: number = 300): AnimationEngine {
+	modalIn(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration)
 			.scale("0.7", "1")
 			.opacity("0", "1")
@@ -1727,7 +1798,7 @@ export class AnimationEngine {
 	 * 模态框退出动画
 	 * @param duration 持续时间
 	 */
-	modalOut(duration: number = 300): AnimationEngine {
+	modalOut(duration : number = 300) : AnimationEngine {
 		return this.setDuration(duration)
 			.scale("1", "0.7")
 			.opacity("1", "0")
@@ -1738,7 +1809,7 @@ export class AnimationEngine {
 	 * 卡片翻转动画
 	 * @param duration 持续时间
 	 */
-	cardFlip(duration: number = 600): AnimationEngine {
+	cardFlip(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.addAttribute("rotateY", "0deg", "180deg")
 			.addCustomEasing("ease-in-out", [0.25, 0.1, 0.25, 1.0]);
@@ -1748,7 +1819,7 @@ export class AnimationEngine {
 	 * 波纹扩散动画
 	 * @param duration 持续时间
 	 */
-	ripple(duration: number = 600): AnimationEngine {
+	ripple(duration : number = 600) : AnimationEngine {
 		return this.setDuration(duration)
 			.scale("0", "4")
 			.opacity("0.7", "0")
@@ -1762,8 +1833,8 @@ export class AnimationEngine {
  * @param options 动画选项
  */
 export function createAnimation(
-	element: UniElement | null,
-	options: AnimationOptions = {}
-): AnimationEngine {
+	element : UniElement | null,
+	options : AnimationOptions = {}
+) : AnimationEngine {
 	return new AnimationEngine(element, options);
 }
