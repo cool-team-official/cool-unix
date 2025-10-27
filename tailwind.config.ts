@@ -447,7 +447,7 @@ export default {
 	theme: {
 		extend: {
 			colors: {
-				...getPrimary("teal"),
+				...getPrimary("orange"),
 				...getSurface("zinc")
 			},
 			fontSize: {

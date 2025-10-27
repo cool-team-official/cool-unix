@@ -1,0 +1,64 @@
+<template>
+	<view class="flex flex-col">
+		<view class="flex flex-row justify-between">
+			<cl-text class="font-bold">{{ t("Weekly revenue trend") }}</cl-text>
+			<cl-button icon="refresh-line" size="small">{{ t("Refresh") }}</cl-button>
+		</view>
+		<view class="w-full h-[350rpx]">
+			<tui-xechars @initFinished="initFinished"></tui-xechars>
+		</view>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { t } from "@/locale";
+import opt from "./index";
+import { TuiCharts } from "@/uni_modules/tui-xechars/index";
+import { get, isNull } from "@/cool";
+
+const tuixcharsins = ref<ComponentPublicInstance | null>(null);
+let charts: TuiCharts | null = null;
+function initFinished(e: TuiCharts) {
+	charts = e;
+	const option = get(opt, "option") as UTSJSONObject;
+	if (!isNull(option)) {
+		const bar = e.add(0, option);
+		bar.setCoordinates({ height: 150, xOffset: 0, yOffset: 0 });
+		bar.draw();
+	}
+}
+
+function updatearcbar() {
+	const char = charts!;
+	const bar = char.getDrawCharts(0)!;
+	bar.update({
+		series: [
+			{
+				data: [
+					{ value: 50 },
+					{ value: 60 },
+					{ value: 55 },
+					{ value: 65 },
+					{ value: 45 },
+					{ value: 70 }
+				],
+				name: "目标值"
+			},
+			{
+				data: [
+					{ value: 10 },
+					{ value: 20 },
+					{ value: 15 },
+					{ value: 25 },
+					{ value: 5 },
+					{ value: 30 }
+				],
+				name: "完成量"
+			}
+		]
+	});
+}
+</script>
+
+<style lang="scss" scoped></style>

@@ -1,0 +1,44 @@
+<template>
+	<view class="flex flex-col">
+		<view class="flex flex-row justify-between">
+			<cl-text class="font-bold">{{ t("Top coins") }}</cl-text>
+			<cl-button icon="refresh-line" size="small">{{ t("Live market") }}</cl-button>
+		</view>
+		<view class="flex flex-wrap flex-row mt-2">
+			<view
+				v-for="item in 4"
+				:key="item"
+				class="flex flex-row bg-surface-100 dark:!bg-surface-700 items-center p-2 mb-2 rounded-xl"
+				:class="{ 'is-dark': isDark, 'mr-2': item % 2 != 0 }"
+			>
+				<cl-text
+					class="w-[70rpx] h-[70rpx] rounded-full bg-primary-100 flex flex-row justify-center items-center"
+				>
+					<cl-icon name="vip" color="primary"></cl-icon>
+				</cl-text>
+				<view class="flex flex-col ml-3">
+					<cl-text class="font-bold">{{ t("BTC") }}</cl-text>
+					<cl-text :pt="{ className: 'text-xs text-surface-400' }">{{
+						t("Bitcoin")
+					}}</cl-text>
+					<view class="flex flex-row justify-center items-center">
+						<cl-text :pt="{ className: 'text-xs' }">$50320.75</cl-text>
+						<cl-icon
+							name="arrow-up-line"
+							:size="25"
+							color="green"
+							class="ml-2"
+						></cl-icon>
+						<cl-text :pt="{ className: 'text-xs !text-green-700' }">2.34%</cl-text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+<script setup lang="ts">
+import { isDark } from "@/cool";
+import { t } from "@/locale";
+</script>
+
+<style lang="scss" scoped></style>

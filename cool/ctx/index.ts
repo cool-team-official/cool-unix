@@ -49,7 +49,7 @@ export type Ctx = {
 };
 
 // 初始化 ctx 对象，不可修改！！
-export const ctx = parse<Ctx>({})!;
+export const ctx = {} as Ctx;
 
 console.log(ctx);
 

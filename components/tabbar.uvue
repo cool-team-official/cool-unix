@@ -24,7 +24,7 @@
 					:pt="{
 						className: parseClass([
 							'text-xs mt-1',
-							[path == item.pagePath, 'text-primary-500', 'text-surface-400']
+							[path == item.pagePath, 'text-orange-500', 'text-surface-400']
 						])
 					}"
 					>{{ t(item.text!) }}</cl-text

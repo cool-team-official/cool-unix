@@ -1,0 +1,81 @@
+<template>
+	<cl-page>
+		<cl-topbar fixed :show-back="false" safe-area-top :height="isMp() ? null : 100">
+			<view
+				class="flex flex-row items-center p-3 flex-1 w-full"
+				:class="{
+					'pt-0': isMp()
+				}"
+			>
+				<view class="bg-primary-500 rounded-lg p-[5rpx]">
+					<cl-image
+						src="/static/logo.png"
+						:width="45"
+						:height="45"
+						:show-loading="false"
+					></cl-image>
+				</view>
+
+				<cl-text
+					color="primary"
+					:pt="{
+						className: parseClass([
+							'!text-xl mr-auto ml-2 flex-1',
+							[isDark, '!text-white', '!text-black']
+						])
+					}"
+				>
+					{{ config.name }}
+				</cl-text>
+
+				<view
+					class="bg-surface-500 h-8 w-8 rounded-full flex flex-row items-center justify-center mr-3"
+					@tap="setSize"
+				>
+					<cl-icon name="font-size" color="white"></cl-icon>
+				</view>
+
+				<view
+					class="bg-primary-500 h-8 w-8 rounded-full flex flex-row items-center justify-center"
+					:class="{
+						'mr-24': isMp()
+					}"
+					@tap="setLocale"
+				>
+					<cl-icon name="translate" color="white"></cl-icon>
+				</view>
+			</view>
+		</cl-topbar>
+		<cl-text> 交换页面 </cl-text>
+
+		<!-- 自定义底部导航栏 -->
+		<custom-tabbar></custom-tabbar>
+
+		<!-- 主题设置 -->
+		<locale-set :ref="refs.set('localeSet')"></locale-set>
+
+		<!-- 字体大小设置 -->
+		<size-set :ref="refs.set('sizeSet')"></size-set>
+	</cl-page>
+</template>
+
+<script setup lang="ts">
+import { isDark, parseClass, isMp, router, useRefs } from "@/cool";
+import { t } from "@/locale";
+import { config } from "@/config";
+import LocaleSet from "@/components/locale-set.uvue";
+import SizeSet from "@/components/size-set.uvue";
+import CustomTabbar from "@/components/tabbar.uvue";
+
+const refs = useRefs();
+
+function setLocale() {
+	refs.open("localeSet");
+}
+
+function setSize() {
+	refs.open("sizeSet");
+}
+</script>
+
+<style lang="scss" scoped></style>

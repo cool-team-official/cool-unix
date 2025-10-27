@@ -7,11 +7,11 @@
 					'pt-0': isMp()
 				}"
 			>
-				<view class="bg-primary-500 rounded-lg p-[12rpx]">
+				<view class="bg-primary-500 rounded-lg p-[5rpx]">
 					<cl-image
 						src="/static/logo.png"
-						:width="32"
-						:height="32"
+						:width="45"
+						:height="45"
 						:show-loading="false"
 					></cl-image>
 				</view>
@@ -19,7 +19,10 @@
 				<cl-text
 					color="primary"
 					:pt="{
-						className: '!text-xl mr-auto ml-2 flex-1'
+						className: parseClass([
+							'!text-xl mr-auto ml-2 flex-1',
+							[isDark, '!text-white', '!text-black']
+						])
 					}"
 				>
 					{{ config.name }}
@@ -43,36 +46,183 @@
 				</view>
 			</view>
 		</cl-topbar>
-
-		<view class="p-3">
-			<view class="group" v-for="item in data" :key="item.label">
-				<cl-text :pt="{ className: '!text-sm !text-surface-400 mb-2 ml-2' }">{{
-					item.label
-				}}（{{ item.children?.length ?? 0 }}）</cl-text>
-
-				<view class="list">
-					<cl-row :gutter="10">
-						<cl-col :span="6" v-for="child in item.children" :key="child.label">
-							<view
-								class="item dark:!bg-surface-800"
-								hover-class="opacity-80"
-								:hover-stay-time="250"
-								@tap="toPath(child)"
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<view class="flex flex-row justify-between item-center">
+				<view class="flex flex-row">
+					<cl-skeleton :loading="homeUser == null" type="circle">
+						<cl-avatar
+							:src="`data:image/png;base64,${homeUser?.avatar}`"
+							rounded
+						></cl-avatar>
+					</cl-skeleton>
+					<view class="ml-5">
+						<cl-skeleton :loading="homeUser == null" type="text">
+							<cl-text
+								:pt="{
+									className: parseClass([
+										'font-bold',
+										[isDark, '!text-white', '!text-black']
+									])
+								}"
+								>{{ homeUser?.name }}</cl-text
 							>
-								<cl-icon :name="child.icon" :size="36"></cl-icon>
-								<cl-text
+						</cl-skeleton>
+						<cl-skeleton
+							:loading="homeUser == null"
+							:class="{ 'mt-2': homeUser == null }"
+							type="text"
+						>
+							<cl-text
+								:pt="{
+									className: parseClass([
+										'text-xs mt-1',
+										[isDark, '!text-white-600', '!text-surface-600']
+									])
+								}"
+								>{{ t("状态") }}:<cl-text
 									:pt="{
-										className: 'mt-1 !text-xs text-center'
+										className: parseClass([
+											'text-xs ml-1',
+											[isDark, '!text-white-600', '!text-surface-600']
+										])
 									}"
-									>{{ child.label }}</cl-text
+									>{{ homeUser?.status }}</cl-text
 								>
-							</view>
-						</cl-col>
-					</cl-row>
+							</cl-text>
+						</cl-skeleton>
+					</view>
+				</view>
+				<view class="flex flex-row item-center py-1">
+					<cl-button
+						rounded
+						disabled
+						color="primary"
+						:pt="{
+							className: '!bg-primary-100'
+						}"
+						><cl-text
+							:pt="{
+								className: 'text-xs !text-primary-500 flex flex-row item-center'
+							}"
+							>{{ homeUser?.level }} miner</cl-text
+						>
+					</cl-button>
+				</view>
+			</view>
+			<view class="flex flex-row mt-5">
+				<view class="flex flex-1 flex-cloumn items-center">
+					<cl-icon name="verified-badge-line" :size="40"></cl-icon>
+					<cl-text class="font-bold mt-1">{{ homeUser?.hashRate }} TH/s</cl-text>
+					<cl-text
+						:pt="{
+							className: parseClass([
+								'text-xs ml-1',
+								[isDark, '!text-white-600', '!text-surface-600']
+							])
+						}"
+						>{{ t("哈希率") }}</cl-text
+					>
+				</view>
+				<view class="flex flex-1 flex-cloumn items-center">
+					<cl-icon name="medal-line" :size="40"></cl-icon>
+					<cl-text class="font-bold mt-1">T {{ homeUser?.earnings }}</cl-text>
+					<cl-text
+						:pt="{
+							className: parseClass([
+								'text-xs ml-1',
+								[isDark, '!text-white-600', '!text-surface-600']
+							])
+						}"
+						>{{ t("收益") }}</cl-text
+					>
+				</view>
+				<view class="flex flex-1 flex-cloumn items-center">
+					<cl-icon name="at-fill" :size="40"></cl-icon>
+					<cl-text class="font-bold mt-1"
+						>{{ homeUser?.minerCount }} {{ t("单位") }}</cl-text
+					>
+					<cl-text
+						:pt="{
+							className: parseClass([
+								'text-xs ml-1',
+								[isDark, '!text-white-600', '!text-surface-600']
+							])
+						}"
+						>{{ t("矿工数量") }}</cl-text
+					>
+				</view>
+			</view>
+			<view class="mt-5 bg-primary-200 rounded-xl p-3">
+				<view class="flex flex-row justify-between items-center">
+					<cl-text
+						:pt="{
+							className: parseClass([
+								'text-md',
+								[isDark, '!text-surface-900', '!text-surface-600']
+							])
+						}"
+						>{{ t("可用代币") }}</cl-text
+					>
+					<view class="flex flex-row items-center">
+						<cl-icon
+							color="primary"
+							class="mr-1 my-auto"
+							name="verified-badge-line"
+							:size="35"
+						></cl-icon>
+						<cl-text class="font-bold !text-primary-500"
+							>{{ homeUser?.tokens }}
+						</cl-text>
+						<cl-text class="font-bold !text-primary-500">MTC</cl-text>
+					</view>
+				</view>
+				<view class="flex flex-row justify-between mt-5">
+					<cl-button
+						icon="add-circle-line"
+						@tap="toDeposit()"
+						class="!px-10 !py-3 flex-1"
+						>{{ t("充值") }}</cl-button
+					>
+					<cl-button
+						icon="arrow-right-up-line"
+						@tap="toWithdraw()"
+						:pt="{
+							className: '!px-10 !py-3 flex-1'
+						}"
+						>{{ t("提现") }}</cl-button
+					>
 				</view>
 			</view>
 		</view>
-
+		<view class="relative mx-2 mt-5 h-[300rpx]">
+			<view
+				class="absolute left-0 top-0 shadow-sm bg-white dark:!bg-surface-800 rounded-xl p-5"
+				:class="{ 'is-dark': isDark }"
+			>
+				<Asserts></Asserts>
+			</view>
+			<view
+				class="absolute right-0 top-0 w-[400rpx] h-[300rpx] box-border shadow-sm bg-white dark:!bg-surface-800 rounded-xl p-5"
+				:class="{ 'is-dark': isDark }"
+			>
+				<Mining></Mining>
+			</view>
+		</view>
+		<view
+			class="mx-2 mt-5 h-[400rpx] bg-white dark:!bg-surface-800 rounded-xl p-5"
+			:class="{ 'is-dark': isDark }"
+		>
+			<TopCoins></TopCoins>
+		</view>
+		<view
+			class="mx-2 my-5 h-[400rpx] bg-white dark:!bg-surface-800 rounded-xl p-5"
+			:class="{ 'is-dark': isDark }"
+		>
+			<WeeklyRevence></WeeklyRevence>
+		</view>
 		<!-- 自定义底部导航栏 -->
 		<custom-tabbar></custom-tabbar>
 
@@ -84,398 +234,57 @@
 	</cl-page>
 </template>
 
-<script lang="ts" setup>
-import { isMp, router, useRefs } from "@/cool";
+<script setup lang="ts">
+import { isDark, parseClass, isMp, useRefs, useStore, request, router } from "@/cool";
 import { t } from "@/locale";
-import { computed } from "vue";
-import { useUi } from "@/uni_modules/cool-ui";
 import { config } from "@/config";
 import LocaleSet from "@/components/locale-set.uvue";
 import SizeSet from "@/components/size-set.uvue";
+import { useUi } from "@/uni_modules/cool-ui";
 import CustomTabbar from "@/components/tabbar.uvue";
+import Asserts from "@/pages/home/assets.uvue";
+import Mining from "@/pages/home/mining.uvue";
+import TopCoins from "@/pages/home/topcoins.uvue";
+import WeeklyRevence from "@/pages/home/weeklyrevence.uvue";
+import { type HomeUserInfo } from "@/types";
+import { ref } from "vue";
 
-const ui = useUi();
 const refs = useRefs();
+const ui = useUi();
+const { user } = useStore();
 
-type Item = {
-	label: string;
-	icon?: string;
-	path?: string;
-	disabled?: boolean;
-	children?: Item[];
-};
+const homeUser = ref<HomeUserInfo | null>(null);
 
-const data = computed<Item[]>(() => {
-	return [
-		{
-			label: t("基础组件"),
-			children: [
-				{
-					label: t("文本"),
-					icon: "text",
-					path: "/pages/demo/basic/text"
-				},
-				{
-					label: t("按钮"),
-					icon: "mouse-line",
-					path: "/pages/demo/basic/button"
-				},
-				{
-					label: t("图片"),
-					icon: "image-line",
-					path: "/pages/demo/basic/image"
-				},
-				{
-					label: t("图标"),
-					icon: "puzzle-2-line",
-					path: "/pages/demo/basic/icon"
-				},
-				{
-					label: t("标签"),
-					icon: "price-tag-3-line",
-					path: "/pages/demo/basic/tag"
-				}
-			]
-		},
-		{
-			label: t("表单组件"),
-			children: [
-				{
-					label: t("表单验证"),
-					icon: "draft-line",
-					path: "/pages/demo/form/form"
-				},
-				{
-					label: t("输入框"),
-					icon: "input-field",
-					path: "/pages/demo/form/input"
-				},
-				{
-					label: t("文本域"),
-					icon: "text-block",
-					path: "/pages/demo/form/textarea"
-				},
-				{
-					label: t("计数器"),
-					icon: "increase-decrease-line",
-					path: "/pages/demo/form/input-number"
-				},
-				{
-					label: t("口令输入"),
-					icon: "input-method-line",
-					path: "/pages/demo/form/input-otp"
-				},
-				{
-					label: t("键盘"),
-					icon: "keyboard-box-line",
-					path: "/pages/demo/form/keyboard"
-				},
-				{
-					label: t("单选框"),
-					icon: "radio-button-line",
-					path: "/pages/demo/form/radio"
-				},
-				{
-					label: t("多选框"),
-					icon: "checkbox-line",
-					path: "/pages/demo/form/checkbox"
-				},
-				{
-					label: t("开关"),
-					icon: "toggle-line",
-					path: "/pages/demo/form/switch"
-				},
-				{
-					label: t("评分"),
-					icon: "star-line",
-					path: "/pages/demo/form/rate"
-				},
-				{
-					label: t("滑块"),
-					icon: "equalizer-2-line",
-					path: "/pages/demo/form/slider"
-				},
-				{
-					label: t("选择器"),
-					icon: "dropdown-list",
-					path: "/pages/demo/form/select"
-				},
-				{
-					label: t("日期选择器"),
-					icon: "calendar-line",
-					path: "/pages/demo/form/select-date"
-				},
-				{
-					label: t("时间选择器"),
-					icon: "time-line",
-					path: "/pages/demo/form/select-time"
-				},
-				{
-					label: t("级联选择器"),
-					icon: "stacked-view",
-					path: "/pages/demo/form/cascader"
-				},
-				{
-					label: t("文件上传"),
-					icon: "file-upload-line",
-					path: "/pages/demo/form/upload"
-				},
-				{
-					label: t("日历"),
-					icon: "calendar-line",
-					path: "/pages/demo/form/calendar"
-				}
-			]
-		},
-		{
-			label: t("布局组件"),
-			children: [
-				{
-					label: t("弹性布局"),
-					icon: "layout-2-line",
-					path: "/pages/demo/layout/flex"
-				},
-				{
-					label: t("标签页"),
-					icon: "function-add-line",
-					path: "/pages/demo/layout/tabs"
-				},
-				{
-					label: t("折叠面板"),
-					icon: "collapse-vertical-line",
-					path: "/pages/demo/layout/collapse"
-				},
-				{
-					label: t("吸顶"),
-					icon: "align-top",
-					path: "/pages/demo/layout/sticky"
-				},
-				{
-					label: t("导航栏"),
-					icon: "layout-top-line",
-					path: "/pages/demo/layout/topbar"
-				},
-				{
-					label: t("底部视图"),
-					icon: "layout-bottom-line",
-					path: "/pages/demo/layout/footer"
-				},
-				{
-					label: t("悬浮视图"),
-					icon: "picture-in-picture-line",
-					path: "/pages/demo/layout/float-view"
-				}
-			]
-		},
-		{
-			label: t("数据展示"),
-			children: [
-				{
-					label: t("头像"),
-					icon: "account-circle-line",
-					path: "/pages/demo/data/avatar"
-				},
-				{
-					label: t("查看更多"),
-					icon: "menu-add-line",
-					path: "/pages/demo/data/read-more"
-				},
-				{
-					label: t("列表"),
-					icon: "list-check",
-					path: "/pages/demo/data/list"
-				},
-				{
-					label: t("列表视图"),
-					icon: "list-view",
-					path: "/pages/demo/data/list-view"
-				},
-				{
-					label: t("列表刷新"),
-					icon: "refresh-line",
-					path: "/pages/demo/data/list-view-refresh",
-					disabled: false
-				},
-				{
-					label: t("瀑布流"),
-					icon: "layout-column-line",
-					path: "/pages/demo/data/waterfall"
-				},
-				{
-					label: t("轮播图"),
-					icon: "carousel-view",
-					path: "/pages/demo/data/banner"
-				},
-				{
-					label: t("跑马灯"),
-					icon: "film-line",
-					path: "/pages/demo/data/marquee"
-				},
-				{
-					label: t("分页"),
-					icon: "page-separator",
-					path: "/pages/demo/data/pagination"
-				},
-				{
-					label: t("时间轴"),
-					icon: "timeline-view",
-					path: "/pages/demo/data/timeline"
-				},
-				{
-					label: t("拖拽"),
-					icon: "drag-move-line",
-					path: "/pages/demo/data/draggable"
-				},
-				{
-					label: t("筛选栏"),
-					icon: "filter-line",
-					path: "/pages/demo/data/filter-bar"
-				},
-				{
-					label: t("树形结构"),
-					icon: "node-tree",
-					path: "/pages/demo/data/tree"
-				}
-			]
-		},
-		{
-			label: t("状态组件"),
-			children: [
-				{
-					label: t("角标"),
-					icon: "notification-badge-line",
-					path: "/pages/demo/status/badge"
-				},
-				{
-					label: t("通知栏"),
-					icon: "error-warning-line",
-					path: "/pages/demo/status/noticebar"
-				},
-				{
-					label: t("倒计时"),
-					icon: "timer-line",
-					path: "/pages/demo/status/countdown"
-				},
-				{
-					label: t("数字滚动"),
-					icon: "arrow-up-box-line",
-					path: "/pages/demo/status/rolling-number"
-				},
-				{
-					label: t("进度条"),
-					icon: "subtract-line",
-					path: "/pages/demo/status/progress"
-				},
-				{
-					label: t("圆形进度条"),
-					icon: "circle-line",
-					path: "/pages/demo/status/progress-circle"
-				},
-				{
-					label: t("骨架图"),
-					icon: "shadow-line",
-					path: "/pages/demo/status/skeleton"
-				},
-				{
-					label: t("加载更多"),
-					icon: "loader-4-line",
-					path: "/pages/demo/status/loadmore"
-				}
-			]
-		},
-		{
-			label: t("反馈组件"),
-			children: [
-				{
-					label: t("操作菜单"),
-					icon: "menu-line",
-					path: "/pages/demo/feedback/action-sheet"
-				},
-				{
-					label: t("弹窗"),
-					icon: "chat-4-line",
-					path: "/pages/demo/feedback/popup"
-				},
-				{
-					label: t("确认框"),
-					icon: "chat-check-line",
-					path: "/pages/demo/feedback/confirm"
-				},
-				{
-					label: t("提示框"),
-					icon: "message-2-line",
-					path: "/pages/demo/feedback/toast"
-				}
-			]
-		},
-		{
-			label: "其他",
-			children: [
-				{
-					label: "QRCode",
-					icon: "qr-code-line",
-					path: "/pages/demo/other/qrcode"
-				},
-				{
-					label: t("签名"),
-					icon: "sketching",
-					path: "/pages/demo/other/sign"
-				},
-				{
-					label: t("图片裁剪"),
-					icon: "crop-line",
-					path: "/pages/demo/other/cropper"
-				},
-				{
-					label: t("Canvas"),
-					icon: "markup-line",
-					path: "/pages/demo/other/canvas"
-				},
-				{
-					label: t("富文本"),
-					icon: "text-snippet",
-					path: "/pages/demo/other/rict-text",
-					disabled: true
-				},
-				{
-					label: "DayUts",
-					icon: "timer-2-line",
-					path: "/pages/demo/other/day-uts"
-				},
-				{
-					label: "Vibrate",
-					icon: "volume-vibrate-line",
-					path: "/pages/demo/other/vibrate"
-				},
-				{
-					label: "SVG",
-					icon: "bubble-chart-line",
-					path: "/pages/demo/other/svg"
-				},
-				{
-					label: "SlideVerify",
-					icon: "contract-right-fill",
-					path: "/pages/demo/other/slide-verify"
-				},
-				{
-					label: "Animation",
-					icon: "instance-line",
-					path: "/pages/demo/other/animation"
-				}
-			]
-		}
-	];
-});
-
-function toPath(item: Item) {
-	if (item.disabled == true) {
-		return ui.showToast({
-			message: t("该功能正在开发中")
-		});
-	}
-
-	router.to(item.path!);
+function toWithdraw() {
+	router.push({ path: "/pages/withdraw/index" });
 }
+
+function toDeposit() {
+	router.push({ path: "/pages/deposit/index" });
+}
+
+onReady(() => {
+	// 根据实际情况调整数据的类型
+	if (user.isNull()) {
+		ui.showToast({
+			message: t("身份已过期，请重新登录!")
+		});
+		user.logout();
+	} else {
+		ui.showLoading(t("加载中"));
+		request({
+			url: "/mara/asap/userinfo"
+		})
+			.then((res) => {
+				if (res != null) {
+					homeUser.value = res as HomeUserInfo;
+				}
+			})
+			.finally(() => {
+				ui.hideLoading();
+			});
+	}
+});
 
 function setLocale() {
 	refs.open("localeSet");
@@ -486,18 +295,4 @@ function setSize() {
 }
 </script>
 
-<style lang="scss" scoped>
-.group {
-	@apply mb-10;
-
-	.list {
-		.item {
-			@apply flex flex-col items-center;
-			@apply rounded-xl bg-white px-2;
-			height: 140rpx;
-			margin-bottom: 10rpx;
-			padding-top: 36rpx;
-		}
-	}
-}
-</style>
+<style lang="scss" scoped></style>

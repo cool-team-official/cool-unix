@@ -1,0 +1,252 @@
+<template>
+	<cl-page>
+		<cl-topbar
+			:title="t('USDT Withdraw')"
+			fixed
+			:show-back="true"
+			safe-area-top
+			:height="isMp() ? null : 100"
+		>
+			<template #append>
+				<cl-icon
+					name="search-line"
+					:size="38"
+					:pt="{
+						className: 'mr-2'
+					}"
+				></cl-icon>
+			</template>
+		</cl-topbar>
+		<view class="flex flex-row h-[200rpx] justify-between items-center p-5 bg-primary-300">
+			<view class="flex flex-col">
+				<cl-text class="!text-xl font-bold !text-white">{{ t("USDT withdrawal") }}</cl-text>
+				<cl-text :pt="{ className: '!text-xs !text-surface-50 mt-2' }">{{
+					t("Secure and fast，withdraw to your wallet")
+				}}</cl-text>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<view class="flex flex-row items-center">
+				<view class="p-4 bg-primary-100 rounded-full">
+					<cl-icon
+						name="wallet-line"
+						:size="50"
+						:pt="{ className: '!text-primary-300' }"
+					></cl-icon>
+				</view>
+				<view class="flex flex-col ml-5">
+					<cl-text class="!text-surface-500">{{ t("USDT Balance") }}</cl-text>
+					<cl-text class="mt-1 text-sm font-bold">{{ 2623.26 }} USDT</cl-text>
+				</view>
+				<cl-tag
+					type="primary"
+					rounded
+					:pt="{
+						className: 'ml-auto !bg-green-50',
+						text: {
+							className: '!text-green-500 !text-xs'
+						}
+					}"
+					>{{ t("Withdrawable") }}</cl-tag
+				>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<view class="flex flex-col">
+				<cl-text class="!text-xl font-bold mb-5">{{ t("Withdrawal (USDT)") }}</cl-text>
+				<cl-input
+					type="number"
+					clearable
+					:placeholder="t('Enter USDT withdrawal amount')"
+					:pt="{
+						className: '!h-14',
+						inner: {
+							className: 'ml-2'
+						}
+					}"
+				>
+					<template #prepend>
+						<cl-icon
+							name="exchange-dollar-line"
+							:size="40"
+							:pt="{ className: '!text-primary-400' }"
+						></cl-icon>
+					</template>
+					<template #append>
+						<cl-text :pt="{ className: 'text-xl' }">USDT</cl-text>
+					</template>
+				</cl-input>
+				<view class="flex flex-row mt-5">
+					<cl-tag
+						v-for="item in [25, 50, 75]"
+						:key="item"
+						rounded
+						:pt="{
+							className: '!bg-primary-100',
+							text: {
+								className: '!text-primary-300 font-bold !text-xs !py-1'
+							}
+						}"
+						>{{ item }} %</cl-tag
+					>
+					<cl-tag
+						rounded
+						:pt="{
+							className: '!bg-primary-100',
+							text: {
+								className: '!text-primary-300 font-bold !text-xs !py-1'
+							}
+						}"
+						>{{ t("All") }}</cl-tag
+					>
+				</view>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="!text-xl font-bold">{{ t("Select Network") }}</cl-text>
+			<view class="mt-5 w-full flex flex-row justify-between">
+				<view
+					class="flex flex-col w-1/2 items-center p-3 bg-primary-100 rounded-xl !border-1 border-primary-400 border-solid"
+				>
+					<cl-icon
+						name="flashlight-fill"
+						:size="60"
+						:pt="{ className: '!text-primary-400' }"
+					></cl-icon>
+					<cl-text class="!text-md font-bold !text-primary-400 mt-2">{{
+						t("TRC20")
+					}}</cl-text>
+					<cl-text class="!text-xs !text-primary-400 mt-2">{{
+						t("Low fees，recommended")
+					}}</cl-text>
+				</view>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="!text-xl font-bold">{{ t("TRC20 Wallet address") }}</cl-text>
+			<cl-text class="!text-sm mt-1">{{
+				t("Enter your Tron(TRX) wallet address starting with T")
+			}}</cl-text>
+			<cl-input
+				type="text"
+				clearable
+				:placeholder="t('Enter your wallet address')"
+				:pt="{
+					className: '!h-14 mt-5',
+					inner: {
+						className: 'ml-2'
+					}
+				}"
+			>
+				<template #prepend>
+					<cl-icon
+						name="wallet-line"
+						:size="40"
+						:pt="{ className: '!text-primary-400' }"
+					></cl-icon>
+				</template>
+			</cl-input>
+			<cl-text class="!text-xs mt-3 !text-red-500">{{
+				t(
+					"Please ensure your wallet address is correct. An incorrect address may result in irreversible loss of assets."
+				)
+			}}</cl-text>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="!text-xl font-bold">{{ t("Withdrawal Details") }}</cl-text>
+			<view
+				class="flex flex-row justify-between items-center py-5 border-gray-200 border-solid border-t-0 border-l-0 border-r-0 border-b-0"
+				style="border-bottom-width: 1rpx"
+			>
+				<cl-text class="!text-sm">{{ t("Withdrawal Amount") }}</cl-text>
+				<cl-text class="!text-sm !text-black">{{ 50.0 }} USDT</cl-text>
+			</view>
+			<view
+				class="flex flex-row justify-between items-center py-5 border-gray-200 border-solid border-t-0 border-l-0 border-r-0 border-b-0"
+				style="border-bottom-width: 1rpx"
+			>
+				<cl-text class="!text-sm !text-red-500">{{ t("Withdrawal Fee") }}</cl-text>
+				<cl-text class="!text-sm !text-red-500">{{ 1.0 }} USDT</cl-text>
+			</view>
+			<view class="flex flex-row justify-between items-center py-5">
+				<cl-text class="!text-sm">{{ t("Net Receipt") }}</cl-text>
+				<cl-text class="!text-sm !text-black">{{ 49.0 }} USDT</cl-text>
+			</view>
+			<view
+				class="flex flex-row items-center border-gray-200 border-solid border-b-0 border-l-0 border-r-0 border-t-0 rounded-lg p-2"
+				style="border-width: 1rpx"
+			>
+				<cl-icon
+					name="information-2-line"
+					:size="40"
+					:pt="{ className: '!text-gray-500' }"
+				></cl-icon>
+				<cl-text class="!text-sm ml-3 !text-gray-500">{{
+					t("TRC20 Network transfers include a fixed fee of 1.00 USDT")
+				}}</cl-text>
+			</view>
+		</view>
+		<cl-button
+			:pt="{
+				className: 'mx-2 mt-5 h-12 font-bold'
+			}"
+		>
+			{{ t("Comfirm Withdrawal") }}
+		</cl-button>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="text-xl font-bold mb-2">{{ t("Withdrawal Instructions") }}</cl-text>
+			<cl-text class="!text-sm mt-1"
+				>1.
+				{{ t("USDT withdrawal requests will be processed within 1-12 hours.") }}</cl-text
+			>
+			<cl-text class="!text-sm mt-1"
+				>2.
+				{{
+					t(
+						"Please ensure your wallet address is correct. Assets send to wrong address cannot be recovered."
+					)
+				}}</cl-text
+			>
+			<cl-text class="!text-sm mt-1"
+				>3.
+				{{
+					t(
+						"The withdrawal fee is 1.00 USDT, with a minimum withdrawal amount of 5.0 USDT per transaction."
+					)
+				}}</cl-text
+			>
+			<cl-text class="!text-sm mt-1 !line-height-2"
+				>4. {{ t("TRC20 withdrawal are faster and have lower fees.") }}</cl-text
+			>
+		</view>
+		<view class="mt-5 p-1"></view>
+	</cl-page>
+</template>
+
+<script setup lang="ts">
+import { isMp, isDark } from "@/cool";
+import { t } from "@/locale";
+import { ref } from "vue";
+
+const paymentMethod = ref("USDT_TRC20");
+</script>
+
+<style scoped lang="scss"></style>

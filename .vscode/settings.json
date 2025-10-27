@@ -14,5 +14,8 @@
 	"prettier.requireConfig": true,
 	"[ets]": {
 		"editor.defaultFormatter": "NailyZero.vscode-naily-ets"
+	},
+	"[vue]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	}
 }

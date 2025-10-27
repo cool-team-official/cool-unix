@@ -1,0 +1,63 @@
+<template>
+	<canvas
+		class="tui-xcharts-main"
+		:id="guid"
+		@click="tap"
+		@touchstart="touchStart"
+		@touchmove="touchMove"
+		@touchend="touchEnd"
+	>
+	</canvas>
+</template>
+
+<script setup lang="ts">
+import { TuiGuid } from "../../libs/common";
+import { TuiCharts } from "../../index";
+import { getCurrentInstance, nextTick, onMounted } from "vue";
+const guid: string = `tui${TuiGuid(20)}`;
+const emits = defineEmits(["initFinished", "select"]);
+const charts = new TuiCharts();
+const ins = getCurrentInstance()?.proxy as ComponentPublicInstance;
+onMounted(() => {
+	nextTick(() => {
+		// @ts-ignore
+		(uni.getElementById(guid) as UniElement)
+			.getBoundingClientRectAsync()
+			?.then((rst: DOMRect) => {
+				uni.createCanvasContextAsync({
+					id: guid,
+					component: ins,
+					success: (context: CanvasContext) => {
+						const ctx = context.getContext("2d")!;
+						const canvas = ctx.canvas;
+						const dpr = uni.getWindowInfo().pixelRatio;
+						canvas.width = canvas.offsetWidth * dpr;
+						canvas.height = canvas.offsetHeight * dpr;
+						ctx.scale(dpr, dpr);
+						charts.setInsMethod(ins, rst);
+						charts.setContext(context);
+						emits("initFinished", charts);
+					}
+				});
+			});
+	});
+});
+function touchStart(e: any) {
+	charts.touchStart(e as UniTouchEvent);
+}
+function touchMove(e: any) {
+	charts.touchMove(e as UniTouchEvent);
+}
+function touchEnd(e: any) {
+	charts.touchEnd(e as UniTouchEvent);
+}
+function tap(e: any) {
+	charts.tap(e as UniPointerEvent);
+}
+</script>
+<style>
+.tui-xcharts-main {
+	width: 100%;
+	height: 100%;
+}
+</style>

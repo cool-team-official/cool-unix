@@ -1,0 +1,144 @@
+<template>
+	<view class="flex flex-col mb-5">
+		<cl-text :pt="{ className: 'text-lg font-bold' }">{{ t("欢迎回来") }}</cl-text>
+		<cl-text :pt="{ className: 'text-sm mt-2' }" color="info">{{
+			t("登录后即可访问您的以下帐户")
+		}}</cl-text>
+	</view>
+
+	<view class="flex flex-col">
+		<cl-form ref="formRef" v-model="emailForm" :rules="rules">
+			<cl-form-item prop="email" required>
+				<cl-input
+					v-model="emailForm.email"
+					prefix-icon="mail-fill"
+					:placeholder="t('请输入邮箱')"
+					:border="false"
+					:pt="{
+						className: parseClass([
+							'!h-[90rpx] !rounded-xl !px-4',
+							[isDark, '!bg-surface-70', '!bg-white']
+						]),
+						prefixIcon: {
+							className: 'mr-1'
+						}
+					}"
+				></cl-input>
+			</cl-form-item>
+
+			<cl-form-item prop="password" required>
+				<cl-input
+					v-model="emailForm.password"
+					:clearable="false"
+					prefix-icon="lock-fill"
+					password
+					:placeholder="t('请输入密码')"
+					:maxlength="20"
+					:border="false"
+					:pt="{
+						className: parseClass([
+							'!h-[90rpx] !rounded-xl !px-4',
+							[isDark, '!bg-surface-70', '!bg-white']
+						]),
+						prefixIcon: {
+							className: 'mr-1'
+						}
+					}"
+				>
+				</cl-input>
+			</cl-form-item>
+		</cl-form>
+
+		<cl-button
+			:pt="{
+				className: '!h-[90rpx] !rounded-xl'
+			}"
+			:loading="loading"
+			:disabled="disabled"
+			@tap="toLogin"
+		>
+			{{ t("登录") }}
+		</cl-button>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { t } from "@/locale";
+import { computed, ref, type PropType } from "vue";
+import type { LoginForm } from "../../types";
+import { isDark, parseClass, request, useRefs, type Response } from "@/cool";
+import { useForm, useUi } from "@/uni_modules/cool-ui";
+import { type ClFormRule } from "@/uni_modules/cool-ui";
+
+const props = defineProps({
+	form: {
+		type: Object as PropType<LoginForm>,
+		default: () => ({})
+	}
+});
+
+const emailForm = ref<LoginForm>(props.form);
+
+const emit = defineEmits(["success"]);
+
+const ui = useUi();
+const refs = useRefs();
+
+// 是否加载中
+const loading = ref(false);
+
+// 是否禁用
+const disabled = computed(() => {
+	return props.form.email == "" || props.form.password == "";
+});
+
+// 获取 cl-form 的组件实例
+const { formRef, validate } = useForm();
+
+const rules = new Map<string, ClFormRule[]>([
+	[
+		"email",
+		[
+			{ required: true, message: t("邮箱不能为空") },
+			{ pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: t("邮箱格式不正确") }
+		]
+	],
+	[
+		"password",
+		[
+			{ required: true, message: t("密码不能为空") },
+			{ min: 3, max: 20, message: t("密码长度在3-20个字符之间") }
+		]
+	]
+]);
+
+// 登录
+function toLogin() {
+	validate(async (valid) => {
+		if (valid) {
+			const { email, password } = props.form;
+
+			loading.value = true;
+
+			await request({
+				url: "/mara/asap/login",
+				method: "POST",
+				data: {
+					email,
+					password
+				}
+			})
+				.then((res) => {
+					emit("success", res);
+				})
+				.catch((err) => {
+					ui.showToast({
+						message: (err as Response).message!
+					});
+				});
+
+			loading.value = false;
+		}
+	});
+}
+</script>

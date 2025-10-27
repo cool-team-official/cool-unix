@@ -1,0 +1,149 @@
+<template>
+	<cl-page>
+		<cl-topbar fixed :show-back="false" safe-area-top :height="isMp() ? null : 100">
+			<view
+				class="flex flex-row items-center p-3 flex-1 w-full"
+				:class="{
+					'pt-0': isMp()
+				}"
+			>
+				<view class="bg-primary-500 rounded-lg p-[5rpx]">
+					<cl-image
+						src="/static/logo.png"
+						:width="45"
+						:height="45"
+						:show-loading="false"
+					></cl-image>
+				</view>
+
+				<cl-text
+					color="primary"
+					:pt="{
+						className: parseClass([
+							'!text-xl mr-auto ml-2 flex-1',
+							[isDark, '!text-white', '!text-black']
+						])
+					}"
+				>
+					{{ config.name }}
+				</cl-text>
+
+				<view
+					class="bg-surface-500 h-8 w-8 rounded-full flex flex-row items-center justify-center mr-3"
+					@tap="setSize"
+				>
+					<cl-icon name="font-size" color="white"></cl-icon>
+				</view>
+
+				<view
+					class="bg-primary-500 h-8 w-8 rounded-full flex flex-row items-center justify-center"
+					:class="{
+						'mr-24': isMp()
+					}"
+					@tap="setLocale"
+				>
+					<cl-icon name="translate" color="white"></cl-icon>
+				</view>
+			</view>
+		</cl-topbar>
+		<view class="flex flex-row h-[200rpx] justify-between items-center p-5 bg-primary-300">
+			<view class="flex flex-col">
+				<cl-text class="text-xl font-bold !text-white">{{ t("Buy Miner") }}</cl-text>
+				<cl-text :pt="{ className: 'text-xs !text-surface-50 mt-1' }">{{
+					t("Choose your ideal miner and start your digital asset journey")
+				}}</cl-text>
+			</view>
+			<cl-icon class="my-auto !text-primary-200" name="verified-badge-line" :size="80">
+			</cl-icon>
+		</view>
+
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="text-xl font-bold">{{ t("Miner Info") }}</cl-text>
+			<cl-text
+				:pt="{
+					className: parseClass([
+						'text-md mt-1',
+						[isDark, '!text-surface-200', '!text-surface-400']
+					])
+				}"
+				>{{
+					t(
+						"Mining machines are essential tools for earning USDT, with different levels offering varying hash power and output " +
+							". Once purchased. mining machines can be used permanently without maintenance fees" +
+							". All mining machines support automatic mining, and the system automaticcally settings earnings to your account in real-time"
+					)
+				}}</cl-text
+			>
+		</view>
+
+		<view class="mt-5 mx-2">
+			<cl-text class="text-xl font-bold">{{ t("Miner Type") }}</cl-text>
+		</view>
+		<view class="mx-2 mb-5">
+			<cl-list-view :data="data" :virtual="false" :pt="{ item: { className: 'mt-5' } }">
+				<template #item="{ value }">
+					<miner :value="value"></miner>
+				</template>
+			</cl-list-view>
+		</view>
+
+		<!-- 自定义底部导航栏 -->
+		<custom-tabbar></custom-tabbar>
+
+		<!-- 主题设置 -->
+		<locale-set :ref="refs.set('localeSet')"></locale-set>
+
+		<!-- 字体大小设置 -->
+		<size-set :ref="refs.set('sizeSet')"></size-set>
+	</cl-page>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+import { isDark, parseClass, isMp, useRefs, request } from "@/cool";
+import { t } from "@/locale";
+import { config } from "@/config";
+import LocaleSet from "@/components/locale-set.uvue";
+import SizeSet from "@/components/size-set.uvue";
+import CustomTabbar from "@/components/tabbar.uvue";
+import { useUi, useListView, type ClListViewItem } from "@/uni_modules/cool-ui";
+import Miner from "@/pages/buy/miner.uvue";
+
+const refs = useRefs();
+const ui = useUi();
+const data = ref<ClListViewItem[]>([]);
+
+function initMinerProduct() {
+	request({
+		url: "/getminersinfo",
+		method: "GET"
+	})
+		.then((res) => {
+			if (res != null) {
+				data.value = useListView(res as UTSJSONObject[]);
+			}
+		})
+		.finally(() => {
+			ui.hideLoading();
+		});
+}
+
+onReady(() => {
+	ui.showLoading(t("加载中"));
+	// 根据实际情况调整数据的类型
+	initMinerProduct();
+});
+
+function setLocale() {
+	refs.open("localeSet");
+}
+
+function setSize() {
+	refs.open("sizeSet");
+}
+</script>
+
+<style lang="scss" scoped></style>

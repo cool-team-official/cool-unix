@@ -1,0 +1,90 @@
+<template>
+	<view class="border-red-300 border-2 border-solid rounded-xl h-full">
+		<view
+			class="flex flex-row m-5 pb-5 mb-0 items-center border-t-0 border-l-0 border-r-0 border-b-1 border-surface-100 border-solid"
+		>
+			<cl-image
+				:src="`data:image/png;base64,${item?.imageBase64}`"
+				mode="aspectFit"
+				:height="100"
+				:width="100"
+			>
+			</cl-image>
+			<view class="flex-1 flex flex-row ml-3 justify-between">
+				<view class="flex flex-col justify-between w-[380rpx]">
+					<view class="flex flex-row">
+						<cl-text :pt="{ className: 'text-xl font-bold text-center' }">{{
+							t("ANTMINER S19")
+						}}</cl-text>
+						<cl-tag
+							:pt="{
+								className: '!bg-primary-100 ml-2',
+								text: {
+									className: '!text-xs !text-primary-300 font-bold'
+								}
+							}"
+							>{{ t("#0") }}</cl-tag
+						>
+					</view>
+					<view class="flex flex-row flex-wrap mt-2">
+						<cl-text :pt="{ className: 'text-sm !text-surface-500' }"
+							>Hash power: {{ 1.0 }}
+						</cl-text>
+						<cl-text :pt="{ className: 'text-sm !text-surface-500' }"
+							>TH/s | Daily
+						</cl-text>
+						<cl-text :pt="{ className: 'text-sm !text-surface-500' }">
+							output: {{ 0.6 }} USDT</cl-text
+						>
+					</view>
+				</view>
+			</view>
+			<view class="flex flex-col items-end relative overflow-visible">
+				<cl-badge
+					type="success"
+					dot
+					position
+					:pt="{
+						className: '!top-[8rpx] !left-[10rpx]'
+					}"
+				>
+				</cl-badge>
+				<cl-text :pt="{ className: '!text-green-400 text-xs' }">{{
+					t("Run normally")
+				}}</cl-text>
+				<cl-text :pt="{ className: 'text-xs mt-2 !text-surface-500' }">
+					{{ t("Efficiency") }}: {{ 180 }}%</cl-text
+				>
+			</view>
+		</view>
+		<cl-button
+			:pt="{
+				className: '!bg-red-400 m-5 h-12'
+			}"
+		>
+			{{ t("Stop") }}
+		</cl-button>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { computed } from "vue";
+import { parse } from "@/cool";
+import { t } from "@/locale";
+import { type MinerType } from "@/types/buy";
+
+defineOptions({
+	name: "earnMiner"
+});
+
+const props = defineProps({
+	value: {
+		type: Object,
+		default: () => ({})
+	}
+});
+
+const item = computed(() => parse<MinerType>(props.value));
+</script>
+
+<style lang="scss" scoped></style>

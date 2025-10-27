@@ -11,13 +11,13 @@
 					></button>
 					<!-- #endif -->
 
-					<cl-avatar
-						:src="userInfo?.avatarUrl"
+					<!-- <cl-avatar
+						:src="`data:image/png;base64,${userInfo?.avatar}`"
 						:size="150"
 						:pt="{ className: '!rounded-3xl', icon: { size: 60 } }"
 						@tap="uploadAvatar"
 					>
-					</cl-avatar>
+					</cl-avatar> -->
 
 					<view
 						class="flex flex-col justify-center items-center absolute bottom-0 right-[-6rpx] bg-black rounded-full p-1 border border-solid border-white"
@@ -35,14 +35,14 @@
 					justify="start"
 					@tap="router.to('/pages/user/edit-name')"
 				>
-					<cl-text>{{ userInfo?.nickName }}</cl-text>
+					<!-- <cl-text>{{ userInfo?.name }}</cl-text> -->
 				</cl-list-item>
-				<cl-list-item label="手机号" hoverable justify="start">
+				<!-- <cl-list-item label="手机号" hoverable justify="start">
 					<cl-text>{{ userInfo?.phone }}</cl-text>
-				</cl-list-item>
+				</cl-list-item> -->
 			</cl-list>
 
-			<cl-list :pt="{ className: 'mb-3' }">
+			<!-- <cl-list :pt="{ className: 'mb-3' }">
 				<cl-list-item
 					:label="t('简介')"
 					hoverable
@@ -55,9 +55,9 @@
 					}}</cl-text>
 					<cl-text ellipsis v-else>{{ userInfo?.description }}</cl-text>
 				</cl-list-item>
-			</cl-list>
+			</cl-list> -->
 
-			<cl-list :pt="{ className: 'mb-3' }">
+			<!-- <cl-list :pt="{ className: 'mb-3' }">
 				<cl-list-item
 					:label="t('性别')"
 					hoverable
@@ -94,9 +94,9 @@
 						t("选择所在的地区")
 					}}</cl-text>
 				</cl-list-item>
-			</cl-list>
+			</cl-list> -->
 
-			<cl-select
+			<!-- <cl-select
 				:title="t('选择性别')"
 				:model-value="userInfo?.gender"
 				:ref="refs.set('gender')"
@@ -121,7 +121,7 @@
 				:options="regionOptions"
 				:show-trigger="false"
 				@change="onRegionChange"
-			></cl-cascader>
+			></cl-cascader> -->
 		</view>
 	</cl-page>
 </template>
@@ -157,9 +157,9 @@ const genderOptions = ref<ClSelectOption[]>([
 ]);
 
 // 性别文本
-const genderText = computed(() => {
-	return [t("保密"), t("男"), t("女")][userInfo.value?.gender!];
-});
+// const genderText = computed(() => {
+// 	return [t("保密"), t("男"), t("女")][userInfo.value?.gender!];
+// });
 
 // 性别改变
 function onGenderChange(val: number) {
@@ -187,24 +187,24 @@ function onBirthdayChange(val: string) {
 const regionOptions = useCascader(pca);
 
 // 地区文本
-const regionText = computed(() => {
-	return [userInfo.value?.province, userInfo.value?.city, userInfo.value?.district]
-		.filter((e) => e != null)
-		.join(" - ");
-});
+// const regionText = computed(() => {
+// 	return [userInfo.value?.province, userInfo.value?.city, userInfo.value?.district]
+// 		.filter((e) => e != null)
+// 		.join(" - ");
+// });
 
 // 地区改变
-function onRegionChange(arr: string[]) {
-	user.update({
-		province: arr[0],
-		city: arr[1],
-		district: arr[2]
-	});
+// function onRegionChange(arr: string[]) {
+// 	user.update({
+// 		province: arr[0],
+// 		city: arr[1],
+// 		district: arr[2]
+// 	});
 
-	ui.showToast({
-		message: t("地区设置成功")
-	});
-}
+// 	ui.showToast({
+// 		message: t("地区设置成功")
+// 	});
+// }
 
 // 打开弹窗
 function open(name: string) {

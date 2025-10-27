@@ -1,6 +1,4 @@
 <script lang="ts">
-import { useStore } from "@/cool";
-
 // #ifdef H5
 import TouchEmulator from "hammer-touchemulator";
 // 模拟移动端调试的触摸事件
@@ -13,12 +11,7 @@ export default {
 	},
 	onShow: function () {
 		console.log("App Show");
-
 		// 根据业务情况判断是否要预先调用
-		const { user } = useStore();
-
-		// 获取用户信息，未登录不执行
-		user.get();
 	},
 	onHide: function () {
 		console.log("App Hide");

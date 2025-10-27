@@ -6,8 +6,9 @@
             "type" : "uni-app:app-ios_simulator"
         },
         {
-            "customPlaygroundType" : "local",
-            "playground" : "custom",
+            "customPlaygroundType" : "device",
+            "packageName" : "uni.appx.cool",
+            "playground" : "standard",
             "type" : "uni-app:app-android"
         }
     ]

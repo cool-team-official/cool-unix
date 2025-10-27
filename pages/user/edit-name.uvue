@@ -74,7 +74,7 @@ async function confirm() {
 }
 
 // 页面加载时，设置输入框内容
-onReady(() => {
-	content.value = userInfo.value?.nickName ?? "";
-});
+// onReady(() => {
+// 	content.value = userInfo.value?.nickName ?? "";
+// });
 </script>

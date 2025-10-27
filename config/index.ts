@@ -29,7 +29,7 @@ type Config = {
 
 // 根据环境导出最终配置
 export const config = {
-	name: "Cool Unix",
+	name: "MARA",
 	version: "1.0.0",
 	locale: "zh",
 	website: "https://cool-js.com",

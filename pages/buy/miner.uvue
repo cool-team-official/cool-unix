@@ -1,0 +1,89 @@
+<template>
+	<view class="border-purple-700 border-2 border-solid rounded-xl h-full">
+		<view class="flex flex-row bg-purple-100 p-3">
+			<cl-image
+				:src="`data:image/png;base64,${item?.imageBase64}`"
+				mode="aspectFit"
+				:height="100"
+				:width="100"
+			>
+			</cl-image>
+			<view class="flex-1 flex flex-row ml-3 justify-between">
+				<view class="flex flex-col">
+					<cl-text :pt="{ className: 'text-sm font-bold text-center !text-black' }">{{
+						item?.name
+					}}</cl-text>
+					<cl-tag
+						:pt="{
+							className: '!bg-purple-200 mt-1',
+							text: {
+								className: '!text-xs !text-purple-700 font-bold'
+							}
+						}"
+						>{{ item?.type }} Miner</cl-tag
+					>
+				</view>
+				<view class="flex flex-col items-end">
+					<cl-text :pt="{ className: '!text-primary-400 font-bold' }"
+						>{{ item?.price }} MTC</cl-text
+					>
+					<cl-text :pt="{ className: 'text-xs mt-2 !text-surface-500' }"
+						>Hash Power: {{ item?.hashPower }} TH/s</cl-text
+					>
+				</view>
+			</view>
+		</view>
+		<view class="p-5">
+			<cl-text class="!text-sm">{{ item?.description }}</cl-text>
+		</view>
+		<view class="px-5 flex flex-row flex-wrap">
+			<cl-text
+				v-for="label in item?.features"
+				:key="label"
+				class="!w-[300rpx] !text-xs pb-5"
+				>{{ label }}</cl-text
+			>
+		</view>
+		<cl-text class="text-xl font-bold mx-5">{{ t("Daily Output") }}</cl-text>
+		<view class="pt-2 mx-5 flex flex-row items-center text-xl font-bold">
+			<cl-icon name="star-line" color="primary" :size="20"></cl-icon>
+			<cl-text class="ml-2 !text-primary-500"
+				>{{ item?.dailyOutput }} {{ t("USDT/Day") }}
+			</cl-text>
+		</view>
+		<view class="pt-2 mx-5 flex flex-row items-center text-xl font-bold">
+			<cl-icon name="star-line" color="primary" :size="20"></cl-icon>
+			<view class="flex flex-col">
+				<cl-text class="ml-2 !text-primary-300">{{ t("Extra Bonus") }}: </cl-text>
+				<cl-text class="ml-2 !text-primary-300"
+					>{{ t("Total output ratio") }} {{ 180 }}%
+				</cl-text>
+			</view>
+		</view>
+		<cl-button icon="shopping-cart-line" :pt="{ className: '!bg-primary-400 my-5 mx-5 h-12' }">
+			{{ t("Buy Now") }}
+		</cl-button>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { computed } from "vue";
+import { parse } from "@/cool";
+import { t } from "@/locale";
+import { type MinerType } from "@/types/buy";
+
+defineOptions({
+	name: "buyMiner"
+});
+
+const props = defineProps({
+	value: {
+		type: Object,
+		default: () => ({})
+	}
+});
+
+const item = computed(() => parse<MinerType>(props.value));
+</script>
+
+<style lang="scss" scoped></style>

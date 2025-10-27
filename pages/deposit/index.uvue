@@ -1,0 +1,185 @@
+<template>
+	<cl-page>
+		<cl-topbar
+			:title="t('USDT Deposit')"
+			fixed
+			:show-back="true"
+			safe-area-top
+			:height="isMp() ? null : 100"
+		>
+			<template #append>
+				<cl-icon
+					name="search-line"
+					:size="38"
+					:pt="{
+						className: 'mr-2'
+					}"
+				></cl-icon>
+			</template>
+		</cl-topbar>
+		<view class="flex flex-row h-[200rpx] justify-between items-center p-5 bg-primary-300">
+			<view class="flex flex-col">
+				<cl-text class="text-xl font-bold !text-white">{{
+					t("Deposit USDT to buy MTC tokens")
+				}}</cl-text>
+				<cl-text :pt="{ className: 'text-xs !text-surface-50 mt-1' }">{{
+					t("Safe，fast，instant recharge")
+				}}</cl-text>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<view class="flex flex-row items-center">
+				<view class="p-4 bg-primary-100 rounded-full">
+					<cl-icon
+						name="exchange-dollar-line"
+						:size="50"
+						:pt="{ className: '!text-primary-300' }"
+					></cl-icon>
+				</view>
+				<view class="flex flex-col ml-5">
+					<cl-text class="text-xl !text-surface-500">{{ t("Current rate") }}</cl-text>
+					<cl-text class="mt-1 text-sm font-bold">1 USDT = 10.0 MTC</cl-text>
+				</view>
+				<cl-tag
+					type="primary"
+					rounded
+					:pt="{
+						className: 'ml-auto !bg-green-50',
+						text: {
+							className: '!text-green-500 !text-xs'
+						}
+					}"
+					>{{ t("Live exchange rate") }}</cl-tag
+				>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<view class="flex flex-col">
+				<cl-text class="text-xl font-bold mb-5">{{ t("Top-up (USDT)") }}</cl-text>
+				<cl-input
+					type="number"
+					clearable
+					:placeholder="t('Enter USDT amount')"
+					:pt="{
+						className: '!h-14',
+						inner: {
+							className: 'ml-2'
+						}
+					}"
+				>
+					<template #prepend>
+						<cl-icon
+							name="wallet-line"
+							:size="40"
+							:pt="{ className: '!text-primary-400' }"
+						></cl-icon>
+					</template>
+					<template #append>
+						<cl-text :pt="{ className: 'text-xl' }">USDT</cl-text>
+					</template>
+				</cl-input>
+				<view class="mt-5 flex flex-row justify-between">
+					<cl-text
+						class="!text-surface-500 dark:!text-white"
+						:class="{ 'is-dark': isDark }"
+						>{{ t("Will receive MTC") }}:</cl-text
+					>
+					<cl-text class="text-xl font-bold !text-primary-400">200.00 MTC</cl-text>
+				</view>
+				<view class="flex flex-row mt-5">
+					<cl-tag
+						v-for="item in [50, 100, 300, 500]"
+						:key="item"
+						rounded
+						:pt="{
+							className: '!bg-primary-100',
+							text: {
+								className: '!text-primary-300 font-bold !text-xs !py-1'
+							}
+						}"
+						>{{ item }} USDT</cl-tag
+					>
+				</view>
+			</view>
+		</view>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="text-xl font-bold">{{ t("Select payment method") }}</cl-text>
+			<view class="mt-5 flex flex-col">
+				<view
+					class="flex flex-row items-center p-3 rounded-lg bg-surface-100 dark:!bg-surface-700"
+					:class="{ 'is-dark': isDark }"
+				>
+					<view
+						class="p-3 bg-primary-100 dark:bg-primary-50 rounded-full"
+						:class="{ 'is-dark': isDark }"
+					>
+						<cl-icon
+							name="flashlight-fill"
+							:size="40"
+							:pt="{ className: '!text-primary-400' }"
+						></cl-icon>
+					</view>
+					<view class="flex flex-row">
+						<view class="flex flex-col ml-3 justify-between">
+							<cl-text class="!text-md font-bold">{{ t("USDT-TRC20") }}</cl-text>
+							<cl-text class="!text-xs">{{
+								t("Tron network，low fee，recommended")
+							}}</cl-text>
+						</view>
+					</view>
+					<cl-radio
+						v-model="paymentMethod"
+						value="USDT_TRC20"
+						:pt="{ className: 'ml-auto' }"
+						active-icon="checkbox-circle-line"
+						inactive-icon="checkbox-blank-circle-line"
+					/>
+				</view>
+			</view>
+		</view>
+		<cl-button
+			:pt="{
+				className: 'mx-2 mt-5 h-12 font-bold'
+			}"
+		>
+			{{ t("Comfirm Payment") }}
+		</cl-button>
+		<view
+			class="shadow-sm mt-5 bg-white dark:!bg-surface-800 rounded-xl p-5 mx-2"
+			:class="{ 'is-dark': isDark }"
+		>
+			<cl-text class="text-xl font-bold">{{ t("Top-up Guide") }}</cl-text>
+			<cl-text class="!text-sm mt-1">1. {{ t("Enter USDT amount") }}</cl-text>
+			<cl-text class="!text-sm mt-1">2. {{ t("Choose the payment network(TRC20)") }}</cl-text>
+			<cl-text class="!text-sm mt-1"
+				>3. {{ t("Scan QR code or copy address to transfer") }}</cl-text
+			>
+			<cl-text class="!text-sm mt-1 !line-height-2"
+				>4.
+				{{
+					t("After the transfer, the system will automatically convert to MTC tokens")
+				}}</cl-text
+			>
+		</view>
+		<view class="mt-5 p-1"></view>
+	</cl-page>
+</template>
+
+<script setup lang="ts">
+import { isMp, isDark } from "@/cool";
+import { t } from "@/locale";
+import { ref } from "vue";
+
+const paymentMethod = ref("USDT_TRC20");
+</script>
+
+<style scoped lang="scss"></style>

@@ -1,16 +1,14 @@
 <template>
 	<cl-page>
-		<cl-topbar safe-area-top background-color="transparent"></cl-topbar>
-
 		<view class="px-10">
 			<!-- Logo -->
 			<view class="flex flex-col items-center justify-center py-20">
-				<view class="p-3 bg-primary-500 rounded-2xl">
+				<view class="p-1 rounded-2xl" style="background-color: #272526">
 					<cl-image
-						src="/static/logo.png"
+						src="/static/logo2.png"
 						mode="widthFix"
-						:width="80"
-						:height="80"
+						:width="150"
+						:height="150"
 					></cl-image>
 				</view>
 
@@ -18,104 +16,39 @@
 			</view>
 
 			<!-- 手机号登录 -->
-			<login-phone :form="form" @success="toLogin"></login-phone>
-
-			<!-- 微信登录 -->
-			<login-wx :ref="refs.set('loginWx')"></login-wx>
-
-			<!-- 协议 -->
-			<view class="mt-6 flex flex-row flex-wrap items-center justify-center">
-				<cl-checkbox
-					v-model="agree"
-					:pt="{ icon: { size: 28 } }"
-					active-icon="checkbox-circle-fill"
-					inactive-icon="checkbox-blank-circle-line"
-				>
-				</cl-checkbox>
-				<cl-text color="info" :pt="{ className: 'text-xs' }">{{
-					t("已阅读并同意")
-				}}</cl-text>
-				<cl-text
-					:pt="{ className: 'text-xs' }"
-					@tap.stop="toDoc(t('用户协议'), 'userAgreement')"
-				>
-					《{{ t("用户协议") }}》
-				</cl-text>
-				<cl-text color="info" :pt="{ className: 'text-xs' }">、</cl-text>
-				<cl-text
-					:pt="{ className: 'text-xs' }"
-					@tap.stop="toDoc(t('隐私政策'), 'privacyPolicy')"
-				>
-					《{{ t("隐私政策") }}》
-				</cl-text>
-			</view>
-
-			<!-- 第三方登录 -->
-			<view class="flex flex-row justify-center mt-10 px-10">
-				<view
-					class="login-item"
-					:class="{
-						'is-dark': isDark
-					}"
-					@tap="refs.callMethod('loginWx', 'login')"
-				>
-					<cl-icon name="wechat-fill" :size="38" color="#00b223"></cl-icon>
-				</view>
-
-				<view class="login-item" :class="{ 'is-dark': isDark }">
-					<cl-icon name="apple-fill" :size="38"></cl-icon>
-				</view>
-			</view>
+			<login-email :form="form" @success="toLogin"></login-email>
 		</view>
 	</cl-page>
 </template>
 
 <script setup lang="ts">
 import { config } from "@/config";
-import { isDark, parse, router, useRefs, useStore, type Token } from "@/cool";
-import { t } from "@/locale";
-import { provide, reactive, ref } from "vue";
+import { parse, router, useStore, type Token } from "@/cool";
+import { reactive } from "vue";
 import type { LoginForm } from "./types";
-import { useUi } from "@/uni_modules/cool-ui";
-import LoginPhone from "./components/login/phone.uvue";
-import LoginWx from "./components/login/wx.uvue";
+import LoginEmail from "./components/login/email.uvue";
+import type { UserInfo } from "@/types";
 
 const { user } = useStore();
-const ui = useUi();
-const refs = useRefs();
 
 // 表单
 const form = reactive<LoginForm>({
-	phone: "18000000000",
-	smsCode: "6666"
+	email: "",
+	password: ""
 });
 
-// 是否同意
-const agree = ref(false);
-
 // 登录成功
-async function toLogin(res: any) {
+function toLogin(res: Token) {
+	res.expire = 1800;
 	user.setToken(parse<Token>(res)!);
+	if (res.info != null) {
+		user.set(parse<UserInfo>(res.info)!);
+	}
 	router.nextLogin();
 }
 
 // 跳转文档
 function toDoc(name: string, path: string) {}
-
-// 是否同意
-function isAgree() {
-	if (!agree.value) {
-		ui.showToast({
-			message: t("请先阅读并同意《用户协议》和《隐私政策》")
-		});
-
-		return false;
-	}
-
-	return true;
-}
-
-provide("isAgree", isAgree);
 </script>
 
 <style lang="scss" scoped>

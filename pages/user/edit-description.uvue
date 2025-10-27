@@ -46,7 +46,7 @@ async function confirm() {
 	router.back();
 }
 
-onReady(() => {
-	content.value = userInfo.value?.description ?? "";
-});
+// onReady(() => {
+// 	content.value = userInfo.value?.description ?? "";
+// });
 </script>

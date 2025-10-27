@@ -9,6 +9,7 @@ export type Token = {
 	expire: number; // token过期时间（秒）
 	refreshToken: string; // 刷新token
 	refreshExpire: number; // 刷新token过期时间（秒）
+	info: UserInfo;
 };
 
 export class User {

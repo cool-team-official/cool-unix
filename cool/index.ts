@@ -29,8 +29,6 @@ export function cool(app: VueApp) {
 
 	initTheme();
 	initLocale();
-
-	console.log(app);
 }
 
 export * from "./animation";

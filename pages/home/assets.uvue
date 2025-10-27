@@ -1,0 +1,50 @@
+<template>
+	<view class="flex flex-col">
+		<view class="flex flex-row items-center">
+			<cl-icon name="heart-fill" :size="30" color="primary"></cl-icon>
+			<cl-text class="ml-1 font-bold" :pt="{ className: 'text-sm' }">{{
+				t("Digital Assets")
+			}}</cl-text>
+		</view>
+		<view class="flex flex-row my-3">
+			<cl-text
+				:pt="{
+					className: '!text-primary-500'
+				}"
+				>≈</cl-text
+			>
+			<cl-text
+				class="ml-1 font-bold"
+				:pt="{
+					className: '!text-primary-500'
+				}"
+				>$0.30</cl-text
+			>
+		</view>
+		<cl-progress :value="50" :show-text="false"></cl-progress>
+		<view class="flex flex-row justify-between mt-3">
+			<cl-text
+				:pt="{
+					className: parseClass([
+						'text-xs',
+						[isDark, '!text-white-600', '!text-surface-600']
+					])
+				}"
+				>{{ t("Hashrate Share") }}</cl-text
+			>
+			<cl-text
+				:pt="{
+					className: 'text-xs ml-1 !text-primary-500'
+				}"
+				>0%</cl-text
+			>
+		</view>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { isDark, parseClass } from "@/cool";
+import { t } from "@/locale";
+</script>
+
+<style lang="scss" scoped></style>

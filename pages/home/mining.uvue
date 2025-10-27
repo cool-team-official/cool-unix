@@ -1,0 +1,12 @@
+<template>
+	<view class="flex flex-col">
+		<cl-progress-circle :value="50" :size="60" :strokeWidth="5"></cl-progress-circle>
+		<cl-button class="!mt-3" size="large" icon="bofang">{{ t("Start Mining") }}</cl-button>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { t } from "@/locale";
+</script>
+
+<style lang="scss" scoped></style>
