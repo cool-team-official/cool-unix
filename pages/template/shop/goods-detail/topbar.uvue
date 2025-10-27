@@ -1,0 +1,124 @@
+<template>
+	<cl-sticky>
+		<cl-topbar fixed safe-area-top>
+			<cl-tabs
+				:list="list"
+				v-model="active"
+				height="36px"
+				:gutter="20"
+				@change="onTabChange"
+			></cl-tabs>
+
+			<template #append>
+				<view class="h-[44px] w-[30px] flex items-center justify-center mr-1">
+					<cl-icon name="search-line"></cl-icon>
+				</view>
+			</template>
+		</cl-topbar>
+	</cl-sticky>
+</template>
+
+<script setup lang="ts">
+import { debounce, getSafeAreaHeight, isNull } from "@/cool";
+import { usePage, type ClTabsItem } from "@/uni_modules/cool-ui";
+import { getCurrentInstance, onMounted, onUnmounted, ref } from "vue";
+
+const { proxy } = getCurrentInstance()!;
+const page = usePage();
+
+// 当前激活tab
+const active = ref("info");
+
+// 滚动时激活tab
+const scrollActive = ref("");
+
+// 卡片距离顶部偏移量
+const tops = ref<number[]>([]);
+
+// tab项列表
+const list = ref<ClTabsItem[]>([
+	{ label: "商品", value: "info" },
+	{ label: "评价", value: "comment" },
+	{ label: "详情", value: "desc" }
+]);
+
+/**
+ * 获取所有.card顶部坐标
+ */
+async function getTops(): Promise<void> {
+	return new Promise((resolve) => {
+		uni.createSelectorQuery()
+			.in(proxy?.$root)
+			.selectAll(".card")
+			.boundingClientRect((res) => {
+				const top = page.getScrollTop() - 44 - getSafeAreaHeight("top"); // 去头部高度
+
+				// 只计算有id的card
+				tops.value = (res as NodeInfo[])
+					.filter((e) => e.id != "" && !isNull(e.id))
+					.map((e) => (e.top ?? 0) + top);
+
+				resolve();
+			})
+			.exec();
+	});
+}
+
+/**
+ * tab切换
+ */
+async function onTabChange(value: string) {
+	// 设置滚动时激活tab
+	scrollActive.value = value;
+
+	// 重新获取卡片位置
+	await getTops();
+
+	// 查找符合当前位置的tab索引
+	const index = list.value.findIndex((e) => e.value == value);
+	if (index < 0) return;
+
+	// 滚动到对应卡片位置
+	page.scrollTo(tops.value[index] + 1);
+}
+
+/**
+ * 同步当前tab
+ */
+const setActive = debounce(() => {
+	active.value = scrollActive.value;
+}, 100);
+
+/**
+ * 滚动时激活tab
+ */
+function onScroll(top: number) {
+	let index = -1;
+
+	// 查找符合当前位置的tab索引
+	for (let i = 0; i < tops.value.length; i++) {
+		if (top >= tops.value[i]) {
+			index = i;
+		}
+	}
+
+	// 设置激活tab
+	if (index >= 0 && index < list.value.length) {
+		scrollActive.value = list.value[index].value as string;
+		setActive();
+	}
+}
+
+onMounted(() => {
+	// 获取卡片位置
+	getTops();
+
+	// 监听页面滚动
+	page.onScroll(onScroll);
+});
+
+onUnmounted(() => {
+	// 移除监听
+	page.offScroll(onScroll);
+});
+</script>

@@ -1,0 +1,15 @@
+<template>
+	<view class="flex">
+		<image v-for="item in list" :key="item" :src="item" mode="widthFix" class="w-full" />
+	</view>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+
+const list = ref<string[]>([
+	"https://unix.cool-js.com/images/demo/goods/desc-1.jpg",
+	"https://unix.cool-js.com/images/demo/goods/desc-2.jpg",
+	"https://unix.cool-js.com/images/demo/goods/desc-3.jpg"
+]);
+</script>

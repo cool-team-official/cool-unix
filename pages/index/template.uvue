@@ -58,7 +58,8 @@ const list = computed<Item[]>(() => [
 				path: "/pages/template/shop/goods-category"
 			},
 			{
-				label: t("商品详情")
+				label: t("商品详情"),
+				path: "/pages/template/shop/goods-detail/index"
 			},
 			{
 				label: t("商品列表、筛选")

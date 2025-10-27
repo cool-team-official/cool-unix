@@ -21,4 +21,5 @@ export type ClBannerProps = {
 	showDots?: boolean;
 	disableTouch?: boolean;
 	height?: any;
+	imageMode?: string;
 };

@@ -523,6 +523,12 @@
 					}
 				},
 				{
+					"path": "shop/goods-detail/index",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
 					"path": "shop/shopping-cart",
 					"style": {
 						"navigationStyle": "custom"

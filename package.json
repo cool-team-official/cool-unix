@@ -1,6 +1,6 @@
 {
 	"name": "cool-unix",
-	"version": "8.0.28",
+	"version": "8.0.29",
 	"license": "MIT",
 	"scripts": {
 		"build-ui": "node ./uni_modules/cool-ui/scripts/generate-types.js",

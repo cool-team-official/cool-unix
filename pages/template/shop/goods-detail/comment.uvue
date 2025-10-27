@@ -1,0 +1,81 @@
+<template>
+	<view class="flex">
+		<view class="flex flex-row items-center mb-3">
+			<cl-text>买家评论 78</cl-text>
+
+			<cl-icon name="arrow-right-s-line" :pt="{ className: 'ml-auto' }"></cl-icon>
+		</view>
+
+		<view class="flex flex-col">
+			<view class="flex flex-row my-3" v-for="item in list" :key="item.id">
+				<cl-avatar :size="72" rounded :src="item.avatar"></cl-avatar>
+
+				<view class="flex-1 ml-4">
+					<view class="flex flex-row items-center justify-between">
+						<cl-text>{{ item.name }}</cl-text>
+						<cl-text color="info" :pt="{ className: 'text-xs' }">{{
+							item.time
+						}}</cl-text>
+					</view>
+
+					<cl-text ellipsis :lines="2" :pt="{ className: 'mt-1 text-sm' }">{{
+						item.content
+					}}</cl-text>
+				</view>
+
+				<view class="ml-3 relative">
+					<cl-image
+						:height="100"
+						:width="100"
+						:pt="{
+							inner: {
+								className: '!rounded-lg'
+							}
+						}"
+						src="https://unix.cool-js.com/images/demo/bg1.png"
+					/>
+
+					<view class="bg-black/60 rounded-full px-1 absolute top-9 right-1">
+						<text class="text-xs text-white">+3</text>
+					</view>
+				</view>
+			</view>
+		</view>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { ref } from "vue";
+
+type Comment = {
+	id: number;
+	avatar: string;
+	name: string;
+	content: string;
+	time: string;
+};
+
+const list = ref<Comment[]>([
+	{
+		id: 1,
+		avatar: "https://unix.cool-js.com/images/demo/avatar-1.jpg",
+		name: "李明",
+		content: "导游讲解很专业，风景绝美，是一次难忘的旅行体验！",
+		time: "几分钟前"
+	},
+	{
+		id: 2,
+		avatar: "https://unix.cool-js.com/images/demo/avatar-2.jpg",
+		name: "小芳",
+		content: "酒店干净卫生，位置也很方便，强烈推荐给大家！",
+		time: "1小时前"
+	},
+	{
+		id: 3,
+		avatar: "https://unix.cool-js.com/images/demo/avatar-3.jpg",
+		name: "王科",
+		content: "行程安排合理，吃住都很满意，导游态度超级好。",
+		time: "5天前"
+	}
+]);
+</script>
