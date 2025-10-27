@@ -52,9 +52,9 @@ import { ref } from "vue";
 const marqueeRef = ref<ClMarqueeComponentPublicInstance | null>(null);
 
 const list = ref<string[]>([
-	"https://uni-docs.cool-js.com/demo/pages/demo/static/bg1.png",
-	"https://uni-docs.cool-js.com/demo/pages/demo/static/bg2.png",
-	"https://uni-docs.cool-js.com/demo/pages/demo/static/bg3.png"
+	"https://unix.cool-js.com/images/demo/bg1.png",
+	"https://unix.cool-js.com/images/demo/bg2.png",
+	"https://unix.cool-js.com/images/demo/bg3.png"
 ]);
 
 const isSpeed = ref(false);

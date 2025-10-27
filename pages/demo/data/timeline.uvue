@@ -43,7 +43,7 @@
 					>
 						<view class="flex flex-row mb-3 mt-1">
 							<cl-image
-								src="https://uni-docs.cool-js.com/demo/pages/demo/static/bg1.png"
+								src="https://unix.cool-js.com/images/demo/bg1.png"
 							></cl-image>
 
 							<view class="flex-1 px-3">

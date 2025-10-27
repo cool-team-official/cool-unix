@@ -37,7 +37,7 @@
 						:pt="{
 							className: 'overflow-visible'
 						}"
-						src="https://uni-docs.cool-js.com/demo/pages/demo/static/bg1.png"
+						src="https://unix.cool-js.com/images/demo/bg1.png"
 					>
 						<cl-badge type="error" value="+9" position> </cl-badge>
 					</cl-image>

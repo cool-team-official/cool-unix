@@ -51,7 +51,7 @@
 						:pt="{
 							className: 'my-3'
 						}"
-						src="https://uni-docs.cool-js.com/demo/pages/demo/static/bg1.png"
+						src="https://unix.cool-js.com/images/demo/bg1.png"
 					></cl-image>
 
 					<cl-text>

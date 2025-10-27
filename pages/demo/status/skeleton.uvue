@@ -18,7 +18,7 @@
 			<demo-item :label="t('图片')">
 				<cl-skeleton type="image" :loading="loading">
 					<cl-image
-						src="https://uni-docs.cool-js.com/demo/pages/demo/static/bg1.png"
+						src="https://unix.cool-js.com/images/demo/bg1.png"
 					></cl-image>
 				</cl-skeleton>
 			</demo-item>
@@ -27,7 +27,7 @@
 				<cl-skeleton type="circle" :loading="loading">
 					<cl-image
 						:radius="100"
-						src="https://uni-docs.cool-js.com/demo/pages/demo/static/bg1.png"
+						src="https://unix.cool-js.com/images/demo/bg1.png"
 					></cl-image>
 				</cl-skeleton>
 			</demo-item>
