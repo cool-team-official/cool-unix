@@ -72,7 +72,7 @@
 
 <script lang="ts" setup>
 import { type PropType, computed, getCurrentInstance, nextTick, onMounted, ref, watch } from "vue";
-import { isDark, isEmpty, isHarmony, isNull, parseClass, parsePt, parseRpx, rpx2px } from "@/cool";
+import { isDark, isEmpty, isHarmony, isNull, parseClass, parsePt, parseRpx } from "@/cool";
 import type { ClTabsItem, PassThroughProps } from "../../types";
 
 // 定义标签类型
@@ -311,7 +311,7 @@ function updatePosition() {
 				// 设置滚动条偏移
 				scrollLeft.value = x;
 				// 设置下划线偏移，使下划线居中于选中项
-				lineLeft.value = item.left + item.width / 2 - rpx2px(16) - tabLeft.value;
+				lineLeft.value = item.left + item.width / 2 - 16 / 2 - tabLeft.value;
 				// 设置滑块左侧偏移
 				sliderLeft.value = item.left - tabLeft.value;
 				// 设置滑块宽度
