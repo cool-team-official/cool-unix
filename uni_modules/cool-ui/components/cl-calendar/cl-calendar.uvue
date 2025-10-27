@@ -125,21 +125,6 @@ defineOptions({
 	name: "cl-calendar"
 });
 
-// 日期单元格数据结构
-type DateCell = {
-	date: string; // 显示的日期数字
-	isCurrentMonth: boolean; // 是否属于当前显示月份
-	isToday: boolean; // 是否为今天
-	isSelected: boolean; // 是否被选中
-	isRange: boolean; // 是否在选择范围内
-	fullDate: string; // 完整日期格式 YYYY-MM-DD
-	isDisabled: boolean; // 是否被禁用
-	isHide: boolean; // 是否隐藏显示
-	topText: string; // 顶部文案
-	bottomText: string; // 底部文案
-	color: string; // 颜色
-};
-
 // 组件属性定义
 const props = defineProps({
 	// 透传样式配置
@@ -197,11 +182,76 @@ const props = defineProps({
 	showWeeks: {
 		type: Boolean,
 		default: true
+	},
+	// 单元格高度
+	cellHeight: {
+		type: Number,
+		default: 66
+	},
+	// 单元格间距
+	cellGap: {
+		type: Number,
+		default: 0
+	},
+	// 主色
+	color: {
+		type: String,
+		default: ""
+	},
+	// 当前月份日期颜色
+	textColor: {
+		type: String,
+		default: ""
+	},
+	// 其他月份日期颜色
+	textOtherMonthColor: {
+		type: String,
+		default: ""
+	},
+	// 禁用日期颜色
+	textDisabledColor: {
+		type: String,
+		default: ""
+	},
+	// 今天日期颜色
+	textTodayColor: {
+		type: String,
+		default: "#ff6b6b"
+	},
+	// 选中日期颜色
+	textSelectedColor: {
+		type: String,
+		default: "#ffffff"
+	},
+	// 选中日期背景颜色
+	bgSelectedColor: {
+		type: String,
+		default: ""
+	},
+	// 范围选择背景颜色
+	bgRangeColor: {
+		type: String,
+		default: ""
 	}
 });
 
 // 事件发射器定义
 const emit = defineEmits(["update:modelValue", "update:date", "change"]);
+
+// 日期单元格数据结构
+type DateCell = {
+	date: string; // 显示的日期数字
+	isCurrentMonth: boolean; // 是否属于当前显示月份
+	isToday: boolean; // 是否为今天
+	isSelected: boolean; // 是否被选中
+	isRange: boolean; // 是否在选择范围内
+	fullDate: string; // 完整日期格式 YYYY-MM-DD
+	isDisabled: boolean; // 是否被禁用
+	isHide: boolean; // 是否隐藏显示
+	topText: string; // 顶部文案
+	bottomText: string; // 底部文案
+	color: string; // 颜色
+};
 
 // 透传样式属性类型
 type PassThrough = {
@@ -215,11 +265,20 @@ const pt = computed(() => parsePt<PassThrough>(props.pt));
 const { getPxValue } = useSize();
 
 // 主色
-const color = ref(ctx.color["primary-500"] as string);
+const color = computed(() => {
+	if (props.color != "") {
+		return props.color;
+	}
+
+	return ctx.color["primary-500"] as string;
+});
+
 // 单元格高度
-const cellHeight = ref(66);
+const cellHeight = computed(() => props.cellHeight);
+
 // 单元格间距
-const cellGap = ref(0);
+const cellGap = computed(() => props.cellGap);
+
 // 字体大小
 const fontSize = computed(() => {
 	// #ifdef APP
@@ -230,30 +289,61 @@ const fontSize = computed(() => {
 	return 14;
 	// #endif
 });
+
 // 当前月份日期颜色
 const textColor = computed(() => {
+	if (props.textColor != "") {
+		return props.textColor;
+	}
+
 	return isDark.value ? "white" : (ctx.color["surface-700"] as string);
 });
+
 // 其他月份日期颜色
 const textOtherMonthColor = computed(() => {
+	if (props.textOtherMonthColor != "") {
+		return props.textOtherMonthColor;
+	}
+
 	return isDark.value
 		? (ctx.color["surface-500"] as string)
 		: (ctx.color["surface-300"] as string);
 });
+
 // 禁用日期颜色
 const textDisabledColor = computed(() => {
+	if (props.textDisabledColor != "") {
+		return props.textDisabledColor;
+	}
+
 	return isDark.value
 		? (ctx.color["surface-500"] as string)
 		: (ctx.color["surface-300"] as string);
 });
+
 // 今天日期颜色
-const textTodayColor = ref("#ff6b6b");
+const textTodayColor = computed(() => props.textTodayColor);
+
 // 选中日期颜色
-const textSelectedColor = ref("#ffffff");
+const textSelectedColor = computed(() => props.textSelectedColor);
+
 // 选中日期背景颜色
-const bgSelectedColor = ref(color.value);
+const bgSelectedColor = computed(() => {
+	if (props.bgSelectedColor != "") {
+		return props.bgSelectedColor;
+	}
+
+	return color.value;
+});
+
 // 范围选择背景颜色
-const bgRangeColor = ref(isHarmony() ? (ctx.color["primary-50"] as string) : color.value + "11");
+const bgRangeColor = computed(() => {
+	if (props.bgRangeColor != "") {
+		return props.bgRangeColor;
+	}
+
+	return isHarmony() ? (ctx.color["primary-50"] as string) : color.value + "11";
+});
 
 // 组件引用管理器
 const refs = useRefs();
@@ -390,6 +480,7 @@ function getCellTextColor(dateCell: DateCell): string {
  */
 
 function getCellBgColor(dateCell: DateCell): string {
+	console.log(bgSelectedColor.value);
 	if (dateCell.isSelected) {
 		return bgSelectedColor.value;
 	}
