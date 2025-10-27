@@ -1,5 +1,4 @@
-import type { ClActionSheetItem, ClActionSheetOptions, PassThroughProps, Type, ClButtonType, Size, ClCalendarDateConfig, ClCalendarMode, ClListViewItem, ClFilterItemType, ClSelectOption, ClFormLabelPosition, ClFormRule, ClFormValidateError, ClInputType, ClListItem, Justify, ClListViewGroup, ClListViewVirtualItem, ClListViewRefresherStatus, ClConfirmAction, ClConfirmOptions, ClToastOptions, ClPopupDirection, ClQrcodeMode, ClSelectValue, ClSelectDateShortcut, ClTabsItem, ClTextType, ClTreeItem, ClTreeNodeInfo, ClUploadItem } from "./types";
-import { type UiInstance } from "./hooks";
+import type { ClActionSheetItem, ClActionSheetOptions, PassThroughProps, Type, ClButtonType, Size, ClCalendarDateConfig, ClCalendarMode, ClListViewItem, ClFilterItemType, ClSelectOption, ClFormLabelPosition, ClFormRule, ClFormValidateError, ClInputType, ClListItem, Justify, ClListViewGroup, ClListViewVirtualItem, ClListViewRefresherStatus, ClPopupDirection, ClQrcodeMode, ClSelectValue, ClSelectDateShortcut, ClTabsItem, ClTextType, ClToastOptions, ClTreeItem, ClTreeNodeInfo, ClUploadItem } from "./types";
 import { type QrcodeOptions } from "./draw";
 
 import type { ClActionSheetProps, ClActionSheetPassThrough } from "./components/cl-action-sheet/props";
@@ -9,7 +8,6 @@ import type { ClBadgeProps, ClBadgePassThrough } from "./components/cl-badge/pro
 import type { ClBannerProps, ClBannerPassThrough } from "./components/cl-banner/props";
 import type { ClButtonProps, ClButtonPassThrough } from "./components/cl-button/props";
 import type { ClCalendarProps, ClCalendarPassThrough } from "./components/cl-calendar/props";
-import type { ClCalendarPickerProps } from "./components/cl-calendar-picker/props";
 import type { ClCalendarSelectProps, ClCalendarSelectPassThrough } from "./components/cl-calendar-select/props";
 import type { ClCascaderProps, ClCascaderPassThrough } from "./components/cl-cascader/props";
 import type { ClCheckboxProps, ClCheckboxPassThrough } from "./components/cl-checkbox/props";
@@ -41,8 +39,6 @@ import type { ClLoadmoreProps, ClLoadmorePassThrough } from "./components/cl-loa
 import type { ClMarqueeProps, ClMarqueePassThrough } from "./components/cl-marquee/props";
 import type { ClNoticebarProps, ClNoticebarPassThrough } from "./components/cl-noticebar/props";
 import type { ClPageProps } from "./components/cl-page/props";
-import type { ClPageThemeProps } from "./components/cl-page-theme/props";
-import type { ClPageUiProps } from "./components/cl-page-ui/props";
 import type { ClPaginationProps, ClPaginationPassThrough } from "./components/cl-pagination/props";
 import type { ClSelectPickerViewProps } from "./components/cl-select-picker-view/props";
 import type { ClPopupProps, ClPopupPassThrough, ClPopupHeaderPassThrough } from "./components/cl-popup/props";
@@ -90,7 +86,6 @@ declare module "vue" {
 		"cl-banner": (typeof import('./components/cl-banner/cl-banner.uvue')['default']) & import('vue').DefineComponent<ClBannerProps>;
 		"cl-button": (typeof import('./components/cl-button/cl-button.uvue')['default']) & import('vue').DefineComponent<ClButtonProps>;
 		"cl-calendar": (typeof import('./components/cl-calendar/cl-calendar.uvue')['default']) & import('vue').DefineComponent<ClCalendarProps>;
-		"cl-calendar-picker": (typeof import('./components/cl-calendar-picker/cl-calendar-picker.uvue')['default']) & import('vue').DefineComponent<ClCalendarPickerProps>;
 		"cl-calendar-select": (typeof import('./components/cl-calendar-select/cl-calendar-select.uvue')['default']) & import('vue').DefineComponent<ClCalendarSelectProps>;
 		"cl-cascader": (typeof import('./components/cl-cascader/cl-cascader.uvue')['default']) & import('vue').DefineComponent<ClCascaderProps>;
 		"cl-checkbox": (typeof import('./components/cl-checkbox/cl-checkbox.uvue')['default']) & import('vue').DefineComponent<ClCheckboxProps>;
@@ -122,8 +117,6 @@ declare module "vue" {
 		"cl-marquee": (typeof import('./components/cl-marquee/cl-marquee.uvue')['default']) & import('vue').DefineComponent<ClMarqueeProps>;
 		"cl-noticebar": (typeof import('./components/cl-noticebar/cl-noticebar.uvue')['default']) & import('vue').DefineComponent<ClNoticebarProps>;
 		"cl-page": (typeof import('./components/cl-page/cl-page.uvue')['default']) & import('vue').DefineComponent<ClPageProps>;
-		"cl-page-theme": (typeof import('./components/cl-page-theme/cl-page-theme.uvue')['default']) & import('vue').DefineComponent<ClPageThemeProps>;
-		"cl-page-ui": (typeof import('./components/cl-page-ui/cl-page-ui.uvue')['default']) & import('vue').DefineComponent<ClPageUiProps>;
 		"cl-pagination": (typeof import('./components/cl-pagination/cl-pagination.uvue')['default']) & import('vue').DefineComponent<ClPaginationProps>;
 		"cl-select-picker-view": (typeof import('./components/cl-select-picker-view/cl-select-picker-view.uvue')['default']) & import('vue').DefineComponent<ClSelectPickerViewProps>;
 		"cl-popup": (typeof import('./components/cl-popup/cl-popup.uvue')['default']) & import('vue').DefineComponent<ClPopupProps>;

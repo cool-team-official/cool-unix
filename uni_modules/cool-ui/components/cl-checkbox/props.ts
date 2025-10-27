@@ -12,7 +12,7 @@ export type ClCheckboxProps = {
 	pt?: ClCheckboxPassThrough;
 	modelValue?: any[] | boolean;
 	label?: string;
-	value: any;
+	value?: any;
 	disabled?: boolean;
 	activeIcon?: string;
 	inactiveIcon?: string;

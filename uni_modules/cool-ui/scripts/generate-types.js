@@ -263,13 +263,11 @@ class UvueTypeParser {
 			return null;
 		}
 
+		// 默认所有 props 都是可选的（非必填），符合 Vue 的默认行为
 		const config = {
 			type: "any",
-			required: true
+			required: false
 		};
-
-		let hasDefault = false;
-		let hasRequired = false;
 
 		for (const prop of propValue.properties) {
 			if (!t.isObjectProperty(prop) || !t.isIdentifier(prop.key)) continue;
@@ -278,20 +276,9 @@ class UvueTypeParser {
 
 			if (key === "type") {
 				config.type = this.extractTypeFromValue(prop.value);
-			} else if (key === "default") {
-				hasDefault = true;
-				config.required = false;
 			} else if (key === "required" && t.isBooleanLiteral(prop.value)) {
-				hasRequired = true;
+				// 只有显式设置 required: true 时才设为必填
 				config.required = prop.value.value;
-			}
-		}
-
-		// 如果没有显式设置required且没有default，对于某些特殊类型可以设为可选
-		if (!hasRequired && !hasDefault) {
-			// 对于复杂的联合类型（比如openType），通常应该是可选的
-			if (config.type.includes("|") && config.type.split("|").length > 5) {
-				config.required = false;
 			}
 		}
 
@@ -775,6 +762,7 @@ class UvueTypeParser {
 
 	/**
 	 * 扫描指定目录下的所有uvue文件
+	 * 只扫描与父目录同名的主组件文件，忽略辅助组件
 	 */
 	scanUvueFiles(directory) {
 		const results = [];
@@ -791,7 +779,13 @@ class UvueTypeParser {
 				if (stat.isDirectory()) {
 					scanDir(fullPath);
 				} else if (item.endsWith(".uvue")) {
-					results.push(fullPath);
+					// 只包含与父目录同名的 .uvue 文件（主组件）
+					const parentDirName = path.basename(path.dirname(fullPath));
+					const fileNameWithoutExt = path.basename(item, ".uvue");
+					
+					if (parentDirName === fileNameWithoutExt) {
+						results.push(fullPath);
+					}
 				}
 			}
 		}

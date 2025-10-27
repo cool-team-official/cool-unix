@@ -10,11 +10,11 @@ export type ClRadioPassThrough = {
 export type ClRadioProps = {
 	className?: string;
 	pt?: ClRadioPassThrough;
-	modelValue: any;
+	modelValue?: any;
 	activeIcon?: string;
 	inactiveIcon?: string;
 	showIcon?: boolean;
 	label?: string;
-	value: any;
+	value?: any;
 	disabled?: boolean;
 };

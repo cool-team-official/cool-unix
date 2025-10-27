@@ -1,6 +1,4 @@
-import type { ClConfirmAction, ClConfirmOptions, ClToastOptions } from "../../types";
-import type { UiInstance } from "../../hooks";
-
-export type ClPageUiProps = {
+export type ClPageProps = {
 	className?: string;
+	backTop?: boolean;
 };
