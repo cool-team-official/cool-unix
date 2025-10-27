@@ -35,7 +35,7 @@
 				<slot :item="item" :index="index">
 					<image
 						:src="item.url"
-						mode="aspectFill"
+						:mode="imageMode"
 						class="cl-banner__item-image"
 						:class="[pt.image?.className]"
 					></image>
@@ -123,6 +123,11 @@ const props = defineProps({
 	height: {
 		type: [Number, String],
 		default: 300
+	},
+	// 图片模式
+	imageMode: {
+		type: String,
+		default: "aspectFill"
 	}
 });
 
@@ -435,7 +440,7 @@ onMounted(() => {
 		@apply absolute bottom-3 left-0 w-full;
 
 		&-item {
-			@apply w-2 h-2 rounded-full mx-1;
+			@apply w-2 h-2 rounded-full mx-1 border border-solid border-surface-500;
 			background-color: rgba(255, 255, 255, 0.3);
 			transition-property: width, background-color;
 			transition-duration: 0.3s;
