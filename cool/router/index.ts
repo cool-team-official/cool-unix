@@ -10,7 +10,9 @@ import {
 	toArray,
 	map,
 	debounce,
-	nth
+	nth,
+	assign,
+	parse
 } from "../utils";
 
 // 路由信息类型
@@ -36,9 +38,14 @@ type Events = {
 export class Router {
 	private eventsMap = {} as Events; // 事件存储
 
-	// 获取缓存的路由参数
+	// 获取传递的 params 参数
 	params() {
 		return (storage.get("router-params") ?? {}) as UTSJSONObject;
+	}
+
+	// 获取传递的 query 参数
+	query() {
+		return this.route()?.query ?? {};
 	}
 
 	// 获取默认路径，支持 home 和 login
@@ -82,7 +89,8 @@ export class Router {
 			// #endif
 
 			// 获取页面 query 参数
-			const query = (get(e, "options") ?? {}) as UTSJSONObject;
+			// @ts-ignore
+			const query = e.options;
 
 			return {
 				path,

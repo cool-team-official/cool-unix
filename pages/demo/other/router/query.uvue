@@ -15,7 +15,7 @@
 <script lang="ts" setup>
 import { t } from "@/locale";
 import DemoItem from "../../components/item.uvue";
-import { userInfo, useStore } from "@/cool";
+import { router, userInfo, useStore } from "@/cool";
 
 const { user } = useStore();
 
@@ -23,6 +23,11 @@ const props = defineProps({
 	id: {
 		type: String
 	}
+});
+
+onReady(() => {
+	const query = router.query();
+	console.log(query);
 });
 </script>
 
