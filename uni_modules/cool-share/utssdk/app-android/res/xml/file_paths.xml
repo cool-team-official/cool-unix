@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths xmlns:android="http://schemas.android.com/apk/res/android">
+	<!-- 外部存储路径 -->
+	<external-path name="external_files" path="." />
+
+	<!-- 外部缓存路径 -->
+	<external-cache-path name="external_cache" path="." />
+
+	<!-- 应用缓存路径（用于 uni.downloadFile 下载的临时文件） -->
+	<cache-path name="cache" path="." />
+
+	<!-- 应用内部文件路径 -->
+	<files-path name="files" path="." />
+
+	<!-- 根路径（谨慎使用） -->
+	<root-path name="root" path="." />
+</paths>

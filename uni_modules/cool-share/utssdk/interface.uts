@@ -1,0 +1,9 @@
+export type ShareWithSystemOptions = {
+	type: string;
+	title?: string;
+	summary?: string;
+	href?: string;
+	imageUrl?: string;
+	success?: () => void;
+	fail?: (error: string) => void;
+};

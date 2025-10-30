@@ -471,6 +471,11 @@ const data = computed<Item[]>(() => {
 					label: "Router",
 					icon: "compass-discover-line",
 					path: "/pages/demo/other/router/index"
+				},
+				{
+					label: "Share",
+					icon: "share-line",
+					path: "/pages/demo/other/share"
 				}
 			]
 		}

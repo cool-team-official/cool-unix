@@ -504,6 +504,12 @@
 				},
 				{
 					"path": "other/router/query"
+				},
+				{
+					"path": "other/share",
+					"style": {
+						"navigationBarTitleText": "Share 分享"
+					}
 				}
 			]
 		},

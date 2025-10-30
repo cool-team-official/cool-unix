@@ -1,0 +1,14 @@
+import { ShareWithSystemOptions } from "../interface.uts";
+import { share } from "./share.ets";
+
+export function shareWithSystem(options: ShareWithSystemOptions) {
+	share(
+		options.type,
+		options.title ?? "",
+		options.summary ?? "",
+		options.href ?? "",
+		options.imageUrl ?? "",
+		options.success ?? (() => {}),
+		options.fail ?? (() => {})
+	);
+}

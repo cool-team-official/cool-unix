@@ -40,8 +40,8 @@ Cool Unix 是一个高效的项目脚手架。它内置了 UI 组件库、Servic
 
 ```html
 <script setup lang="ts">
-	import { $t, t } from "@/uni_modules/cool-unix";
-	import { useUi } from "@/uni_modules/cool-unix";
+	import { $t, t } from "@/uni_modules/cool-ui";
+	import { useUi } from "@/uni_modules/cool-ui";
 
 	const ui = useUi();
 

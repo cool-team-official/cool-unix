@@ -15,5 +15,8 @@
 	"[ets]": {
 		"editor.defaultFormatter": "NailyZero.vscode-naily-ets"
 	},
-	"scss.lint.unknownAtRules": "ignore"
+	"scss.lint.unknownAtRules": "ignore",
+	"[xml]": {
+		"editor.defaultFormatter": "redhat.vscode-xml"
+	}
 }
