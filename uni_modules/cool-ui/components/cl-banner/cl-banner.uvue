@@ -12,11 +12,9 @@
 	>
 		<view
 			class="cl-banner__list"
-			:class="{
-				'is-transition': isAnimating
-			}"
 			:style="{
-				transform: `translateX(${slideOffset}px)`
+				transform: `translateX(${slideOffset}px)`,
+				transitionDuration: isAnimating ? '0.3s' : '0s'
 			}"
 		>
 			<view
@@ -303,6 +301,11 @@ function startAutoplay() {
 	}
 }
 
+// 触摸起始Y坐标
+let touchStartY = 0
+// 横向滑动参数
+let touchHorizontal = 0
+
 /**
  * 处理触摸开始事件
  * 记录触摸起始状态，准备手势识别
@@ -324,6 +327,8 @@ function onTouchStart(e: TouchEvent) {
 	// 禁用动画，开始手势跟踪
 	isAnimating.value = false;
 	touchStartPoint.value = e.touches[0].clientX;
+	touchStartY = e.touches[0].clientY;
+	touchHorizontal = 0
 	touchStartTimestamp.value = Date.now();
 	initialOffset.value = slideOffset.value;
 }
@@ -336,6 +341,26 @@ function onTouchStart(e: TouchEvent) {
 function onTouchMove(e: TouchEvent) {
 	if (props.list.length <= 1 || props.disableTouch || !isTouching.value) return;
 
+	const x =  touchStartPoint.value - e.touches[0].clientX
+	if (touchHorizontal == 0) {
+		// 只在horizontal=0时判断一次
+		const y = touchStartY - e.touches[0].clientY
+		
+		if (Math.abs(x) > Math.abs(y)) {
+			// 如果x轴移动距离大于y轴移动距离则表明是横向移动手势
+			touchHorizontal = 1
+		}
+		if (touchHorizontal == 1) {
+			// 如果是横向移动手势，则阻止默认行为（防止页面滚动）
+			e.preventDefault()
+		}
+	}
+
+	// 横向移动时才处理
+	if (touchHorizontal != 1) {
+		return
+	}
+
 	// 计算手指移动距离，实时更新偏移量
 	const deltaX = e.touches[0].clientX - touchStartPoint.value;
 	slideOffset.value = initialOffset.value + deltaX;
@@ -347,6 +372,9 @@ function onTouchMove(e: TouchEvent) {
  */
 function onTouchEnd() {
 	if (props.list.length <= 1 || !isTouching.value) return;
+	
+	touchStartY = 0;
+	touchHorizontal = 0;
 
 	// 重置触摸状态
 	isTouching.value = false;
@@ -409,6 +437,13 @@ onMounted(() => {
 	getRect();
 	startAutoplay();
 });
+
+// 将触摸事件暴露给父组件，支持控制其它view将做touch代理
+defineExpose({
+	onTouchStart,
+	onTouchMove,
+	onTouchEnd,
+});
 </script>
 
 <style lang="scss" scoped>
@@ -419,11 +454,7 @@ onMounted(() => {
 		@apply flex flex-row h-full w-full overflow-visible;
 		// HBuilderX 4.8.2 bug，临时处理
 		width: 100000px;
-
-		&.is-transition {
-			transition-property: transform;
-			transition-duration: 0.3s;
-		}
+		transition-property: transform;
 	}
 
 	&__item {
