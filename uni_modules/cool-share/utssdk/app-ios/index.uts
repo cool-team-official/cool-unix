@@ -1,0 +1,287 @@
+import { UIActivityViewController, UIImage } from "UIKit";
+import { URL, Data } from "Foundation";
+import { ShareWithSystemOptions } from "../interface.uts";
+
+/**
+ * 分享类型枚举
+ */
+const ShareType = {
+	TEXT: "text", // 纯文本分享
+	IMAGE: "image", // 图片分享
+	VIDEO: "video", // 视频分享
+	AUDIO: "audio", // 音频分享
+	FILE: "file", // 文件分享
+	LINK: "link" // 链接分享
+};
+
+/**
+ * 判断是否为网络 URL
+ * @param url 地址
+ * @returns 是否为网络 URL
+ */
+function isNetworkUrl(url: string): boolean {
+	return url.startsWith("http://") || url.startsWith("https://");
+}
+
+/**
+ * 下载网络文件到本地缓存
+ * @param url 网络地址
+ * @param success 成功回调，返回本地文件路径
+ * @param fail 失败回调
+ */
+function downloadNetworkFile(
+	url: string,
+	success: (localPath: string) => void,
+	fail: (error: string) => void
+): void {
+	uni.downloadFile({
+		url: url,
+		success: (res) => {
+			if (res.statusCode == 200) {
+				success(res.tempFilePath);
+			} else {
+				fail(`下载失败，状态码: ${res.statusCode}`);
+			}
+		},
+		fail: (err) => {
+			fail(`下载失败: ${err.errMsg ?? "未知错误"}`);
+		}
+	});
+}
+
+/**
+ * 处理文件路径并加载数据
+ * @param filePath 文件路径
+ * @returns Data 对象或 null
+ */
+function loadFileData(filePath: string): Data | null {
+	const absolutePath = UTSiOS.convert2AbsFullPath(filePath);
+	const fileURL = new URL((fileURLWithPath = absolutePath));
+	const data = UTSiOS.try(new Data((contentsOf = fileURL)), "?");
+	return data;
+}
+
+/**
+ * 创建文本分享内容
+ * @param title 标题
+ * @param summary 描述
+ * @param url 链接
+ * @returns 分享内容数组
+ */
+function createTextShareItems(title: string, summary: string, url: string): any[] {
+	// 组合分享内容
+	let content = "";
+	if (title != "") {
+		content = title;
+	}
+	if (summary != "") {
+		content = content == "" ? summary : content + "\n" + summary;
+	}
+	if (url != "") {
+		content = content == "" ? url : content + "\n" + url;
+	}
+
+	// 如果内容为空，使用默认文本
+	if (content == "") {
+		content = "分享内容";
+	}
+
+	return [content];
+}
+
+/**
+ * 创建图片分享内容
+ * @param url 图片路径
+ * @param success 成功回调
+ * @param fail 失败回调
+ */
+function createImageShareItems(
+	url: string,
+	success: (items: any[]) => void,
+	fail: (error: string) => void
+): void {
+	if (url == "") {
+		fail("图片路径不能为空");
+		return;
+	}
+
+	const handleImagePath = (localPath: string) => {
+		const absolutePath = UTSiOS.convert2AbsFullPath(localPath);
+		const image = new UIImage((contentsOfFile = absolutePath));
+
+		if (image == null) {
+			fail("图片加载失败");
+			return;
+		}
+
+		success([image]);
+	};
+
+	if (isNetworkUrl(url)) {
+		// 网络图片先下载
+		downloadNetworkFile(url, handleImagePath, fail);
+	} else {
+		// 本地图片直接处理
+		handleImagePath(url);
+	}
+}
+
+/**
+ * 创建文件分享内容（视频、音频、文件）
+ * @param filePath 文件路径
+ * @param success 成功回调
+ * @param fail 失败回调
+ */
+function createFileShareItems(
+	filePath: string,
+	success: (items: any[]) => void,
+	fail: (error: string) => void
+): void {
+	if (filePath == "") {
+		fail("文件路径不能为空");
+		return;
+	}
+
+	const handleFilePath = (localPath: string) => {
+		const data = loadFileData(localPath);
+
+		if (data == null) {
+			fail("文件加载失败");
+			return;
+		}
+
+		const absolutePath = UTSiOS.convert2AbsFullPath(localPath);
+		const fileURL = new URL.init((fileURLWithPath = absolutePath));
+
+		success([data, fileURL]);
+	};
+
+	if (isNetworkUrl(filePath)) {
+		// 网络文件先下载
+		downloadNetworkFile(filePath, handleFilePath, fail);
+	} else {
+		// 本地文件直接处理
+		handleFilePath(filePath);
+	}
+}
+
+/**
+ * 启动系统分享界面
+ * @param items 分享内容数组
+ * @param success 成功回调
+ * @param fail 失败回调
+ */
+function presentShareController(
+	items: any[],
+	success: () => void,
+	fail: (error: string) => void
+): void {
+	DispatchQueue.main.async(
+		(execute = (): void => {
+			const activityViewController = new UIActivityViewController(
+				(activityItems = items),
+				(applicationActivities = nil)
+			);
+
+			const currentVC = UTSiOS.getCurrentViewController();
+			if (currentVC == null) {
+				fail("无法获取当前视图控制器");
+				return;
+			}
+
+			currentVC.present(
+				activityViewController,
+				(animated = true),
+				(completion = () => {
+					success();
+				})
+			);
+		})
+	);
+}
+
+/**
+ * 系统分享功能
+ * @param options 分享参数
+ * @param options.type 分享类型: text(文本) | image(图片) | video(视频) | audio(音频) | file(文件) | link(链接)
+ * @param options.title 分享标题
+ * @param options.summary 分享描述/内容
+ * @param options.url 资源路径（图片/视频/音频/文件路径或链接地址，支持本地路径和网络 URL）
+ * @param options.success 成功回调
+ * @param options.fail 失败回调
+ */
+export function shareWithSystem(options: ShareWithSystemOptions): void {
+	const type = options.type;
+	const title = options.title ?? "";
+	const summary = options.summary ?? "";
+	const url = options.url ?? "";
+
+	// 根据分享类型创建对应的内容
+	if (type == (ShareType["TEXT"] as string) || type == (ShareType["LINK"] as string)) {
+		// 文本或链接分享
+		const items = createTextShareItems(title, summary, url);
+		presentShareController(
+			items,
+			() => {
+				options.success?.();
+			},
+			(error: string) => {
+				options.fail?.(error);
+			}
+		);
+	} else if (type == (ShareType["IMAGE"] as string)) {
+		// 图片分享
+		createImageShareItems(
+			url,
+			(items: any[]) => {
+				presentShareController(
+					items,
+					() => {
+						options.success?.();
+					},
+					(error: string) => {
+						options.fail?.(error);
+					}
+				);
+			},
+			(error: string) => {
+				options.fail?.(error);
+			}
+		);
+	} else if (
+		type == (ShareType["VIDEO"] as string) ||
+		type == (ShareType["AUDIO"] as string) ||
+		type == (ShareType["FILE"] as string)
+	) {
+		// 视频、音频、文件分享
+		createFileShareItems(
+			url,
+			(items: any[]) => {
+				presentShareController(
+					items,
+					() => {
+						options.success?.();
+					},
+					(error: string) => {
+						options.fail?.(error);
+					}
+				);
+			},
+			(error: string) => {
+				options.fail?.(error);
+			}
+		);
+	} else {
+		// 未知类型，默认使用文本分享
+		const items = createTextShareItems(title, summary, url);
+		presentShareController(
+			items,
+			() => {
+				options.success?.();
+			},
+			(error: string) => {
+				options.fail?.(error);
+			}
+		);
+	}
+}

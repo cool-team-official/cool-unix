@@ -1,9 +1,29 @@
 export type ShareWithSystemOptions = {
+	/**
+	 * 分享类型: 
+	 * text(文本) | image(图片) | video(视频) | audio(音频) | file(文件) | link(链接)
+	 */
 	type: string;
+	/**
+	 * 分享标题
+	 */
 	title?: string;
+	/**
+	 * 分享描述或内容
+	 */
 	summary?: string;
-	href?: string;
-	imageUrl?: string;
+	/**
+	 * 分享资源路径:
+	 * 如果是图片/视频/音频/文件，填写资源路径或网络URL
+	 * 如果是link，填写链接地址
+	 */
+	url?: string;
+	/**
+	 * 分享成功回调
+	 */
 	success?: () => void;
+	/**
+	 * 分享失败回调，返回错误信息
+	 */
 	fail?: (error: string) => void;
 };

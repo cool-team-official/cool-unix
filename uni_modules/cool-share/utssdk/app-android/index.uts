@@ -169,24 +169,24 @@ function createFileUriAsync(
 
 /**
  * 创建图片分享 Intent（异步）
- * @param imageUrl 图片路径（支持本地路径和网络 URL）
+ * @param url 图片路径（支持本地路径和网络 URL）
  * @param title 分享标题
  * @param success 成功回调
  * @param fail 失败回调
  */
 function createImageShareIntent(
-	imageUrl: string,
+	url: string,
 	title: string,
 	success: (intent: Intent) => void,
 	fail: (error: string) => void
 ): void {
-	if (imageUrl == "") {
+	if (url == "") {
 		fail("图片路径不能为空");
 		return;
 	}
 
 	createFileUriAsync(
-		imageUrl,
+		url,
 		(uri: Uri) => {
 			const intent = new Intent(Intent.ACTION_SEND);
 			intent.setType(MimeTypes["IMAGE"] as string);
@@ -203,24 +203,24 @@ function createImageShareIntent(
 
 /**
  * 创建视频分享 Intent（异步）
- * @param videoUrl 视频路径（支持本地路径和网络 URL）
+ * @param url 视频路径（支持本地路径和网络 URL）
  * @param title 分享标题
  * @param success 成功回调
  * @param fail 失败回调
  */
 function createVideoShareIntent(
-	videoUrl: string,
+	url: string,
 	title: string,
 	success: (intent: Intent) => void,
 	fail: (error: string) => void
 ): void {
-	if (videoUrl == "") {
+	if (url == "") {
 		fail("视频路径不能为空");
 		return;
 	}
 
 	createFileUriAsync(
-		videoUrl,
+		url,
 		(uri: Uri) => {
 			const intent = new Intent(Intent.ACTION_SEND);
 			intent.setType(MimeTypes["VIDEO"] as string);
@@ -237,24 +237,24 @@ function createVideoShareIntent(
 
 /**
  * 创建音频分享 Intent（异步）
- * @param audioUrl 音频路径（支持本地路径和网络 URL）
+ * @param url 音频路径（支持本地路径和网络 URL）
  * @param title 分享标题
  * @param success 成功回调
  * @param fail 失败回调
  */
 function createAudioShareIntent(
-	audioUrl: string,
+	url: string,
 	title: string,
 	success: (intent: Intent) => void,
 	fail: (error: string) => void
 ): void {
-	if (audioUrl == "") {
+	if (url == "") {
 		fail("音频路径不能为空");
 		return;
 	}
 
 	createFileUriAsync(
-		audioUrl,
+		url,
 		(uri: Uri) => {
 			const intent = new Intent(Intent.ACTION_SEND);
 			intent.setType(MimeTypes["AUDIO"] as string);
@@ -308,20 +308,20 @@ function createFileShareIntent(
 
 /**
  * 创建链接分享 Intent
- * @param href 链接地址
+ * @param url 链接地址
  * @param title 分享标题
  * @param summary 分享描述
  * @param success 成功回调
  * @param fail 失败回调
  */
 function createLinkShareIntent(
-	href: string,
+	url: string,
 	title: string,
 	summary: string,
 	success: (intent: Intent) => void,
 	fail: (error: string) => void
 ): void {
-	if (href == "") {
+	if (url == "") {
 		fail("链接地址不能为空");
 		return;
 	}
@@ -334,8 +334,8 @@ function createLinkShareIntent(
 	if (summary != "") {
 		content = content == "" ? summary : content + "\n" + summary;
 	}
-	if (href != "") {
-		content = content == "" ? href : content + "\n" + href;
+	if (url != "") {
+		content = content == "" ? url : content + "\n" + url;
 	}
 
 	const intent = new Intent(Intent.ACTION_SEND);
@@ -349,13 +349,13 @@ function createLinkShareIntent(
  * 创建文本分享 Intent
  * @param title 分享标题
  * @param summary 分享描述
- * @param href 附加链接（可选）
+ * @param url 附加链接（可选）
  * @param success 成功回调
  */
 function createTextShareIntent(
 	title: string,
 	summary: string,
-	href: string,
+	url: string,
 	success: (intent: Intent) => void
 ): void {
 	// 组合分享内容
@@ -366,8 +366,8 @@ function createTextShareIntent(
 	if (summary != "") {
 		content = content == "" ? summary : content + "\n" + summary;
 	}
-	if (href != "") {
-		content = content == "" ? href : content + "\n" + href;
+	if (url != "") {
+		content = content == "" ? url : content + "\n" + url;
 	}
 
 	// 如果内容为空，使用默认文本
@@ -413,8 +413,7 @@ function startShareActivity(
  * @param options.type 分享类型: text(文本) | image(图片) | video(视频) | audio(音频) | file(文件) | link(链接)
  * @param options.title 分享标题
  * @param options.summary 分享描述/内容
- * @param options.href 链接地址或文件路径
- * @param options.imageUrl 图片/视频/音频路径（支持本地路径和网络 URL）
+ * @param options.url 资源路径（图片/视频/音频/文件路径或链接地址，支持本地路径和网络 URL）
  * @param options.success 成功回调
  * @param options.fail 失败回调
  */
@@ -422,8 +421,7 @@ export function shareWithSystem(options: ShareWithSystemOptions): void {
 	const type = options.type;
 	const title = options.title ?? "";
 	const summary = options.summary ?? "";
-	const href = options.href ?? "";
-	const imageUrl = options.imageUrl ?? "";
+	const url = options.url ?? "";
 
 	// 成功和失败回调
 	const onSuccess = (intent: Intent) => {
@@ -445,17 +443,17 @@ export function shareWithSystem(options: ShareWithSystemOptions): void {
 
 	// 根据分享类型创建对应的 Intent
 	if (type == ShareType["IMAGE"]) {
-		createImageShareIntent(imageUrl, title, onSuccess, onFail);
+		createImageShareIntent(url, title, onSuccess, onFail);
 	} else if (type == ShareType["VIDEO"]) {
-		createVideoShareIntent(imageUrl, title, onSuccess, onFail);
+		createVideoShareIntent(url, title, onSuccess, onFail);
 	} else if (type == ShareType["AUDIO"]) {
-		createAudioShareIntent(imageUrl, title, onSuccess, onFail);
+		createAudioShareIntent(url, title, onSuccess, onFail);
 	} else if (type == ShareType["FILE"]) {
-		createFileShareIntent(href, title, onSuccess, onFail);
+		createFileShareIntent(url, title, onSuccess, onFail);
 	} else if (type == ShareType["LINK"]) {
-		createLinkShareIntent(href, title, summary, onSuccess, onFail);
+		createLinkShareIntent(url, title, summary, onSuccess, onFail);
 	} else {
 		// 默认为文本分享
-		createTextShareIntent(title, summary, href, onSuccess);
+		createTextShareIntent(title, summary, url, onSuccess);
 	}
 }

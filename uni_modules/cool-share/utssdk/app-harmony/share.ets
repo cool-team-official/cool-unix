@@ -33,17 +33,17 @@ function getUtdTypeByPath(filePath: string, defaultType: string): string {
 
 /**
  * 创建图片分享数据
- * @param imageUrl 图片路径（支持本地路径和网络 URL）
+ * @param url 图片路径（支持本地路径和网络 URL）
  * @param title 分享标题
  * @param summary 分享描述
  * @returns 分享数据对象
  */
-function createImageShareData(imageUrl: string, title: string, summary: string): systemShare.SharedData | null {
-	if (imageUrl === '') {
+function createImageShareData(url: string, title: string, summary: string): systemShare.SharedData | null {
+	if (url === '') {
 		return null;
 	}
 
-	const filePath = UTSHarmony.getResourcePath(imageUrl);
+	const filePath = UTSHarmony.getResourcePath(url);
 	const utdTypeId = getUtdTypeByPath(filePath, utd.UniformDataType.IMAGE);
 
 	return new systemShare.SharedData({
@@ -56,17 +56,17 @@ function createImageShareData(imageUrl: string, title: string, summary: string):
 
 /**
  * 创建视频分享数据
- * @param videoUrl 视频路径（支持本地路径和网络 URL）
+ * @param url 视频路径（支持本地路径和网络 URL）
  * @param title 分享标题
  * @param summary 分享描述
  * @returns 分享数据对象
  */
-function createVideoShareData(videoUrl: string, title: string, summary: string): systemShare.SharedData | null {
-	if (videoUrl === '') {
+function createVideoShareData(url: string, title: string, summary: string): systemShare.SharedData | null {
+	if (url === '') {
 		return null;
 	}
 
-	const filePath = UTSHarmony.getResourcePath(videoUrl);
+	const filePath = UTSHarmony.getResourcePath(url);
 	const utdTypeId = getUtdTypeByPath(filePath, utd.UniformDataType.VIDEO);
 
 	return new systemShare.SharedData({
@@ -79,17 +79,17 @@ function createVideoShareData(videoUrl: string, title: string, summary: string):
 
 /**
  * 创建音频分享数据
- * @param audioUrl 音频路径（支持本地路径和网络 URL）
+ * @param url 音频路径（支持本地路径和网络 URL）
  * @param title 分享标题
  * @param summary 分享描述
  * @returns 分享数据对象
  */
-function createAudioShareData(audioUrl: string, title: string, summary: string): systemShare.SharedData | null {
-	if (audioUrl === '') {
+function createAudioShareData(url: string, title: string, summary: string): systemShare.SharedData | null {
+	if (url === '') {
 		return null;
 	}
 
-	const filePath = UTSHarmony.getResourcePath(audioUrl);
+	const filePath = UTSHarmony.getResourcePath(url);
 	const utdTypeId = getUtdTypeByPath(filePath, utd.UniformDataType.AUDIO);
 
 	return new systemShare.SharedData({
@@ -160,16 +160,16 @@ function createFileShareData(filePath: string, title: string, summary: string): 
 
 /**
  * 创建链接分享数据
- * @param href 链接地址
+ * @param url 链接地址
  * @param title 分享标题
  * @param summary 分享描述
  * @returns 分享数据对象
  */
-function createLinkShareData(href: string, title: string, summary: string): systemShare.SharedData {
+function createLinkShareData(url: string, title: string, summary: string): systemShare.SharedData {
 	return new systemShare.SharedData({
 		utd: utd.UniformDataType.HYPERLINK,
 		title: title,
-		content: href,
+		content: url,
 		description: summary
 	});
 }
@@ -194,12 +194,11 @@ function createTextShareData(title: string, summary: string): systemShare.Shared
  * @param options.type 分享类型: text(文本) | image(图片) | video(视频) | audio(音频) | file(文件) | link(链接)
  * @param options.title 分享标题
  * @param options.summary 分享描述/内容
- * @param options.href 链接地址或文件路径
- * @param options.imageUrl 图片/视频/音频路径（支持本地路径和网络 URL）
+ * @param options.url 资源路径（图片/视频/音频/文件路径或链接地址，支持本地路径和网络 URL）
  * @param options.success 成功回调
  * @param options.fail 失败回调
  */
-export function share(type: string, title: string, summary: string, href: string, imageUrl: string, success: () => void, fail: (error: string) => void): void {
+export function share(type: string, title: string, summary: string, url: string, success: () => void, fail: (error: string) => void): void {
 	// 获取UI上下文
 	const uiContext: UIContext = UTSHarmony.getCurrentWindow()?.getUIContext();
 	const context: common.UIAbilityContext = uiContext.getHostContext() as common.UIAbilityContext;
@@ -210,32 +209,33 @@ export function share(type: string, title: string, summary: string, href: string
 
 	switch (type) {
 		case ShareType.IMAGE:
-			shareData = createImageShareData(imageUrl, title, summary);
+			shareData = createImageShareData(url, title, summary);
 			errorMsg = '图片路径不能为空';
 			break;
 
 		case ShareType.VIDEO:
-			shareData = createVideoShareData(imageUrl, title, summary);
+			shareData = createVideoShareData(url, title, summary);
 			errorMsg = '视频路径不能为空';
 			break;
 
 		case ShareType.AUDIO:
-			shareData = createAudioShareData(imageUrl, title, summary);
+			shareData = createAudioShareData(url, title, summary);
 			errorMsg = '音频路径不能为空';
 			break;
 
 		case ShareType.FILE:
-			shareData = createFileShareData(href, title, summary);
+			shareData = createFileShareData(url, title, summary);
 			errorMsg = '文件路径不能为空';
 			break;
 
 		case ShareType.LINK:
-			shareData = createLinkShareData(href, title, summary);
+			shareData = createLinkShareData(url, title, summary);
 			break;
 
 		default:
 			// 默认为文本分享
 			shareData = createTextShareData(title, summary);
+			errorMsg = '分享内容不能为空';
 			break;
 	}
 

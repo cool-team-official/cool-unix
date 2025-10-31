@@ -3,8 +3,7 @@ declare module "@/uni_modules/cool-share" {
 		type: "text" | "image" | "file" | "link" | "video" | "audio";
 		title?: string;
 		summary?: string;
-		href?: string;
-		imageUrl?: string;
+		url?: string;
 		success?: () => void;
 		fail?: (error: string) => void;
 	}): void;

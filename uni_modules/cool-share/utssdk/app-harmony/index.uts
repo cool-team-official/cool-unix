@@ -6,8 +6,7 @@ export function shareWithSystem(options: ShareWithSystemOptions) {
 		options.type,
 		options.title ?? "",
 		options.summary ?? "",
-		options.href ?? "",
-		options.imageUrl ?? "",
+		options.url ?? "",
 		options.success ?? (() => {}),
 		options.fail ?? (() => {})
 	);

@@ -29,7 +29,7 @@ function shareText() {
 	shareWithSystem({
 		type: "text",
 		title: "Cool Unix 是一个高效的项目脚手架",
-		summary: "",
+		summary: "Cool Unix 是一个高效的项目脚手架",
 		success: () => {
 			console.log("success");
 		},
@@ -42,7 +42,7 @@ function shareText() {
 function shareImage() {
 	shareWithSystem({
 		type: "image",
-		imageUrl: "https://cool-js.com/logo.png",
+		url: "https://cool-js.com/logo.png",
 		success: () => {
 			console.log("success");
 		}
@@ -52,7 +52,7 @@ function shareImage() {
 function shareFile() {
 	shareWithSystem({
 		type: "file",
-		href: "https://show.cool-admin.com/用户导入模版.xlsx",
+		url: "https://show.cool-admin.com/用户导入模版.xlsx",
 		success: () => {
 			console.log("success");
 		}
@@ -62,7 +62,7 @@ function shareFile() {
 function shareLink() {
 	shareWithSystem({
 		type: "link",
-		href: "https://cool-js.com/",
+		url: "https://cool-js.com/",
 		success: () => {
 			console.log("success");
 		}
