@@ -21,14 +21,17 @@
 </template>
 
 <script lang="ts" setup>
+// #ifdef APP
 import { shareWithSystem } from "@/uni_modules/cool-share";
+// #endif
 import DemoItem from "../components/item.uvue";
 import { t } from "@/locale";
 
 function shareText() {
+	// #ifdef APP
 	shareWithSystem({
 		type: "text",
-		title: "Cool Unix 是一个高效的项目脚手架",
+		title: "Cool Unix",
 		summary: "Cool Unix 是一个高效的项目脚手架",
 		success: () => {
 			console.log("success");
@@ -37,9 +40,11 @@ function shareText() {
 			console.log("fail", error);
 		}
 	});
+	// #endif
 }
 
 function shareImage() {
+	// #ifdef APP
 	shareWithSystem({
 		type: "image",
 		url: "https://cool-js.com/logo.png",
@@ -47,9 +52,11 @@ function shareImage() {
 			console.log("success");
 		}
 	});
+	// #endif
 }
 
 function shareFile() {
+	// #ifdef APP
 	shareWithSystem({
 		type: "file",
 		url: "https://show.cool-admin.com/用户导入模版.xlsx",
@@ -57,9 +64,11 @@ function shareFile() {
 			console.log("success");
 		}
 	});
+	// #endif
 }
 
 function shareLink() {
+	// #ifdef APP
 	shareWithSystem({
 		type: "link",
 		url: "https://cool-js.com/",
@@ -67,6 +76,7 @@ function shareLink() {
 			console.log("success");
 		}
 	});
+	// #endif
 }
 </script>
 

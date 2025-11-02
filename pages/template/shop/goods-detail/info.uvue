@@ -4,17 +4,16 @@
 			>Apple/苹果 iPhone 15 (A3092) 128GB 黑色 支持移动联通电信5G 双卡双待手机</cl-text
 		>
 
-		<view class="flex flex-row items-center mb-3 overflow-visible">
-			<view class="flex flex-row items-end overflow-visible">
+		<view class="flex flex-row items-center mb-3">
+			<view class="flex flex-row items-end">
 				<cl-text color="error" :pt="{ className: 'font-bold text-sm' }">¥</cl-text>
 				<cl-text
 					type="amount"
 					:value="8499"
 					color="error"
-					:size="44"
 					currency=""
 					:pt="{
-						className: 'font-bold ml-1'
+						className: 'font-bold ml-1 text-2xl'
 					}"
 				>
 				</cl-text>

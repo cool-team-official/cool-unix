@@ -302,9 +302,9 @@ function startAutoplay() {
 }
 
 // 触摸起始Y坐标
-let touchStartY = 0
+let touchStartY = 0;
 // 横向滑动参数
-let touchHorizontal = 0
+let touchHorizontal = 0;
 
 /**
  * 处理触摸开始事件
@@ -328,7 +328,7 @@ function onTouchStart(e: TouchEvent) {
 	isAnimating.value = false;
 	touchStartPoint.value = e.touches[0].clientX;
 	touchStartY = e.touches[0].clientY;
-	touchHorizontal = 0
+	touchHorizontal = 0;
 	touchStartTimestamp.value = Date.now();
 	initialOffset.value = slideOffset.value;
 }
@@ -341,24 +341,24 @@ function onTouchStart(e: TouchEvent) {
 function onTouchMove(e: TouchEvent) {
 	if (props.list.length <= 1 || props.disableTouch || !isTouching.value) return;
 
-	const x =  touchStartPoint.value - e.touches[0].clientX
+	const x = touchStartPoint.value - e.touches[0].clientX;
 	if (touchHorizontal == 0) {
 		// 只在horizontal=0时判断一次
-		const y = touchStartY - e.touches[0].clientY
-		
+		const y = touchStartY - e.touches[0].clientY;
+
 		if (Math.abs(x) > Math.abs(y)) {
 			// 如果x轴移动距离大于y轴移动距离则表明是横向移动手势
-			touchHorizontal = 1
+			touchHorizontal = 1;
 		}
 		if (touchHorizontal == 1) {
 			// 如果是横向移动手势，则阻止默认行为（防止页面滚动）
-			e.preventDefault()
+			e.preventDefault();
 		}
 	}
 
 	// 横向移动时才处理
 	if (touchHorizontal != 1) {
-		return
+		return;
 	}
 
 	// 计算手指移动距离，实时更新偏移量
@@ -372,7 +372,7 @@ function onTouchMove(e: TouchEvent) {
  */
 function onTouchEnd() {
 	if (props.list.length <= 1 || !isTouching.value) return;
-	
+
 	touchStartY = 0;
 	touchHorizontal = 0;
 
@@ -442,7 +442,7 @@ onMounted(() => {
 defineExpose({
 	onTouchStart,
 	onTouchMove,
-	onTouchEnd,
+	onTouchEnd
 });
 </script>
 

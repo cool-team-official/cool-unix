@@ -52,22 +52,24 @@
 
 				<view class="list">
 					<cl-row :gutter="10">
-						<cl-col :span="6" v-for="child in item.children" :key="child.label">
-							<view
-								class="item dark:!bg-surface-800"
-								hover-class="opacity-80"
-								:hover-stay-time="250"
-								@tap="toPath(child)"
-							>
-								<cl-icon :name="child.icon" :size="36"></cl-icon>
-								<cl-text
-									:pt="{
-										className: 'mt-1 !text-xs text-center'
-									}"
-									>{{ child.label }}</cl-text
+						<template v-for="child in item.children" :key="child.label">
+							<cl-col :span="6" v-if="child.hidden != true">
+								<view
+									class="item dark:!bg-surface-800"
+									hover-class="opacity-80"
+									:hover-stay-time="250"
+									@tap="toPath(child)"
 								>
-							</view>
-						</cl-col>
+									<cl-icon :name="child.icon" :size="36"></cl-icon>
+									<cl-text
+										:pt="{
+											className: 'mt-1 !text-xs text-center'
+										}"
+										>{{ child.label }}</cl-text
+									>
+								</view>
+							</cl-col>
+						</template>
 					</cl-row>
 				</view>
 			</view>
@@ -85,7 +87,7 @@
 </template>
 
 <script lang="ts" setup>
-import { isMp, router, useRefs } from "@/cool";
+import { isApp, isMp, router, useRefs } from "@/cool";
 import { t } from "@/locale";
 import { computed } from "vue";
 import { useUi } from "@/uni_modules/cool-ui";
@@ -102,6 +104,7 @@ type Item = {
 	icon?: string;
 	path?: string;
 	disabled?: boolean;
+	hidden?: boolean;
 	children?: Item[];
 };
 
@@ -475,7 +478,8 @@ const data = computed<Item[]>(() => {
 				{
 					label: "Share",
 					icon: "share-line",
-					path: "/pages/demo/other/share"
+					path: "/pages/demo/other/share",
+					hidden: !isApp()
 				}
 			]
 		}
