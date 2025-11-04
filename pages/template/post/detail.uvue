@@ -180,16 +180,16 @@
 		</view>
 
 		<cl-footer>
-			<view class="flex-row">
+			<view class="flex flex-row h-[68rpx]">
 				<view
-					class="flex-row items-center bg-surface-100 dark:bg-surface-700 rounded-full px-3 py-2 mr-6 w-[260rpx] h-[68rpx]"
+					class="flex-row items-center bg-surface-100 dark:bg-surface-700 rounded-full px-3 py-2 mr-6 w-[260rpx] h-full"
 					@tap="openReply"
 				>
 					<cl-icon name="edit-line" color="info" :size="32"></cl-icon>
 					<cl-text color="info" :pt="{ className: 'text-sm ml-2' }">说点什么...</cl-text>
 				</view>
 
-				<view class="flex flex-row flex-1 justify-end">
+				<view class="flex flex-row flex-1 justify-end h-full items-center">
 					<view class="flex-row justify-center items-center mr-6">
 						<cl-icon name="heart-line" :size="40"></cl-icon>
 						<cl-text :pt="{ className: 'ml-2 text-sm' }">700</cl-text>
