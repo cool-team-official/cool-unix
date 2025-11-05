@@ -794,7 +794,9 @@ function confirm() {
 watch(
 	computed(() => props.modelValue),
 	(val: string) => {
-		setValue(val);
+		if (!props.rangeable) {
+			setValue(val);
+		}
 	},
 	{
 		immediate: true
@@ -805,7 +807,9 @@ watch(
 watch(
 	computed(() => props.values),
 	(val: string[]) => {
-		setValues(val);
+		if (props.rangeable) {
+			setValues(val);
+		}
 	},
 	{
 		immediate: true

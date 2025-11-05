@@ -153,7 +153,7 @@ type Form = {
 };
 
 const form = reactive<Form>({
-	date1: "",
+	date1: "2023-06-24",
 	date2: "",
 	date3: "",
 	date4: "",
