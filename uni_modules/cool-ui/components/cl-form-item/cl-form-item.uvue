@@ -151,7 +151,7 @@ const labelWidth = computed<string>(() => {
 
 // 计算是否必填
 const required = computed<boolean>(() => {
-	if (props.required != null) {
+	if (props.required !== null && props.required !== undefined) {
 		return props.required;
 	}
 
