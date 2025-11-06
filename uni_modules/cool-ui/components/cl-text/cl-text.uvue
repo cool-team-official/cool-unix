@@ -209,9 +209,17 @@ const textStyle = computed(() => {
 	}
 
 	// 行高
-	const lineHeight = getLineHeight();
-	if (lineHeight != null) {
-		style["lineHeight"] = lineHeight;
+	// 判断是否多行文本
+	const isMultiLine = props.preWrap || !props.ellipsis || props.lines > 1;
+	if (isMultiLine) {
+		// 多行文本，行高交给浏览器/平台自动计算
+		style["lineHeight"] = "normal";
+	} else {
+		// 单行文本，使用原来的行高逻辑
+		const lineHeight = getLineHeight();
+		if (lineHeight != null) {
+			style["lineHeight"] = lineHeight;
+		}
 	}
 
 	return style;
