@@ -109,13 +109,13 @@ const props = defineProps({
 	},
 	// 是否必填
 	required: {
-		type: Boolean,
-		default: false
+		type: Boolean as PropType<boolean | null>,
+		default: null
 	}
 });
 
 // cl-form 上下文
-const { formRef, getError, getValue, validateField, addField, removeField, setRule } = useForm();
+const { formRef, getError, getValue, validateField, addField, removeField, setRule, getRule } = useForm();
 
 // 透传样式类型
 type PassThrough = {
@@ -149,9 +149,20 @@ const labelWidth = computed<string>(() => {
 	return props.labelWidth ?? formRef.value?.labelWidth ?? "120rpx";
 });
 
+// 计算是否必填
+const required = computed<boolean>(() => {
+	if (props.required != null) {
+		return props.required;
+	}
+
+	// 否则，根据规则自动判断
+	const rules = getRule(props.prop);
+	return rules.some(rule => rule.required == true);
+});
+
 // 是否显示必填星号
 const showAsterisk = computed<boolean>(() => {
-	if (!props.required) {
+	if (!required.value) {
 		return false;
 	}
 
@@ -160,7 +171,7 @@ const showAsterisk = computed<boolean>(() => {
 
 // 是否显示错误信息
 const showMessage = computed<boolean>(() => {
-	if (!props.required) {
+	if (!required.value) {
 		return false;
 	}
 
@@ -168,7 +179,7 @@ const showMessage = computed<boolean>(() => {
 });
 
 watch(
-	computed(() => props.required),
+	required, // 监听计算后的 required 属性
 	(val: boolean) => {
 		if (val) {
 			addField(props.prop, props.rules);
