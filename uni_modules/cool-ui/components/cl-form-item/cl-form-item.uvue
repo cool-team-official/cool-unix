@@ -115,7 +115,8 @@ const props = defineProps({
 });
 
 // cl-form 上下文
-const { formRef, getError, getValue, validateField, addField, removeField, setRule, getRule } = useForm();
+const { formRef, getError, getValue, validateField, addField, removeField, setRule, getRule } =
+	useForm();
 
 // 透传样式类型
 type PassThrough = {
@@ -157,7 +158,7 @@ const required = computed<boolean>(() => {
 
 	// 否则，根据规则自动判断
 	const rules = getRule(props.prop);
-	return rules.some(rule => rule.required == true);
+	return rules.some((rule) => rule.required == true);
 });
 
 // 是否显示必填星号
@@ -178,8 +179,9 @@ const showMessage = computed<boolean>(() => {
 	return props.showMessage ?? formRef.value?.showMessage ?? true;
 });
 
+// 监听计算后的 required 属性
 watch(
-	required, // 监听计算后的 required 属性
+	required,
 	(val: boolean) => {
 		if (val) {
 			addField(props.prop, props.rules);
@@ -205,7 +207,7 @@ onMounted(() => {
 			return value;
 		}),
 		(a: any, b: any) => {
-			if (props.required) {
+			if (required.value == true) {
 				if (!isEqual(a, b)) {
 					validateField(props.prop);
 				}
