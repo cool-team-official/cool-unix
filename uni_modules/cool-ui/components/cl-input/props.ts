@@ -29,4 +29,5 @@ export type ClInputProps = {
 	adjustPosition?: boolean;
 	maxlength?: number;
 	holdKeyboard?: boolean;
+	precision?: number;
 };
