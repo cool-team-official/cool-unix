@@ -8,7 +8,7 @@
 				'cl-input--border': border,
 				'cl-input--focus': isFocus,
 				'cl-input--disabled': isDisabled,
-				'cl-input--error': isError
+				'cl-input--error': isError,
 			}
 		]"
 		@tap="onTap"
@@ -28,7 +28,8 @@
 			:class="[
 				{
 					'is-disabled': isDisabled,
-					'is-dark': isDark
+					'is-dark': isDark,
+					'is-exceed': isExceed
 				},
 				ptClassName
 			]"
@@ -189,6 +190,11 @@ const props = defineProps({
 	holdKeyboard: {
 		type: Boolean,
 		default: false
+	},
+	// 保留精度
+	precision: {
+		type: Number,
+		default: 0
 	}
 });
 
@@ -256,6 +262,17 @@ const showClear = computed(() => {
 // 是否显示密码
 const isPassword = ref(props.password);
 
+// 是否超出限制
+const isExceed = computed(() => {
+	// 检查数字精度是否超出限制
+	if (props.type == "number" && props.precision >= 0 && value.value != "") {
+		const parts = value.value.split(".");
+		return parts.length > 1 && parts[1].length > props.precision;
+	} else {
+		return false;
+	}
+});
+
 // 切换密码显示状态
 function showPassword() {
 	isPassword.value = !isPassword.value;
@@ -270,6 +287,17 @@ function onFocus(e: UniInputFocusEvent) {
 // 失去焦点事件
 function onBlur(e: UniInputBlurEvent) {
 	emit("blur", e);
+
+	// 处理数字精度
+	if (props.type == "number" && props.precision > 0 && value.value != "") {
+		const numValue = parseFloat(value.value);
+		if (!isNaN(numValue)) {
+			const formattedValue = numValue.toFixed(props.precision);
+			value.value = formattedValue;
+			emit("update:modelValue", formattedValue);
+			emit("change", formattedValue);
+		}
+	}
 
 	setTimeout(() => {
 		isFocus.value = false;
@@ -366,6 +394,14 @@ defineExpose({
 
 		&.is-dark {
 			@apply text-white;
+		}
+
+		&.is-exceed {
+			@apply text-red-500;
+		}
+
+		&.is-exceed.is-dark {
+			@apply text-red-400;
 		}
 	}
 

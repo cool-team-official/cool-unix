@@ -59,6 +59,16 @@
 				</cl-input>
 			</demo-item>
 
+			<demo-item :label="t('保留精度')">
+				<demo-tips>当 type 为 number 时，可设置 precision 属性来保留精度</demo-tips>
+
+				<cl-list-item :label="t('精度')">
+					<cl-input-number v-model="precision"></cl-input-number>
+				</cl-list-item>
+
+				<cl-input type="number" :precision="precision"></cl-input>
+			</demo-item>
+
 			<demo-item :label="t('自定义')">
 				<cl-input
 					v-model="content"
@@ -127,6 +137,8 @@ const isLeftIcon = ref(true);
 const isRightIcon = ref(false);
 const isDisabled = ref(false);
 const isColor = ref(false);
+
+const precision = ref<number>(2);
 
 function toAlert() {
 	ui.showToast({
