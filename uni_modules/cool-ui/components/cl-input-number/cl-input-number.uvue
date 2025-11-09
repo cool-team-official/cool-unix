@@ -7,6 +7,9 @@
 			},
 			pt.className
 		]"
+		:style="{
+			height: parseRpx(size!)
+		}"
 	>
 		<view
 			class="cl-input-number__minus"
