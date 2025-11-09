@@ -60,13 +60,15 @@
 			</demo-item>
 
 			<demo-item :label="t('保留精度')">
-				<demo-tips>当 type 为 number 时，可设置 precision 属性来保留精度</demo-tips>
+				<demo-tips>当 type 为 digit 时，可设置 precision 属性来保留精度</demo-tips>
 
-				<cl-list-item :label="t('精度')">
-					<cl-input-number v-model="precision"></cl-input-number>
-				</cl-list-item>
+				<cl-input type="digit" :precision="precision"></cl-input>
 
-				<cl-input type="number" :precision="precision"></cl-input>
+				<cl-list border :pt="{ className: 'mt-5' }">
+					<cl-list-item :label="t('精度')">
+						<cl-input-number v-model="precision"></cl-input-number>
+					</cl-list-item>
+				</cl-list>
 			</demo-item>
 
 			<demo-item :label="t('自定义')">

@@ -23,6 +23,7 @@
 			></cl-icon>
 		</view>
 
+		<!-- @vue-ignore -->
 		<input
 			class="cl-input__inner"
 			:class="[
@@ -265,7 +266,7 @@ const isPassword = ref(props.password);
 // 是否超出限制
 const isExceed = computed(() => {
 	// 检查数字精度是否超出限制
-	if (props.type == "number" && props.precision >= 0 && value.value != "") {
+	if (props.type == "digit" && props.precision >= 0 && value.value != "") {
 		const parts = value.value.split(".");
 		return parts.length > 1 && parts[1].length > props.precision;
 	} else {
@@ -289,7 +290,7 @@ function onBlur(e: UniInputBlurEvent) {
 	emit("blur", e);
 
 	// 处理数字精度
-	if (props.type == "number" && props.precision > 0 && value.value != "") {
+	if (props.type == "digit" && props.precision > 0 && value.value != "") {
 		const numValue = parseFloat(value.value);
 		if (!isNaN(numValue)) {
 			const formattedValue = numValue.toFixed(props.precision);
