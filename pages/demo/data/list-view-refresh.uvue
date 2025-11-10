@@ -107,7 +107,10 @@ const { refresh, list, listView, loading, loadMore } = usePager((params, { rende
 
 async function onPull() {
 	await refresh({ page: 1 });
-	listViewRef.value!.stopRefresh();
+
+	setTimeout(() => {
+		listViewRef.value!.stopRefresh();
+	}, 300);
 }
 
 onReady(() => {

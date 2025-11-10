@@ -572,10 +572,8 @@ const refresherText = computed(() => {
 
 // 停止下拉刷新
 function stopRefresh() {
-	setTimeout(() => {
-		refresherStatus.value = "default";
-		refreshTriggered.value = false;
-	}, 300);
+	refresherStatus.value = "default";
+	refreshTriggered.value = false;
 }
 
 // 滚动到顶部事件处理函数
