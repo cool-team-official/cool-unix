@@ -85,7 +85,7 @@ const props = defineProps({
 	// 选择器选项高度
 	itemHeight: {
 		type: Number,
-		default: 42
+		default: isAppIOS() ? 50 : 42
 	},
 	// 选择器高度
 	height: {
@@ -107,8 +107,8 @@ const headers = computed(() => {
 // 遮罩层样式
 const maskStyle = computed(() => {
 	if (isDark.value) {
-		if(isAppIOS()) {
-			return `background-color: rgba(0, 0, 0, 0);`
+		if (isAppIOS()) {
+			return `background-color: rgba(0, 0, 0, 0);`;
 		}
 
 		return `background-image: linear-gradient(
