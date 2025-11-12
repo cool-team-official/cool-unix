@@ -1,6 +1,14 @@
 <template>
 	<cl-page>
-		<cl-topbar fixed :show-back="false" safe-area-top :height="isMp() ? null : 100">
+		<cl-topbar
+			fixed
+			:show-back="false"
+			safe-area-top
+			:height="isMp() ? null : 100"
+			:pt="{
+				className: '!z-50'
+			}"
+		>
 			<view
 				class="flex flex-row items-center p-3 flex-1 w-full"
 				:class="{
