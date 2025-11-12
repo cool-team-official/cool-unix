@@ -1,9 +1,6 @@
 <template>
 	<view
 		class="cl-float-view"
-		:class="{
-			'no-dragging': !position.isDragging
-		}"
 		:style="viewStyle"
 		@touchstart="onTouchStart"
 		@touchmove.stop.prevent="onTouchMove"
@@ -16,7 +13,7 @@
 
 <script setup lang="ts">
 import { getSafeAreaHeight, getTabBarHeight, hasCustomTabBar, router } from "@/cool";
-import { computed, reactive } from "vue";
+import { computed, nextTick, reactive } from "vue";
 import { clFooterOffset } from "../cl-footer/offset";
 
 defineOptions({
@@ -80,7 +77,7 @@ type Position = {
 const position = reactive<Position>({
 	x: props.left, // 初始左边距10px
 	y: props.bottom, // 初始距离底部10px
-	isDragging: false // 初始状态为非拖拽
+	isDragging: true // 初始状态为拖拽
 });
 
 /**
@@ -128,6 +125,14 @@ const viewStyle = computed(() => {
 	style["width"] = `${props.size}px`;
 	// 设置高度
 	style["height"] = `${props.size}px`;
+
+	// 拖拽过渡效果
+	if (position.isDragging) {
+		style["transition-property"] = "none";
+	} else {
+		style["transition-property"] = "left, bottom";
+		style["transition-duration"] = "300ms";
+	}
 
 	return style;
 });
@@ -265,23 +270,20 @@ function onTouchEnd() {
 	// 如果不在拖拽状态，直接返回
 	if (!position.isDragging) return;
 
-	// 结束拖拽状态，恢复过渡动画
-	position.isDragging = false;
+	nextTick(() => {
+		// 结束拖拽状态，恢复过渡动画
+		position.isDragging = false;
 
-	// 执行边缘吸附逻辑
-	if (!props.noSnapping) {
-		performEdgeSnapping();
-	}
+		// 执行边缘吸附逻辑
+		if (!props.noSnapping) {
+			performEdgeSnapping();
+		}
+	});
 }
 </script>
 
 <style lang="scss" scoped>
 .cl-float-view {
-	@apply fixed transition-none;
-
-	&.no-dragging {
-		@apply duration-300;
-		transition-property: left, bottom;
-	}
+	@apply fixed;
 }
 </style>
