@@ -1,6 +1,6 @@
 {
 	"name": "cool-unix",
-	"version": "8.0.30",
+	"version": "8.0.31",
 	"license": "MIT",
 	"scripts": {
 		"build-ui": "node ./uni_modules/cool-ui/scripts/generate-types.js",
@@ -15,7 +15,7 @@
 		"@babel/parser": "^7.27.5",
 		"@babel/types": "^7.27.6",
 		"@cool-vue/ai": "^1.1.7",
-		"@cool-vue/vite-plugin": "^8.2.18",
+		"@cool-vue/vite-plugin": "^8.2.19",
 		"@dcloudio/types": "^3.4.16",
 		"@types/node": "^24.0.15",
 		"@vue/compiler-sfc": "^3.5.16",
