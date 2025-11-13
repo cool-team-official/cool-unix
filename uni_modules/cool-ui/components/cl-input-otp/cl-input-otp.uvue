@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref, watch, type PropType, type Ref } from "vue";
 import type { ClInputType, PassThroughProps } from "../../types";
-import { createAnimation, isDark, isEmpty, last, parsePt } from "@/cool";
+import { AnimationEngine, createAnimation, isDark, isEmpty, last, parsePt } from "@/cool";
 
 defineOptions({
 	name: "cl-input-otp"
@@ -159,6 +159,9 @@ const list = computed<string[]>(() => {
 	return arr;
 });
 
+// 光标动画引擎
+let animationEngine: AnimationEngine | null = null;
+
 /**
  * 光标动画
  */
@@ -171,7 +174,11 @@ async function onCursor() {
 
 	// 开始动画
 	// #ifdef APP
-	createAnimation(last(cursorRef.value), {
+	if (animationEngine != null) {
+		animationEngine!.stop();
+	}
+
+	animationEngine = createAnimation(last(cursorRef.value), {
 		duration: 600,
 		loop: -1,
 		alternate: true
@@ -228,6 +235,9 @@ onMounted(() => {
 	&__list {
 		@apply flex flex-row relative;
 		margin: 0 -10rpx;
+		// #ifdef APP-IOS
+		padding-bottom: 0.1rpx;
+		// #endif
 	}
 
 	&__item {
