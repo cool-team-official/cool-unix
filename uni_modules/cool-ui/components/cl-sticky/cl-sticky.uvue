@@ -105,32 +105,37 @@ const stickyTop = computed(() => {
 
 // 获取sticky元素的位置信息，并更新rect
 function getRect() {
-	nextTick(() => {
-		setTimeout(
-			() => {
-				uni.createSelectorQuery()
-					.in(proxy)
-					.select(".cl-sticky")
-					.boundingClientRect()
-					.exec((nodes) => {
-						if (isEmpty(nodes)) {
-							return;
-						}
+	const next = () => {
+		uni.createSelectorQuery()
+			.in(proxy)
+			.select(".cl-sticky")
+			.boundingClientRect()
+			.exec((nodes) => {
+				if (isEmpty(nodes)) {
+					return;
+				}
 
-						const node = nodes[0] as NodeInfo;
+				const node = nodes[0] as NodeInfo;
 
-						// 赋值时做空值处理，保证类型安全
-						rect.height = node.height ?? 0;
+				// 赋值时做空值处理，保证类型安全
+				rect.height = node.height ?? 0;
 
-						rect.width = node.width ?? 0;
-						rect.left = node.left ?? 0;
-						// top需要减去offsetTop并加上当前滚动距离，保证吸顶准确
-						rect.top = (node.top ?? 0) - props.offsetTop + scrollTop.value;
-					});
-			},
-			isHarmony() ? 300 : 0
-		);
-	});
+				rect.width = node.width ?? 0;
+				rect.left = node.left ?? 0;
+				// top需要减去offsetTop并加上当前滚动距离，保证吸顶准确
+				rect.top = (node.top ?? 0) - props.offsetTop + scrollTop.value;
+			});
+	};
+
+	if (isHarmony()) {
+		nextTick(() => {
+			setTimeout(() => {
+				next();
+			}, 300);
+		});
+	} else {
+		next();
+	}
 }
 
 onMounted(() => {
