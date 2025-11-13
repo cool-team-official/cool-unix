@@ -163,10 +163,12 @@ function getContainerSize(): Promise<void> {
  * 绘制水印 - 使用Canvas
  */
 async function drawWatermark() {
-	await nextTick();
-
 	// 获取容器尺寸
 	await getContainerSize();
+
+	// 等待渲染完成
+	await nextTick();
+
 	if (containerWidth.value <= 0 || containerHeight.value <= 0) return;
 
 	uni.createCanvasContextAsync({
