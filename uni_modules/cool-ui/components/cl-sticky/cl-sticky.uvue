@@ -128,11 +128,9 @@ function getRect() {
 	};
 
 	if (isHarmony()) {
-		nextTick(() => {
-			setTimeout(() => {
-				next();
-			}, 300);
-		});
+		setTimeout(() => {
+			next();
+		}, 300);
 	} else {
 		next();
 	}

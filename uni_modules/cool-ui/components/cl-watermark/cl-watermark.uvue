@@ -163,6 +163,9 @@ function getContainerSize(): Promise<void> {
  * 绘制水印 - 使用Canvas
  */
 async function drawWatermark() {
+	// 等待渲染完成
+	await nextTick();
+
 	// 获取容器尺寸
 	await getContainerSize();
 
