@@ -178,7 +178,7 @@ watch(
 
 <style lang="scss" scoped>
 .cl-switch {
-	@apply flex flex-row items-center duration-200;
+	@apply flex flex-row items-center duration-200 opacity-100;
 
 	&__track {
 		@apply flex flex-row items-center relative rounded-full duration-200;
