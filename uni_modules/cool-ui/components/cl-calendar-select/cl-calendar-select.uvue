@@ -263,7 +263,7 @@ function confirm() {
 			return;
 		}
 
-		if (date.value.length != 2) {
+		if (date.value.length != 2 && props.mode == "range") {
 			ui.showToast({
 				message: t("请选择日期范围")
 			});
