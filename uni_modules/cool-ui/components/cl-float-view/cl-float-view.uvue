@@ -188,6 +188,9 @@ function onTouchStart(e: TouchEvent) {
  * 实时更新按钮位置，实现拖拽效果
  */
 function onTouchMove(e: TouchEvent) {
+	// 如果禁用，直接返回
+	if (props.disabled) return;
+
 	// 如果不在拖拽状态或没有触摸点，直接返回
 	if (!position.isDragging || e.touches.length == 0) return;
 
@@ -267,6 +270,9 @@ function performEdgeSnapping() {
  * 结束拖拽状态并执行边缘吸附
  */
 function onTouchEnd() {
+	// 如果禁用，直接返回
+	if (props.disabled) return;
+
 	// 如果不在拖拽状态，直接返回
 	if (!position.isDragging) return;
 
