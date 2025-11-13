@@ -8,7 +8,7 @@
 				'cl-input--border': border,
 				'cl-input--focus': isFocus,
 				'cl-input--disabled': isDisabled,
-				'cl-input--error': isError,
+				'cl-input--error': isError
 			}
 		]"
 		@tap="onTap"
@@ -63,7 +63,7 @@
 			></cl-icon>
 		</view>
 
-		<view class="cl-input__icon" @tap="clear" v-if="showClear">
+		<view class="cl-input__icon" @tap.stop="clear" v-if="showClear">
 			<cl-icon
 				name="close-circle-fill"
 				:size="32"
@@ -257,7 +257,7 @@ const isFocus = ref<boolean>(props.autofocus);
 
 // 是否显示清除按钮
 const showClear = computed(() => {
-	return isFocus.value && props.clearable && value.value != "";
+	return props.clearable && value.value != "";
 });
 
 // 是否显示密码
