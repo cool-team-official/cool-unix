@@ -128,6 +128,7 @@ import { isAppIOS, isDark, isHarmony, parseClass, parsePt } from "@/cool";
 import type { Justify, PassThroughProps } from "../../types";
 import type { ClIconProps } from "../cl-icon/props";
 import type { ClImageProps } from "../cl-image/props";
+import { useTouch } from "../../hooks";
 
 defineOptions({
 	name: "cl-list-item"
@@ -189,6 +190,7 @@ const props = defineProps({
 
 const { proxy } = getCurrentInstance()!;
 const slots = useSlots();
+const touch = useTouch();
 
 // 透传样式类型定义
 type PassThrough = {
@@ -278,6 +280,10 @@ const isHover = ref(false);
  * @param e 触摸事件对象
  */
 function onTouchStart(e: UniTouchEvent) {
+	// 注册触摸开始事件
+	touch.start(e);
+
+	// 设置点击态
 	isHover.value = true;
 
 	// 记录开始触摸位置
@@ -292,6 +298,9 @@ function onTouchStart(e: UniTouchEvent) {
  */
 function onTouchEnd() {
 	if (isHover.value) {
+		// 注册触摸结束事件
+		touch.end();
+
 		// 计算滑动阈值 - 取滑动区域一半和50px中的较小值
 		const threshold = swipe.width / 2 > 50 ? 50 : swipe.width / 2;
 		// 计算实际滑动距离
@@ -330,6 +339,14 @@ function onTouchCancel() {
  */
 function onTouchMove(e: UniTouchEvent) {
 	if (isHover.value) {
+		// 注册触摸移动事件
+		touch.move(e);
+
+		// 横向移动时才处理
+		if (touch.horizontal != 1) {
+			return;
+		}
+
 		// 计算滑动偏移量
 		const offsetX = (e.touches[0] as UniTouch).pageX - swipe.startX;
 
