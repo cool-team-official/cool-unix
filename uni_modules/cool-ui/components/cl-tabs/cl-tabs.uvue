@@ -42,6 +42,7 @@
 										item.isActive && color == '' && unColor == '',
 										showSlider ? 'text-white' : 'text-primary-500'
 									],
+									[item.disabled, 'opacity-30'],
 									pt.text?.className
 								])
 							}"
@@ -225,6 +226,7 @@ function getColor(isActive: boolean) {
 	} else {
 		color = props.unColor;
 	}
+
 	return isEmpty(color) ? null : color;
 }
 
