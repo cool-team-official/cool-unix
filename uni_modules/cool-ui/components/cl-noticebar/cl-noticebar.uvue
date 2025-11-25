@@ -38,7 +38,8 @@ import {
 	computed,
 	getCurrentInstance,
 	type PropType,
-	watch
+	watch,
+	nextTick
 } from "vue";
 import { parseRpx, parsePt, parseClass } from "@/cool";
 import type { PassThroughProps } from "../../types";
@@ -150,65 +151,69 @@ function clear(): void {
 
 // 刷新滚动状态
 function refresh() {
-	// 先清除已有定时器，避免重复动画
-	clear();
+	nextTick(() => {
+		// 先清除已有定时器，避免重复动画
+		clear();
 
-	// 查询公告栏容器尺寸
-	uni.createSelectorQuery()
-		.in(proxy)
-		.select(".cl-noticebar")
-		.boundingClientRect((box) => {
-			// 获取容器高度和宽度
-			const boxHeight = (box as NodeInfo).height ?? 0;
-			const boxWidth = (box as NodeInfo).width ?? 0;
+		// 查询公告栏容器尺寸
+		uni.createSelectorQuery()
+			.in(proxy)
+			.select(".cl-noticebar")
+			.boundingClientRect((box) => {
+				// 获取容器高度和宽度
+				const boxHeight = (box as NodeInfo).height ?? 0;
+				const boxWidth = (box as NodeInfo).width ?? 0;
 
-			// 查询文本节点尺寸
-			uni.createSelectorQuery()
-				.in(proxy)
-				.select(".cl-noticebar__text")
-				.boundingClientRect((text) => {
-					// 水平滚动逻辑
-					if (props.direction == "horizontal") {
-						// 获取文本宽度
-						const textWidth = (text as NodeInfo).width ?? 0;
+				// 查询文本节点尺寸
+				uni.createSelectorQuery()
+					.in(proxy)
+					.select(".cl-noticebar__text")
+					.boundingClientRect((text) => {
+						// 水平滚动逻辑
+						if (props.direction == "horizontal") {
+							// 获取文本宽度
+							const textWidth = (text as NodeInfo).width ?? 0;
 
-						// 启动水平滚动动画
-						function next() {
-							// 计算滚动距离和动画时长
-							scroll.translateX = textWidth + boxWidth;
-							scroll.duration = Math.ceil((scroll.translateX / props.speed) * 1000);
-							scroll.left = boxWidth;
+							// 启动水平滚动动画
+							function next() {
+								// 计算滚动距离和动画时长
+								scroll.translateX = textWidth + boxWidth;
+								scroll.duration = Math.ceil(
+									(scroll.translateX / props.speed) * 1000
+								);
+								scroll.left = boxWidth;
 
-							// 动画结束后重置，形成循环滚动
-							// @ts-ignore
-							timer = setTimeout(() => {
-								scroll.translateX = 0;
-								scroll.duration = 0;
+								// 动画结束后重置，形成循环滚动
+								// @ts-ignore
+								timer = setTimeout(() => {
+									scroll.translateX = 0;
+									scroll.duration = 0;
 
-								setTimeout(() => {
-									next();
-								}, 100);
-							}, scroll.duration);
-						}
-
-						next();
-					}
-					// 垂直滚动逻辑
-					else {
-						// 定时切换文本，循环滚动
-						// @ts-ignore
-						timer = setInterval(() => {
-							if (Math.abs(scroll.top) >= boxHeight * (list.value.length - 1)) {
-								scroll.top = 0;
-							} else {
-								scroll.top -= boxHeight;
+									setTimeout(() => {
+										next();
+									}, 100);
+								}, scroll.duration);
 							}
-						}, props.duration);
-					}
-				})
-				.exec();
-		})
-		.exec();
+
+							next();
+						}
+						// 垂直滚动逻辑
+						else {
+							// 定时切换文本，循环滚动
+							// @ts-ignore
+							timer = setInterval(() => {
+								if (Math.abs(scroll.top) >= boxHeight * (list.value.length - 1)) {
+									scroll.top = 0;
+								} else {
+									scroll.top -= boxHeight;
+								}
+							}, props.duration);
+						}
+					})
+					.exec();
+			})
+			.exec();
+	});
 }
 
 onMounted(() => {
