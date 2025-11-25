@@ -58,9 +58,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref, watch, type PropType, type Ref } from "vue";
+import { computed, nextTick, onMounted, ref, watch, type PropType } from "vue";
 import type { ClInputType, PassThroughProps } from "../../types";
-import { AnimationEngine, createAnimation, isDark, isEmpty, last, parsePt } from "@/cool";
+import { AnimationEngine, createAnimation, isEmpty, last, parsePt, isDark } from "@/cool";
 
 defineOptions({
 	name: "cl-input-otp"
@@ -242,7 +242,8 @@ onMounted(() => {
 
 	&__item {
 		@apply flex flex-row items-center justify-center duration-100;
-		@apply border border-solid border-surface-200 rounded-lg bg-white;
+		@apply border border-solid border-surface-200 rounded-lg;
+		background-color: #fff;
 		height: 80rpx;
 		width: 80rpx;
 		margin: 0 10rpx;
@@ -262,6 +263,26 @@ onMounted(() => {
 		&.is-active {
 			@apply border-primary-500;
 		}
+
+		// #ifdef APP-HARMONY
+		@apply border-none bg-surface-50;
+
+		&.is-active {
+			@apply bg-surface-100;
+		}
+
+		&.is-dark {
+			@apply bg-surface-700;
+
+			&.is-active {
+				@apply bg-surface-600;
+			}
+
+			&.is-disabled {
+				@apply opacity-70;
+			}
+		}
+		// #endif
 	}
 
 	&__cursor {
