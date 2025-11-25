@@ -73,7 +73,7 @@
 
 <script lang="ts" setup>
 import { type PropType, computed, getCurrentInstance, nextTick, onMounted, ref, watch } from "vue";
-import { isDark, isEmpty, isHarmony, isNull, parseClass, parsePt, parseRpx } from "@/cool";
+import { isDark, isEmpty, isNull, parseClass, parsePt, parseRpx } from "@/cool";
 import type { ClTabsItem, PassThroughProps } from "../../types";
 
 // 定义标签类型
@@ -350,58 +350,53 @@ function getRects() {
 
 // 刷新tab区域的宽度和位置信息
 function refresh() {
-	setTimeout(
-		() => {
-			// 创建选择器查询
-			uni.createSelectorQuery()
-				// 作用域限定为当前组件
-				.in(proxy)
-				// 选择tab容器
-				.select(".cl-tabs")
-				// 获取容器的left和width
-				.boundingClientRect((node) => {
-					// 设置tab左侧偏移
-					tabLeft.value = (node as NodeInfo).left ?? 0;
-					// 设置tab宽度
-					tabWidth.value = (node as NodeInfo).width ?? 0;
+	nextTick(() => {
+		// 创建选择器查询
+		uni.createSelectorQuery()
+			// 作用域限定为当前组件
+			.in(proxy)
+			// 选择tab容器
+			.select(".cl-tabs")
+			// 获取容器的left和width
+			.boundingClientRect((node) => {
+				// 设置tab左侧偏移
+				tabLeft.value = (node as NodeInfo).left ?? 0;
+				// 设置tab宽度
+				tabWidth.value = (node as NodeInfo).width ?? 0;
 
-					// 获取所有标签的位置信息
-					getRects();
-				})
-				.exec();
-		},
-		isHarmony() ? 50 : 0
-	);
+				// 获取所有标签的位置信息
+				getRects();
+			})
+			.exec();
+	});
 }
 
-// 监听modelValue变化，更新active和位置
-watch(
-	computed(() => props.modelValue!),
-	(val: string | number) => {
-		// 更新当前选中标签
-		active.value = val;
-		// 更新下划线、滑块等位置
-		updatePosition();
-	},
-	{
-		// 立即执行一次
-		immediate: true
-	}
-);
-
-// 监听标签列表变化，刷新布局
-watch(
-	computed(() => props.list),
-	() => {
-		nextTick(() => {
-			refresh();
-		});
-	}
-);
-
-// 组件挂载时刷新布局，确保初始渲染正确
 onMounted(() => {
-	refresh();
+	// 监听modelValue变化，更新active和位置
+	watch(
+		computed(() => props.modelValue!),
+		(val: string | number) => {
+			// 更新当前选中标签
+			active.value = val;
+			// 更新下划线、滑块等位置
+			updatePosition();
+		},
+		{
+			// 立即执行一次
+			immediate: true
+		}
+	);
+
+	// 监听标签列表变化，刷新布局
+	watch(
+		computed(() => props.list),
+		() => {
+			refresh();
+		},
+		{
+			immediate: true
+		}
+	);
 });
 </script>
 
