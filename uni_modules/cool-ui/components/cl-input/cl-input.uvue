@@ -11,9 +11,8 @@
 				'cl-input--error': isError
 			}
 		]"
-		@tap="onTap"
 	>
-		<slot name="prepend"></slot>
+		<slot name="prepend"> </slot>
 
 		<view class="cl-input__icon !pl-0 pr-[12rpx]" v-if="prefixIcon">
 			<cl-icon
@@ -39,9 +38,10 @@
 			:disabled="readonly ?? isDisabled"
 			:type="type"
 			:password="isPassword"
-			:focus="isFocus"
+			:focus="isFocusing"
 			:placeholder="placeholder"
 			:placeholder-class="`text-surface-400 ${placeholderClass}`"
+			:placeholder-style="placeholderStyle"
 			:maxlength="maxlength"
 			:cursor-spacing="cursorSpacing"
 			:confirm-type="confirmType"
@@ -63,7 +63,7 @@
 			></cl-icon>
 		</view>
 
-		<view class="cl-input__icon" @tap.stop="clear" v-if="showClear">
+		<view class="cl-input__icon" @tap="clear" v-if="showClear">
 			<cl-icon
 				name="close-circle-fill"
 				:size="32"
@@ -86,10 +86,10 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, type PropType } from "vue";
 import type { ClInputType, PassThroughProps } from "../../types";
-import { isDark, parseClass, parsePt } from "@/cool";
 import type { ClIconProps } from "../cl-icon/props";
-import { t } from "@/locale";
 import { useForm, useFormItem, useSize } from "../../hooks";
+import { isDark, parseClass, parsePt } from "@/cool";
+import { t } from "@/locale";
 
 defineOptions({
 	name: "cl-input"
@@ -149,6 +149,11 @@ const props = defineProps({
 	},
 	// 占位符样式类
 	placeholderClass: {
+		type: String,
+		default: ""
+	},
+	// 占位符样式
+	placeholderStyle: {
 		type: String,
 		default: ""
 	},
@@ -249,11 +254,19 @@ const inputStyle = computed(() => {
 	return style;
 });
 
+// 占位符样式
+const placeholderStyle = computed(() => {
+	return `font-size: 26rpx; ${props.placeholderStyle}`;
+});
+
 // 绑定值
 const value = ref<string>("");
 
-// 是否聚焦
+// 是否聚焦（样式作用）
 const isFocus = ref<boolean>(props.autofocus);
+
+// 是否聚焦（输入框作用）
+const isFocusing = ref<boolean>(props.autofocus);
 
 // 是否显示清除按钮
 const showClear = computed(() => {
@@ -330,22 +343,13 @@ function onKeyboardheightchange(e: UniInputKeyboardHeightChangeEvent) {
 	emit("keyboardheightchange", e);
 }
 
-// 点击事件
-function onTap() {
-	if (isDisabled.value) {
-		return;
-	}
-
-	isFocus.value = true;
-}
-
 // 聚焦方法
 function focus() {
 	setTimeout(() => {
-		isFocus.value = false;
+		isFocusing.value = false;
 
 		nextTick(() => {
-			isFocus.value = true;
+			isFocusing.value = true;
 		});
 	}, 0);
 }
