@@ -60,7 +60,7 @@
 <script lang="ts" setup>
 import { t } from "@/locale";
 import DemoItem from "../components/item.uvue";
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { dayUts, isDark, parseClass } from "@/cool";
 import { useUi } from "@/uni_modules/cool-ui";
 
@@ -76,9 +76,18 @@ function onDone() {
 
 const countdownRef = ref<ClCountdownComponentPublicInstance | null>(null);
 
+let timer: number = 0;
+
 onMounted(() => {
-	setTimeout(() => {
-		countdownRef.value!.next();
+	// @ts-ignore
+	timer = setTimeout(() => {
+		if (countdownRef.value != null) {
+			countdownRef.value.next();
+		}
 	}, 3000);
+});
+
+onUnmounted(() => {
+	clearTimeout(timer);
 });
 </script>
