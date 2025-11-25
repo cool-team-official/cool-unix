@@ -11,7 +11,6 @@
 				'cl-textarea--error': isError
 			}
 		]"
-		@tap="onTap"
 	>
 		<textarea
 			class="cl-textarea__inner"
@@ -28,8 +27,9 @@
 			:disabled="readonly ?? isDisabled"
 			:placeholder="placeholder"
 			:placeholder-class="`text-surface-400 ${placeholderClass}`"
+			:placeholder-style="placeholderStyle"
 			:maxlength="maxlength"
-			:auto-focus="isFocus"
+			:focus="isFocusing"
 			:cursor="cursor"
 			:cursor-spacing="cursorSpacing"
 			:cursor-color="cursorColor"
@@ -60,11 +60,10 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch, type PropType } from "vue";
-import { parsePt, parseRpx } from "@/cool";
 import type { PassThroughProps } from "../../types";
-import { isDark } from "@/cool";
-import { t } from "@/locale";
 import { useForm, useFormItem, useSize } from "../../hooks";
+import { isDark, parsePt, parseRpx } from "@/cool";
+import { t } from "@/locale";
 
 defineOptions({
 	name: "cl-textarea"
@@ -114,6 +113,11 @@ const props = defineProps({
 	},
 	// 占位符样式类
 	placeholderClass: {
+		type: String,
+		default: ""
+	},
+	// 占位符样式
+	placeholderStyle: {
 		type: String,
 		default: ""
 	},
@@ -261,11 +265,19 @@ const textareaStyle = computed(() => {
 	return style;
 });
 
+// 占位符样式
+const placeholderStyle = computed(() => {
+	return `font-size: 26rpx; ${props.placeholderStyle}`;
+});
+
 // 绑定值
 const value = ref(props.modelValue);
 
-// 是否聚焦
+// 是否聚焦（样式作用）
 const isFocus = ref<boolean>(props.autofocus);
+
+// 是否聚焦（输入框作用）
+const isFocusing = ref<boolean>(props.autofocus);
 
 // 获取焦点事件
 function onFocus(e: UniTextareaFocusEvent) {
@@ -312,22 +324,13 @@ function onLineChange(e: UniTextareaLineChangeEvent) {
 	emit("linechange", e);
 }
 
-// 点击事件
-function onTap() {
-	if (isDisabled.value) {
-		return;
-	}
-
-	isFocus.value = true;
-}
-
 // 聚焦方法
 function focus() {
 	setTimeout(() => {
-		isFocus.value = false;
+		isFocusing.value = false;
 
 		nextTick(() => {
-			isFocus.value = true;
+			isFocusing.value = true;
 		});
 	}, 0);
 }
