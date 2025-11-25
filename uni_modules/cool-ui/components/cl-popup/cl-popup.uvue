@@ -409,7 +409,7 @@ function onTouchMove(e: UniTouchEvent) {
 		swipe.isMove = true;
 
 		// 计算Y轴偏移量
-		const offsetY = (e.touches[0] as UniTouch).pageY - swipe.startY;
+		const offsetY = (e.touches[0] as UniTouch).clientY - swipe.startY;
 
 		// 只允许向下滑动(offsetY > 0)
 		if (offsetY > 0) {
