@@ -14,6 +14,7 @@ export type ClInputType =
 	| "idcard"
 	| "digit"
 	| "tel"
+	| "password"
 	| "safe-password"
 	| "nickname";
 
