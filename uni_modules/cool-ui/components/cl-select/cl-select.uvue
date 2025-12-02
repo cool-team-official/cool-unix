@@ -61,7 +61,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, type PropType, watch } from "vue";
+import { ref, computed, type PropType, watch, onMounted } from "vue";
 import type { ClSelectOption, ClSelectValue } from "../../types";
 import { isEmpty, isNull, parsePt, parseToObject } from "@/cool";
 import type { ClSelectTriggerPassThrough } from "../cl-select-trigger/props";
@@ -384,6 +384,9 @@ function clear() {
 
 // 确认选择
 function confirm() {
+	// 主动触发一次change事件，确保值正确
+	onChange(indexes.value);
+
 	// 根据列数返回单个值或数组
 	const val = getValue();
 
@@ -400,16 +403,26 @@ function confirm() {
 	close();
 }
 
-// 监听modelValue变化
-watch(
-	computed(() => props.modelValue),
-	(val: ClSelectValue) => {
-		setValue(val);
-	},
-	{
-		immediate: true
-	}
-);
+onMounted(() => {
+	// 监听modelValue变化
+	watch(
+		computed(() => props.modelValue),
+		(val: ClSelectValue) => {
+			setValue(val);
+		},
+		{
+			immediate: true
+		}
+	);
+
+	// 监听options变化，更新显示文本
+	watch(
+		computed(() => props.options),
+		() => {
+			updateText();
+		}
+	);
+});
 
 defineExpose({
 	open,
