@@ -2,6 +2,10 @@ const fs = require("fs");
 const path = require("path");
 const AdmZip = require("adm-zip");
 
+// 输出目录（可通过命令行参数配置：node icon.js dist/icons）
+// 也可以按需直接修改这里的默认值
+const outputDir = process.argv[2] || "icons";
+
 // 清理所有临时文件
 function cleanupTempDir() {
 	const tempDir = path.join(".cool", "temp");
@@ -9,7 +13,7 @@ function cleanupTempDir() {
 		try {
 			fs.rmSync(tempDir, { recursive: true, force: true });
 		} catch (error) {
-			console.warn(`❌ 清理临时目录失败: ${ tempDir }`, error);
+			console.warn(`❌ 清理临时目录失败: ${tempDir}`, error);
 		}
 	}
 }
@@ -22,9 +26,9 @@ function ensureTempDir() {
 	}
 }
 
-// 创建icons目录和子目录
+// 创建输出目录和子目录
 function ensureDistDir(folderName = "") {
-	const iconsPath = folderName ? path.join("icons", folderName) : "icons";
+	const iconsPath = folderName ? path.join(outputDir, folderName) : outputDir;
 	if (!fs.existsSync(iconsPath)) {
 		fs.mkdirSync(iconsPath, { recursive: true });
 	}
@@ -34,7 +38,7 @@ function ensureDistDir(folderName = "") {
 function getZipFiles() {
 	const iconsDir = path.join(".cool", "icons");
 	if (!fs.existsSync(iconsDir)) {
-		console.error(`❌ 目录不存在: ${ iconsDir }`);
+		console.error(`❌ 目录不存在: ${iconsDir}`);
 		return [];
 	}
 
@@ -84,7 +88,7 @@ function extractZipFile(zipPath, folderName) {
 
 		return tempDir;
 	} catch (error) {
-		console.error(`❌ 解压失败: ${ zipPath }`, error);
+		console.error(`❌ 解压失败: ${zipPath}`, error);
 		return null;
 	}
 }
@@ -95,26 +99,26 @@ function ttfToBase64(ttfPath) {
 		const ttfBuffer = fs.readFileSync(ttfPath);
 		return ttfBuffer.toString("base64");
 	} catch (error) {
-		console.error(`❌ 读取TTF文件失败: ${ ttfPath }`, error);
+		console.error(`❌ 读取TTF文件失败: ${ttfPath}`, error);
 		return null;
 	}
 }
 
 // 生成TypeScript文件
 function generateTypeScript(originalFolderName, camelCaseName, iconData, iconPrefix) {
-	const tsContent = `export const ${ camelCaseName } = {\n${ iconData
-		.map((item) => `\t"${ iconPrefix }${ item.name }": "${ item.unicode }"`)
-		.join(",\n") }\n};\n`;
+	const tsContent = `export const ${camelCaseName} = {\n${iconData
+		.map((item) => `\t"${iconPrefix}${item.name}": "${item.unicode}"`)
+		.join(",\n")}\n};\n`;
 
-	const outputPath = path.join("icons", originalFolderName, "index.ts");
+	const outputPath = path.join(outputDir, originalFolderName, "index.ts");
 	fs.writeFileSync(outputPath, tsContent);
 }
 
 // 生成SCSS文件
 function generateSCSS(originalFolderName, base64Data) {
-	const scssContent = `@font-face {\n\tfont-family: "${ toCamelCase(originalFolderName) }";\n\tsrc: url("data:font/ttf;base64,${ base64Data }") format("woff");\n}\n`;
+	const scssContent = `@font-face {\n\tfont-family: "${toCamelCase(originalFolderName)}";\n\tsrc: url("data:font/ttf;base64,${base64Data}") format("woff");\n}\n`;
 
-	const outputPath = path.join("icons", originalFolderName, "index.scss");
+	const outputPath = path.join(outputDir, originalFolderName, "index.scss");
 	fs.writeFileSync(outputPath, scssContent);
 }
 
@@ -140,7 +144,7 @@ function extractIconsFromCSS(cssPath) {
 
 		return iconData;
 	} catch (error) {
-		console.error(`❌ 读取CSS文件失败: ${ cssPath }`, error);
+		console.error(`❌ 读取CSS文件失败: ${cssPath}`, error);
 		return [];
 	}
 }
@@ -154,7 +158,7 @@ function processIconData(jsonPath) {
 			unicode: item.unicode
 		}));
 	} catch (error) {
-		console.error(`❌ 读取JSON文件失败: ${ jsonPath }`, error);
+		console.error(`❌ 读取JSON文件失败: ${jsonPath}`, error);
 		return [];
 	}
 }
@@ -194,7 +198,7 @@ function processZipFile(zipFileName) {
 	const getFilePath = (ext) => {
 		let filePath = null;
 		for (const name of ptName) {
-			const tempPath = path.join(tempDir, `${ name }.${ ext }`);
+			const tempPath = path.join(tempDir, `${name}.${ext}`);
 			if (fs.existsSync(tempPath)) {
 				filePath = tempPath;
 				break;
@@ -209,7 +213,7 @@ function processZipFile(zipFileName) {
 	const ttfPath = getFilePath("ttf");
 
 	if (!ttfPath) {
-		console.warn(`⚠️跳过 ${ folderName }: 缺少 TTF 文件`);
+		console.warn(`⚠️跳过 ${folderName}: 缺少 TTF 文件`);
 		return null;
 	}
 
@@ -228,21 +232,21 @@ function processZipFile(zipFileName) {
 	else if (cssPath) {
 		iconData = extractIconsFromCSS(cssPath);
 	} else {
-		console.warn(`⚠️ 跳过 ${ folderName }: 缺少 ${ jsonPath } 或 ${ cssPath }`);
+		console.warn(`⚠️ 跳过 ${folderName}: 缺少 ${jsonPath} 或 ${cssPath}`);
 		return null;
 	}
 
 	if (iconData.length === 0) {
-		console.warn(`⚠️ ${ folderName }: 没有找到图标数据`);
+		console.warn(`⚠️ ${folderName}: 没有找到图标数据`);
 		return null;
 	}
 
-	console.log(`✅ ${ zipFileName } 找到 ${ iconData.length } 个图标`);
+	console.log(`✅ ${zipFileName} 找到 ${iconData.length} 个图标`);
 
 	// 转换TTF为base64
 	const base64Data = ttfToBase64(ttfPath);
 	if (!base64Data) {
-		console.error(`❌ ${ folderName }: TTF转换失败`);
+		console.error(`❌ ${folderName}: TTF转换失败`);
 		return null;
 	}
 
@@ -263,28 +267,28 @@ function generateIndexTS(actualFolders) {
 	const imports = actualFolders
 		.map((folder) => {
 			const camelName = toCamelCase(folder);
-			return `import { ${ camelName } } from "./${ folder }";`;
+			return `import { ${camelName} } from "./${folder}";`;
 		})
 		.join("\n");
 
-	const exports = `export const icons = {\n${ actualFolders
-		.map((folder) => `\t${ toCamelCase(folder) }`)
-		.join(",\n") }\n};\n`;
+	const exports = `export const icons = {\n${actualFolders
+		.map((folder) => `\t${toCamelCase(folder)}`)
+		.join(",\n")}\n};\n`;
 
-	const content = `${ imports }\n\n${ exports }`;
-	fs.writeFileSync("icons/index.ts", content);
+	const content = `${imports}\n\n${exports}`;
+	fs.writeFileSync(path.join(outputDir, "index.ts"), content);
 }
 
 // 生成主index.scss文件
 function generateIndexSCSS(actualFolders) {
-	const imports = actualFolders.map((folder) => `@import "./${ folder }/index.scss";`).join("\n");
+	const imports = actualFolders.map((folder) => `@import "./${folder}/index.scss";`).join("\n");
 
-	fs.writeFileSync("icons/index.scss", imports + "\n");
+	fs.writeFileSync(path.join(outputDir, "index.scss"), imports + "\n");
 }
 
 // 扫描icons目录下的实际文件夹
 function getActualIconFolders() {
-	const iconsDir = "icons";
+	const iconsDir = outputDir;
 	if (!fs.existsSync(iconsDir)) {
 		return [];
 	}
@@ -333,7 +337,7 @@ function main() {
 				typeof f === "string" ? f : f.originalName
 			);
 			console.log(
-				`\n🎉 成功处理了 ${ processedFolders.length } 个字体包: ${ folderNames.join(", ") }`
+				`\n🎉 成功处理了 ${processedFolders.length} 个字体包: ${folderNames.join(", ")}`
 			);
 		}
 	} catch (error) {
