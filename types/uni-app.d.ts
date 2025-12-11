@@ -458,6 +458,7 @@ declare interface UniElement {
 		fail?: (err: { errCode: number; errMsg: string }) => void;
 	}): void;
 	getBoundingClientRectAsync(): Promise<DOMRect>;
+	getBoundingClientRect(): DOMRect;
 	getDrawableContext(): DrawableContext;
 	animate(
 		keyframes: UniAnimationKeyframe | UniAnimationKeyframe[],

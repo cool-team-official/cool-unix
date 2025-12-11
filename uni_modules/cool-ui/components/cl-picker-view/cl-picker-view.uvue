@@ -31,6 +31,17 @@
 					v-for="(column, columnIndex) in columns"
 					:key="columnIndex"
 				>
+					<!-- #ifdef APP-ANDROID -->
+					<view
+						ref="columnItemRef"
+						:style="{
+							height: `${itemHeight * column.length}px`
+						}"
+						android-layer-type="hardware"
+					></view>
+					<!-- #endif -->
+
+					<!-- #ifndef APP-ANDROID -->
 					<view
 						class="cl-picker-view__item"
 						:style="{
@@ -49,6 +60,7 @@
 							>{{ item.label }}</cl-text
 						>
 					</view>
+					<!-- #endif -->
 				</picker-view-column>
 			</picker-view>
 		</view>
@@ -56,11 +68,21 @@
 </template>
 
 <script setup lang="ts">
-import { forInObject, isAppIOS, isDark, isEqual, isNull, parseClass, rpx2px } from "@/cool";
+import {
+	forInObject,
+	getColor,
+	isAppIOS,
+	isDark,
+	isEqual,
+	isNull,
+	parseClass,
+	rpx2px,
+	parseRpx
+} from "@/cool";
 import type { ClSelectOption } from "../../types";
-import { parseRpx } from "@/cool";
-import { computed } from "vue";
+import { computed, nextTick, onMounted, shallowRef, watch } from "vue";
 import type { PropType } from "vue";
+import { useSize } from "../../hooks";
 
 defineOptions({
 	name: "cl-select-picker-view"
@@ -95,6 +117,8 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["change-value", "change-index"]);
+
+const { getScale } = useSize();
 
 // 获取窗口宽度,用于计算选择器列宽
 const { windowWidth } = uni.getWindowInfo();
@@ -182,6 +206,57 @@ function onChange(e: UniPickerViewChangeEvent) {
 	emit("change-value", values);
 	emit("change-index", indexs);
 }
+
+// 列项ref引用
+const columnItemRef = shallowRef<UniElement[]>([]);
+
+// 渲染列项内容
+const renderColumnItem = () => {
+	// 当前全局或默认字体大小
+	const fontSize = getScale() * 14;
+
+	// 根据主题切换字体颜色（深色/浅色）
+	const color = isDark.value ? "white" : getColor("surface-700");
+
+	// 遍历所有 picker-view-column 的ref，与每列数据一一对应
+	for (let i = 0; i < columnItemRef.value.length; i++) {
+		const column = props.columns[i]; // 当前列的数据
+		const dom = columnItemRef.value[i]; // 当前列对应的DOM节点
+		// 获取节点尺寸，用于文本居中计算
+		const rect = dom!.getBoundingClientRect();
+		// 获取原生画布上下文
+		const ctx = dom!.getDrawableContext()!;
+
+		ctx.reset(); // 每次重绘前需先重置画布
+		ctx.textAlign = "center";
+
+		// 计算文本水平方向的中点位置
+		const x = rect.width / 2;
+
+		// 循环绘制本列的每一个选项
+		for (let j = 0; j < column.length; j++) {
+			ctx.fillStyle = color; // 设置文本颜色
+			ctx.font = `${fontSize}px`;
+			// 计算每行文本的垂直位置，使其垂直居中于item元素内
+			const y = 12 + (props.itemHeight - fontSize) / 2 + props.itemHeight * j;
+			ctx.fillText(column[j].label, x, y); // 绘制文本
+		}
+		ctx.update(); // 完成当前列绘制，刷到视图
+	}
+};
+
+onMounted(() => {
+	nextTick(() => {
+		renderColumnItem();
+	});
+
+	watch(
+		computed(() => [isDark.value, props.columns, props.itemHeight]),
+		() => {
+			renderColumnItem();
+		}
+	);
+});
 </script>
 
 <style lang="scss" scoped>

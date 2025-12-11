@@ -150,6 +150,8 @@ function open() {
 .cl-select-trigger {
 	@apply flex flex-row items-center w-full box-border;
 	@apply border border-solid border-surface-200 rounded-lg bg-white;
+	@apply duration-200;
+	transition-property: border-color;
 	height: 66rpx;
 	padding: 0 20rpx;
 

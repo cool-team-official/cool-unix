@@ -146,7 +146,7 @@ class Size {
 		}
 
 		const lineHeight = this.lineHeights[this.getIndex()];
-		return lineHeight == 1 ? `1` : this.getRpx(lineHeight);
+		return lineHeight == 1 ? "1" : this.getRpx(lineHeight);
 	};
 }
 
