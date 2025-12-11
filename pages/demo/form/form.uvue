@@ -67,7 +67,7 @@
 								</view>
 							</cl-form-item>
 
-							<cl-button icon="add-line" @tap="addContact">{{
+							<cl-button size="large" icon="add-line" @tap="addContact">{{
 								t("添加联系人")
 							}}</cl-button>
 						</view>
@@ -149,13 +149,20 @@
 
 		<cl-footer>
 			<view class="flex flex-row">
-				<cl-button type="info" :pt="{ className: 'flex-1' }" @click="reset">{{
-					t("重置")
-				}}</cl-button>
+				<cl-button
+					type="light"
+					size="large"
+					text
+					border
+					:pt="{ className: 'flex-1 !rounded-xl h-[80rpx]' }"
+					@click="reset"
+					>{{ t("重置") }}</cl-button
+				>
 				<cl-button
 					type="primary"
 					:loading="saving"
-					:pt="{ className: 'flex-1' }"
+					size="large"
+					:pt="{ className: 'flex-1 !rounded-xl h-[80rpx]' }"
 					@click="submit"
 					>{{ t("提交") }}</cl-button
 				>
