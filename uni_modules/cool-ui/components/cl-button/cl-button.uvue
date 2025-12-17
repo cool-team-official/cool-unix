@@ -527,26 +527,6 @@ function onTouchCancel() {
 </script>
 
 <style lang="scss" scoped>
-@mixin button-type($color) {
-	@apply bg-#{$color}-500;
-
-	&.cl-button--hover {
-		@apply bg-#{$color}-600;
-	}
-
-	&.cl-button--text {
-		background-color: transparent;
-
-		&.cl-button--hover {
-			@apply bg-transparent opacity-50;
-		}
-	}
-
-	&.cl-button--border {
-		@apply border-#{$color}-500;
-	}
-}
-
 .cl-button {
 	@apply flex flex-row items-center justify-center relative box-border;
 	@apply border border-transparent border-solid;
@@ -593,23 +573,63 @@ function onTouchCancel() {
 	}
 
 	&--primary {
-		@include button-type("primary");
+		@apply bg-primary-500;
+
+		&.cl-button--hover {
+			@apply bg-primary-600;
+		}
+
+		&.cl-button--border {
+			@apply border-primary-500;
+		}
 	}
 
 	&--warn {
-		@include button-type("yellow");
+		@apply bg-yellow-500;
+
+		&.cl-button--hover {
+			@apply bg-yellow-600;
+		}
+
+		&.cl-button--border {
+			@apply border-yellow-500;
+		}
 	}
 
 	&--error {
-		@include button-type("red");
+		@apply bg-red-500;
+
+		&.cl-button--hover {
+			@apply bg-red-600;
+		}
+
+		&.cl-button--border {
+			@apply border-red-500;
+		}
 	}
 
 	&--info {
-		@include button-type("surface");
+		@apply bg-surface-500;
+
+		&.cl-button--hover {
+			@apply bg-surface-600;
+		}
+
+		&.cl-button--border {
+			@apply border-surface-500;
+		}
 	}
 
 	&--success {
-		@include button-type("green");
+		@apply bg-green-500;
+
+		&.cl-button--hover {
+			@apply bg-green-600;
+		}
+
+		&.cl-button--border {
+			@apply border-green-500;
+		}
 	}
 
 	&--light {
@@ -661,6 +681,14 @@ function onTouchCancel() {
 
 		&.cl-button--light {
 			@apply border-surface-500;
+		}
+	}
+
+	&--text {
+		@apply bg-transparent;
+
+		&.cl-button--hover {
+			@apply bg-transparent opacity-50;
 		}
 	}
 }

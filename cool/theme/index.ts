@@ -168,24 +168,32 @@ export const setH5 = () => {
 	const navBgColor = getConfig("navBgColor");
 	const navTextStyle = getConfig("navTextStyle");
 
+	// 设置主题类
+	document.documentElement.classList.toggle("dark", isDark.value);
+
+	// 设置背景色
 	document.body.style.setProperty("--background-color-content", bgContentColor);
 
+	// 设置 tabbar 背景色
 	const tabbar = document.querySelector(".uni-tabbar");
 	if (tabbar) {
 		(tabbar as HTMLElement).style.backgroundColor = tabBgColor;
 	}
 
+	// 设置页面头部背景色和文字颜色
 	const pageHead = document.querySelector(".uni-page-head");
 	if (pageHead) {
 		(pageHead as HTMLElement).style.backgroundColor = navBgColor;
 		(pageHead as HTMLElement).style.color = navTextStyle;
 	}
 
+	// 设置页面头部按钮路径颜色
 	const pageHeadBtnPath = document.querySelector(".uni-page-head-btn path");
 	if (pageHeadBtnPath) {
 		(pageHeadBtnPath as HTMLElement).style.fill = navTextStyle;
 	}
 
+	// 发送主题变化消息
 	window.parent.postMessage(
 		{
 			type: "theme-change",
