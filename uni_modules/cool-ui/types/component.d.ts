@@ -127,6 +127,22 @@ declare type ClListItemComponentPublicInstance = {
 	initSwipe: () => void;
 };
 
+declare type ClListItem = {
+	label: string;
+	content?: string;
+	icon?: string;
+	arrow?: boolean;
+	hoverable?: boolean;
+	disabled?: boolean;
+};
+
+declare type ClListViewItem = {
+	label?: string;
+	value?: any;
+	index?: string;
+	children?: ClListViewItem[];
+};
+
 declare type ClListViewComponentPublicInstance = {
 	data: ClListViewItem[];
 	stopRefresh: () => void;
@@ -164,6 +180,20 @@ declare type ClCropperComponentPublicInstance = {
 	close: () => void;
 	chooseImage: () => void;
 	toPng: () => Promise<string>;
+};
+
+declare type ClFormRule = {
+	required?: boolean;
+	message?: string;
+	min?: number;
+	max?: number;
+	pattern?: RegExp;
+	validator?: (value: any | null) => boolean | string;
+};
+
+declare type ClFormValidateError = {
+	field: string;
+	message: string;
 };
 
 declare type ClFormComponentPublicInstance = {
@@ -242,4 +272,21 @@ declare type ClMarqueeComponentPublicInstance = {
 declare type ClReadMoreComponentPublicInstance = {
 	toggle(): void;
 	getContentHeight(): void;
+};
+
+declare type ClSelectSeatComponentPublicInstance = {
+	setSeat: (row: number, col: number, data: UTSJSONObject) => void;
+	getSeats: () => {
+		row: number;
+		col: number;
+		disabled?: boolean;
+		empty?: boolean;
+		bgColor?: string;
+		borderColor?: string;
+		selectedBgColor?: string;
+		selectedColor?: string;
+		selectedIcon?: string;
+		icon?: string;
+	}[];
+	draw: () => void;
 };

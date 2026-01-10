@@ -6,19 +6,9 @@
 
 <script setup lang="ts">
 import { computed, type PropType } from "vue";
-import {
-	forInObject,
-	get,
-	has,
-	parsePt,
-	useCache,
-	isDark,
-	ctx,
-	hasTextColor,
-	isNull
-} from "@/cool";
-import { icons } from "@/icons";
+import { parsePt, useCache, isDark, ctx, hasTextColor, isNull } from "@/cool";
 import { useSize } from "../../hooks";
+import { getIcon } from "./utils";
 
 defineOptions({
 	name: "cl-icon"
@@ -72,38 +62,8 @@ const { cache } = useCache(() => [props.color]);
 // 字号
 const { getRpx, ptClassName } = useSize(() => pt.value.className ?? "");
 
-// 图标类型定义
-type Icon = {
-	font: string; // 字体名称
-	text: string; // 图标文本
-};
-
 // 图标信息
-const icon = computed<Icon>(() => {
-	let font = "";
-	let text = "";
-
-	try {
-		let code = "";
-
-		// 遍历字体库查找对应图标
-		forInObject(icons, (value, key) => {
-			if (has(value, props.name)) {
-				font = key;
-				code = get(value, props.name) as string;
-			}
-		});
-
-		text = String.fromCharCode(parseInt(code, 16));
-	} catch (e) {
-		console.error(`图标 ${props.name} 不存在`, e);
-	}
-
-	return {
-		font,
-		text
-	};
-});
+const icon = computed(() => getIcon(props.name));
 
 // 图标颜色
 const color = computed(() => {

@@ -510,6 +510,13 @@
 					"style": {
 						"navigationBarTitleText": "Share 分享"
 					}
+				},
+				{
+					"path": "other/select-seat",
+					"style": {
+						"navigationBarTitleText": "SelectSeat 座位选择",
+						"disableScroll": true
+					}
 				}
 			]
 		},

@@ -11,11 +11,15 @@
 
 		<cl-footer>
 			<!-- #ifdef H5 -->
-			<cl-button type="primary" @click="previewImage">{{ t("预览图片") }}</cl-button>
+			<cl-button size="large" type="primary" @click="previewImage">{{
+				t("预览图片")
+			}}</cl-button>
 			<!-- #endif -->
 
 			<!-- #ifndef H5 -->
-			<cl-button type="primary" @click="saveImage">{{ t("保存图片") }}</cl-button>
+			<cl-button size="large" type="primary" @click="saveImage">{{
+				t("保存图片")
+			}}</cl-button>
 			<!-- #endif -->
 		</cl-footer>
 	</cl-page>

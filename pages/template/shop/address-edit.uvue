@@ -45,7 +45,7 @@
 		</view>
 
 		<cl-footer>
-			<cl-button @tap="save()">{{ t("保存") }}</cl-button>
+			<cl-button size="large" @tap="save()">{{ t("保存") }}</cl-button>
 		</cl-footer>
 	</cl-page>
 </template>

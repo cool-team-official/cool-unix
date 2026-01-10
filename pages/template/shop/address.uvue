@@ -72,7 +72,7 @@
 		</view>
 
 		<cl-footer>
-			<cl-button @tap="toAdd()">{{ t("添加地址") }}</cl-button>
+			<cl-button size="large" @tap="toAdd()">{{ t("添加地址") }}</cl-button>
 		</cl-footer>
 	</cl-page>
 </template>
