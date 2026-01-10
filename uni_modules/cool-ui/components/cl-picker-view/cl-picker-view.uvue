@@ -23,6 +23,7 @@
 				:mask-style="maskStyle"
 				:mask-top-style="maskStyle"
 				:mask-bottom-style="maskStyle"
+				:immediate-change="true"
 				:indicator-style="indicatorStyle"
 				@change="onChange"
 			>
