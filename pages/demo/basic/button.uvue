@@ -41,7 +41,7 @@
 						:rounded="isRounded"
 						:loading="isLoading"
 						:disabled="isDisabled"
-						:icon="isIcon ? 'send-plane-fill' : ''"
+						:icon="isIcon ? 'edit-fill' : ''"
 						:color="isColor ? '#4286e0' : ''"
 						:pt="{
 							className: parseClass([

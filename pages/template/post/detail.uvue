@@ -39,7 +39,9 @@
 			<view
 				class="p-4 border border-solid border-b-surface-200 dark:border-b-surface-600 border-t-0 border-l-0 border-r-0"
 			>
-				<cl-text bold :pt="{ className: 'mb-2 text-lg' }">❄️ 雪地旅行商务团价格表</cl-text>
+				<cl-text :pt="{ className: 'mb-2 text-lg font-bold' }"
+					>雪地旅行商务团价格表</cl-text
+				>
 
 				<cl-text :pt="{ className: 'mb-3' }">
 					对于不想做攻略的小伙伴来说定制团真的是最佳选择。雪地自驾没有经验的真心不建议。费用清晰明了。预算很准确，收费很合理。</cl-text
@@ -47,16 +49,15 @@
 
 				<view class="flex-row mb-4">
 					<view
-						class="flex-row items-center border border-solid border-surface-300 dark:border-surface-600 rounded-lg px-3 py-1 pl-2"
+						class="flex-row items-center border border-solid border-surface-300 dark:border-surface-600 rounded-lg px-3 py-1"
 					>
-						<cl-icon name="map-pin-2-line" :size="30"></cl-icon>
-						<cl-text :pt="{ className: 'text-sm ml-1' }"
+						<cl-text :pt="{ className: 'text-sm' }" color="info"
 							>哈尔滨 · 圣 · 索菲亚教堂</cl-text
 						>
 					</view>
 				</view>
 
-				<cl-text :pt="{ className: 'text-sm' }" color="info">编辑于 2天前</cl-text>
+				<cl-text :pt="{ className: 'text-xs' }" color="info">编辑于2天前</cl-text>
 			</view>
 
 			<!-- 评论 -->
@@ -113,17 +114,19 @@
 							</view>
 
 							<!-- 评论内容 -->
-							<cl-text :pt="{ className: 'mb-1' }">{{ item.content }}</cl-text>
+							<cl-text :pt="{ className: 'mb-2 text-sm' }">{{
+								item.content
+							}}</cl-text>
 
 							<view class="flex-row items-center">
 								<!-- 评论时间 -->
-								<cl-text :pt="{ className: 'text-sm' }" color="info">
+								<cl-text :pt="{ className: 'text-xs text-surface-400' }">
 									{{ item.time }}
 								</cl-text>
 
 								<cl-text
 									color="info"
-									:pt="{ className: 'text-sm ml-3' }"
+									:pt="{ className: 'text-xs ml-3' }"
 									@tap="openReply()"
 									>回复</cl-text
 								>
@@ -151,26 +154,22 @@
 										>
 									</view>
 
-									<cl-text :pt="{ className: 'mb-1' }">{{
+									<cl-text :pt="{ className: 'mb-2 text-sm' }">{{
 										reply.content
 									}}</cl-text>
 
 									<view class="flex-row items-center mb-1">
-										<cl-text :pt="{ className: 'text-sm' }" color="info">
+										<cl-text :pt="{ className: 'text-xs text-surface-400' }">
 											{{ reply.time }}
 										</cl-text>
 
 										<cl-text
 											color="info"
-											:pt="{ className: 'text-sm ml-3' }"
+											:pt="{ className: 'text-xs ml-3' }"
 											@tap="openReply()"
 											>回复</cl-text
 										>
 									</view>
-
-									<cl-text color="info" :pt="{ className: 'text-sm' }"
-										>展开 1 条回复</cl-text
-									>
 								</view>
 							</view>
 						</view>
@@ -264,7 +263,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-1.jpg",
 		name: "李明",
 		content: "导游讲解很专业，风景绝美，是一次难忘的旅行体验！",
-		time: "2024-06-20 10:15",
+		time: "06-20 10:15",
 		isAuthor: false,
 		order: 1,
 		reply: []
@@ -274,7 +273,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-2.jpg",
 		name: "小芳",
 		content: "酒店干净卫生，位置也很方便，强烈推荐给大家！",
-		time: "2024-06-20 11:08",
+		time: "06-20 11:08",
 		isAuthor: false,
 		order: 2,
 		reply: [
@@ -283,7 +282,7 @@ const commentList = ref<Comment[]>([
 				avatar: "https://unix.cool-js.com/images/demo/avatar.jpg",
 				name: "神仙都没用",
 				content: "感谢您的推荐，欢迎再次光临哦~",
-				time: "2024-06-20 12:00",
+				time: "06-20 12:00",
 				isAuthor: true,
 				order: 1,
 				reply: []
@@ -295,7 +294,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-3.jpg",
 		name: "王科",
 		content: "行程安排合理，吃住都很满意，导游态度超级好。",
-		time: "2024-06-19 09:22",
+		time: "06-19 09:22",
 		isAuthor: false,
 		order: 3,
 		reply: []
@@ -305,7 +304,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-4.jpg",
 		name: "艳艳",
 		content: "第一次带父母出游，家人都开心，下次还会选择这里~",
-		time: "2024-06-18 15:40",
+		time: "06-18 15:40",
 		isAuthor: false,
 		order: 4,
 		reply: []
@@ -315,7 +314,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-5.jpg",
 		name: "孙强",
 		content: "车程舒适，时间安排紧凑但不赶，非常不错，非常棒！",
-		time: "2024-06-17 17:05",
+		time: "06-17 17:05",
 		isAuthor: false,
 		order: 5,
 		reply: [
@@ -324,7 +323,7 @@ const commentList = ref<Comment[]>([
 				avatar: "https://unix.cool-js.com/images/demo/avatar.jpg",
 				name: "神仙都没用",
 				content: "您的好评就是我们最大的动力，谢谢支持~",
-				time: "2024-06-17 17:45",
+				time: "06-17 17:45",
 				isAuthor: true,
 				order: 1,
 				reply: []
@@ -336,7 +335,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-6.jpg",
 		name: "导游小陈",
 		content: "很高兴大家玩的开心，有问题随时联系我们。",
-		time: "2024-06-17 18:20",
+		time: "06-17 18:20",
 		isAuthor: false,
 		order: 6,
 		reply: []
@@ -346,7 +345,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-7.jpg",
 		name: "Grace",
 		content: "风景如画，照片拍了一堆，朋友都夸赞说好美！",
-		time: "2024-06-16 14:10",
+		time: "06-16 14:10",
 		isAuthor: false,
 		order: 7,
 		reply: []
@@ -356,7 +355,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-8.jpg",
 		name: "阿伟",
 		content: "活动内容丰富，小朋友特别喜欢，下次会再来~",
-		time: "2024-06-15 19:28",
+		time: "06-15 19:28",
 		isAuthor: false,
 		order: 8,
 		reply: []
@@ -366,7 +365,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-9.jpg",
 		name: "小虎",
 		content: "天气晴朗，安排贴心，吃到了很多特色美食，值了！",
-		time: "2024-06-14 13:52",
+		time: "06-14 13:52",
 		isAuthor: false,
 		order: 9,
 		reply: []
@@ -376,7 +375,7 @@ const commentList = ref<Comment[]>([
 		avatar: "https://unix.cool-js.com/images/demo/avatar-10.jpg",
 		name: "Julia",
 		content: "贴心的讲解和服务，体验很棒，感谢本次旅行团队！",
-		time: "2024-06-13 16:34",
+		time: "06-13 16:34",
 		isAuthor: false,
 		order: 10,
 		reply: []

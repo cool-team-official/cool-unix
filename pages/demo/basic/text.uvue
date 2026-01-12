@@ -6,11 +6,21 @@
 			</demo-item>
 
 			<demo-item :label="t('自定义颜色')">
-				<cl-text color="primary">明月松间照，清泉石上流。</cl-text>
-				<cl-text color="error">举头望明月，低头思故乡。</cl-text>
-				<cl-text color="success">春眠不觉晓，处处闻啼鸟。</cl-text>
-				<cl-text color="warn">劝君更尽一杯酒，西出阳关无故人。</cl-text>
-				<cl-text color="info">孤帆远影碧空尽，唯见长江天际流。</cl-text>
+				<cl-text color="primary" :pt="{ className: 'mb-1' }"
+					>明月松间照，清泉石上流。</cl-text
+				>
+				<cl-text color="error" :pt="{ className: 'mb-1' }"
+					>举头望明月，低头思故乡。</cl-text
+				>
+				<cl-text color="success" :pt="{ className: 'mb-1' }"
+					>春眠不觉晓，处处闻啼鸟。</cl-text
+				>
+				<cl-text color="warn" :pt="{ className: 'mb-1' }"
+					>劝君更尽一杯酒，西出阳关无故人。</cl-text
+				>
+				<cl-text color="info" :pt="{ className: 'mb-1' }"
+					>孤帆远影碧空尽，唯见长江天际流。</cl-text
+				>
 				<cl-text
 					:pt="{
 						className: 'text-sky-500'

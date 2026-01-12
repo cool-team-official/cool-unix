@@ -159,16 +159,7 @@ declare interface UniTouch {
 }
 
 declare interface UniTouchEvent extends UniEvent {
-	changedTouches: {
-		clientX: number;
-		clientY: number;
-		force: number;
-		identifier: number;
-		pageX: number;
-		pageY: number;
-		screenX: number;
-		screenY: number;
-	}[];
+	changedTouches: UniTouch[];
 	touches: UniTouch[];
 	stopPropagation: () => void;
 	preventDefault: () => void;

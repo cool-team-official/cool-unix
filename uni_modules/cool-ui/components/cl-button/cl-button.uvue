@@ -77,7 +77,7 @@
 			:pt="{
 				className: parseClass([
 					{
-						'mr-[8rpx]': !isIcon
+						'mr-1': !isIcon
 					},
 					pt.icon?.className
 				])
