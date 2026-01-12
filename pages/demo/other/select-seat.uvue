@@ -1,0 +1,198 @@
+<template>
+	<cl-page>
+		<view class="p-3 pb-0 w-full">
+			<view
+				class="flex flex-row items-center p-2 rounded-lg bg-white w-full dark:!bg-surface-800 mb-3"
+			>
+				<cl-icon name="information-2-line" color="warn"></cl-icon>
+
+				<cl-text
+					:pt="{
+						className: 'text-sm ml-1'
+					}"
+					color="warn"
+					>双指缩放：放大/缩小、单指拖动：移动视图</cl-text
+				>
+			</view>
+		</view>
+
+		<view v-if="width > 0">
+			<view
+				class="w-full flex flex-col items-center justify-center pt-3"
+				:style="{
+					transform: `translateX(${translateX}px)`
+				}"
+			>
+				<image
+					src="/static/demo/select-seat/screen.png"
+					mode="widthFix"
+					class="w-[400rpx]"
+				/>
+				<cl-text
+					:pt="{
+						className: 'text-center w-full text-sm'
+					}"
+					>2号激光厅 银幕</cl-text
+				>
+			</view>
+
+			<cl-select-seat
+				ref="selectSeatRef"
+				v-model="selected as ClSelectSeatValue[]"
+				:rows="rows"
+				:cols="cols"
+				:width="width"
+				:height="300"
+				:seats="seats"
+				:seatGap="8"
+				:borderRadius="6"
+				:minScale="1"
+				:maxScale="1.5"
+				selectedIcon="check-line"
+				@seat-click="onSeatClick"
+				@move="onMove"
+			></cl-select-seat>
+		</view>
+
+		<cl-footer>
+			<cl-text>寻秦记</cl-text>
+			<cl-text
+				color="info"
+				:pt="{
+					className: 'text-sm mb-3 mt-1'
+				}"
+				>今日 01月10日 14:20 - 16:16 国语 2D</cl-text
+			>
+
+			<scroll-view direction="horizontal" class="flex flex-row" :show-scrollbar="false">
+				<view
+					class="flex p-3 bg-surface-100 dark:!bg-surface-800 rounded-lg mr-2 mb-2"
+					v-for="(item, index) in selectedSeats"
+					:key="index"
+				>
+					<cl-text
+						:pt="{
+							className: 'text-sm'
+						}"
+						>{{ item }}</cl-text
+					>
+				</view>
+			</scroll-view>
+
+			<view class="mt-2">
+				<cl-button size="large" :disabled="selectedSeats.length == 0" @tap="confirm"
+					>确认选座</cl-button
+				>
+			</view>
+		</cl-footer>
+	</cl-page>
+</template>
+
+<script lang="ts" setup>
+import { ref, computed } from "vue";
+import type { ClSelectSeatItem, ClSelectSeatValue } from "@/uni_modules/cool-ui/types";
+import { getColor, isDark } from "@/cool";
+import { useUi } from "@/uni_modules/cool-ui";
+import { t } from "@/locale";
+
+const selectSeatRef = ref<ClSelectSeatComponentPublicInstance | null>(null);
+
+const ui = useUi();
+
+// 已选中的座位
+const selected = ref<ClSelectSeatValue[]>([]);
+
+// 画布偏移横向值
+const translateX = ref(0);
+
+// 座位行数
+const rows = ref(9);
+// 座位列数
+const cols = ref(16);
+
+// 生成自定义座位数据
+const seats = computed<ClSelectSeatItem[]>(() => {
+	const seats: ClSelectSeatItem[] = [];
+
+	for (let row = 0; row < rows.value; row++) {
+		for (let col = 0; col < cols.value; col++) {
+			const seat: ClSelectSeatItem = {
+				row,
+				col
+			};
+
+			// 示例：设置一些座位为禁用（不可点击）
+			if (col < 4 && row > 1 && row < 6) {
+				seat.disabled = true;
+				seat.bgColor = isDark.value ? getColor("surface-600") : getColor("surface-200");
+				seat.color = isDark.value ? getColor("surface-300") : getColor("surface-400");
+			}
+
+			// 示例：VIP座位使用金色边框，选中时金色背景
+			if (row < 2) {
+				seat.borderColor = "#ffd700";
+			}
+
+			// 示例：情侣座使用粉色边框，选中时粉色背景
+			if (row > 7) {
+				seat.borderColor = "#ff69b4";
+				seat.icon = "heart-fill";
+				seat.color = "#ff69b4";
+			}
+
+			// 示例：空座位
+			if ((col < 2 && row < 8) || (col > 13 && row < 8)) {
+				seat.empty = true;
+			}
+
+			// 最佳座位
+			if (col > 4 && col < 11 && row > 1 && row < 6) {
+				seat.borderColor = "#22c55e";
+			}
+
+			seats.push(seat);
+		}
+	}
+
+	return seats;
+});
+
+// 计算已选座位显示
+const selectedSeats = computed<string[]>(() => {
+	if (selected.value.length == 0) {
+		return [];
+	}
+
+	return selected.value.map((s) => `${s.row + 1}排${s.col + 1}座`);
+});
+
+// 座位点击事件
+function onSeatClick(seat: ClSelectSeatItem) {
+	console.log("点击座位：", seat);
+}
+
+// 移动事件
+function onMove(data: UTSJSONObject) {
+	translateX.value = data["screenTranslateX"] as number;
+}
+
+function confirm() {
+	ui.showConfirm({
+		title: t("提示"),
+		message: t("确认选座后将无法修改，是否确认？"),
+		callback(action) {
+			if (action == "confirm") {
+				ui.showToast({
+					message: t("选座成功")
+				});
+			}
+		}
+	});
+}
+
+const width = ref(0);
+
+onReady(() => {
+	width.value = uni.getWindowInfo().windowWidth;
+});
+</script>

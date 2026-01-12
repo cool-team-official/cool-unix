@@ -488,6 +488,11 @@ const data = computed<Item[]>(() => {
 					icon: "share-line",
 					path: "/pages/demo/other/share",
 					hidden: !isApp()
+				},
+				{
+					label: "选座",
+					icon: "armchair-line",
+					path: "/pages/demo/other/select-seat"
 				}
 			]
 		}

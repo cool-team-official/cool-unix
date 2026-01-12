@@ -1,0 +1,665 @@
+<template>
+	<view class="cl-select-seat" :style="{ width: width + 'px', height: height + 'px' }">
+		<view
+			class="cl-select-seat__index"
+			:style="{
+				transform: `translateY(${translateY}px)`
+			}"
+		>
+			<view
+				class="cl-select-seat__index-item"
+				v-for="i in rows"
+				:key="i"
+				:style="{
+					height: seatSize * scale + 'px',
+					marginTop: i == 1 ? 0 : seatGap * scale + 'px'
+				}"
+			>
+				<cl-text
+					color="white"
+					:pt="{
+						className: 'text-xs'
+					}"
+					>{{ i }}</cl-text
+				>
+			</view>
+		</view>
+
+		<canvas
+			id="seatCanvas"
+			class="cl-select-seat__canvas"
+			@touchstart.stop.prevent="onTouchStart"
+			@touchmove.stop.prevent="onTouchMove"
+			@touchend.stop.prevent="onTouchEnd"
+		></canvas>
+	</view>
+</template>
+
+<script setup lang="ts">
+import { assign, getColor, getDevicePixelRatio, isDark, isH5 } from "@/cool";
+import { computed, getCurrentInstance, onMounted, ref, watch } from "vue";
+import { getIcon } from "../cl-icon/utils";
+import type { PropType } from "vue";
+import type { ClSelectSeatItem, ClSelectSeatValue } from "../../types";
+
+defineOptions({
+	name: "cl-select-seat"
+});
+
+type TouchPoint = {
+	x: number;
+	y: number;
+	identifier: number;
+};
+
+const props = defineProps({
+	modelValue: {
+		type: Array as PropType<ClSelectSeatValue[]>,
+		default: () => []
+	},
+	rows: {
+		type: Number,
+		default: 0
+	},
+	cols: {
+		type: Number,
+		default: 0
+	},
+	seatGap: {
+		type: Number,
+		default: 8
+	},
+	borderRadius: {
+		type: Number,
+		default: 8
+	},
+	borderWidth: {
+		type: Number,
+		default: 1
+	},
+	minScale: {
+		type: Number,
+		default: 1
+	},
+	maxScale: {
+		type: Number,
+		default: 3
+	},
+	color: {
+		type: String,
+		default: () => getColor("surface-300")
+	},
+	darkColor: {
+		type: String,
+		default: () => getColor("surface-500")
+	},
+	bgColor: {
+		type: String,
+		default: () => "#ffffff"
+	},
+	darkBgColor: {
+		type: String,
+		default: () => getColor("surface-800")
+	},
+	borderColor: {
+		type: String,
+		default: () => getColor("surface-200")
+	},
+	darkBorderColor: {
+		type: String,
+		default: () => getColor("surface-600")
+	},
+	selectedBgColor: {
+		type: String,
+		default: () => getColor("primary-500")
+	},
+	selectedColor: {
+		type: String,
+		default: () => "#ffffff"
+	},
+	selectedIcon: {
+		type: String,
+		default: "check-line"
+	},
+	width: {
+		type: Number,
+		default: 0
+	},
+	height: {
+		type: Number,
+		default: 0
+	},
+	seats: {
+		type: Array as PropType<ClSelectSeatItem[]>,
+		default: () => []
+	}
+});
+
+const emit = defineEmits(["update:modelValue", "seatClick", "move"]);
+
+const { proxy } = getCurrentInstance()!;
+
+// 画布渲染上下文
+let renderingContext: CanvasRenderingContext2D | null = null;
+// 画布偏移顶部
+let offsetTop = 0;
+// 画布偏移左侧
+let offsetLeft = 0;
+// 左侧边距
+let leftPadding = 0;
+
+// 座位数据
+let seats: ClSelectSeatItem[] = [];
+
+// 画布变换参数
+const scale = ref(1);
+const translateX = ref(0);
+const translateY = ref(0);
+
+// 触摸状态
+let touchPoints: TouchPoint[] = [];
+let lastDistance = 0;
+let lastCenterX = 0;
+let lastCenterY = 0;
+// 是否发生过拖动或缩放，用于防止误触选座
+let hasMoved = false;
+// 起始触摸点，用于判断是否发生拖动
+let startTouchX = 0;
+let startTouchY = 0;
+// 拖动阈值（像素）
+const moveThreshold = 10;
+
+// 根据视图大小计算座位大小
+const seatSize = computed(() => {
+	const availableWidth =
+		props.width - (props.cols - 1) * props.seatGap - props.borderWidth * props.cols;
+	const seatWidth = availableWidth / props.cols;
+
+	const availableHeight =
+		props.height - (props.rows - 1) * props.seatGap - props.borderWidth * props.rows;
+	const seatHeight = availableHeight / props.rows;
+
+	return Math.min(seatWidth, seatHeight);
+});
+
+// 是否选中
+function isSelected(row: number, col: number): boolean {
+	return props.modelValue.some((item) => item.row == row && item.col == col);
+}
+
+// 初始化座位数据
+function initSeats() {
+	seats = [];
+
+	if (props.seats.length > 0) {
+		props.seats.forEach((e) => {
+			seats.push({
+				row: e.row,
+				col: e.col,
+				disabled: e.disabled,
+				empty: e.empty,
+				bgColor: e.bgColor,
+				borderColor: e.borderColor,
+				selectedBgColor: e.selectedBgColor,
+				selectedColor: e.selectedColor,
+				selectedIcon: e.selectedIcon,
+				icon: e.icon,
+				color: e.color
+			} as ClSelectSeatItem);
+		});
+	} else {
+		for (let row = 0; row < props.rows; row++) {
+			for (let col = 0; col < props.cols; col++) {
+				seats.push({
+					row,
+					col
+				} as ClSelectSeatItem);
+			}
+		}
+	}
+}
+
+// 居中显示
+function centerView() {
+	if (renderingContext == null) return;
+
+	const contentWidth = props.cols * (seatSize.value + props.seatGap) - props.seatGap;
+	const contentHeight = props.rows * (seatSize.value + props.seatGap) - props.seatGap;
+
+	translateX.value = (renderingContext!.canvas.offsetWidth - contentWidth) / 2;
+	translateY.value = (renderingContext!.canvas.offsetHeight - contentHeight) / 2;
+
+	leftPadding = translateX.value;
+}
+
+// 限制平移范围
+function constrainTranslate() {
+	if (renderingContext == null) return;
+
+	// 计算内容区（座位区域）宽高
+	const contentWidth = props.cols * (seatSize.value + props.seatGap) - props.seatGap;
+	const contentHeight = props.rows * (seatSize.value + props.seatGap) - props.seatGap;
+	// 获取画布的显示区域宽高
+	const viewWidth = renderingContext!.canvas.offsetWidth;
+	const viewHeight = renderingContext!.canvas.offsetHeight;
+
+	// 计算缩放后的实际宽高
+	const scaledWidth = contentWidth * scale.value;
+	const scaledHeight = contentHeight * scale.value;
+
+	// 允许的最大空白比例（视图的 20%）
+	const marginRatio = 0.2;
+	const marginX = viewWidth * marginRatio;
+	const marginY = viewHeight * marginRatio;
+
+	// 水平方向边界限制：内容左边缘最多在视图左侧 20% 处，右边缘最多在视图右侧 80% 处
+	const minTranslateX = viewWidth * (1 - marginRatio) - scaledWidth;
+	const maxTranslateX = marginX;
+	translateX.value = Math.max(minTranslateX, Math.min(maxTranslateX, translateX.value));
+
+	// 垂直方向边界限制：内容上边缘最多在视图顶部 20% 处，下边缘最多在视图底部 80% 处
+	const minTranslateY = viewHeight * (1 - marginRatio) - scaledHeight;
+	const maxTranslateY = marginY;
+	translateY.value = Math.max(minTranslateY, Math.min(maxTranslateY, translateY.value));
+}
+
+// 绘制圆角矩形
+function drawRoundRect(
+	ctx: CanvasRenderingContext2D,
+	x: number,
+	y: number,
+	width: number,
+	height: number,
+	radius: number
+) {
+	ctx.beginPath();
+	ctx.moveTo(x + radius, y);
+	ctx.lineTo(x + width - radius, y);
+	ctx.arc(x + width - radius, y + radius, radius, Math.PI * 1.5, Math.PI * 2);
+	ctx.lineTo(x + width, y + height - radius);
+	ctx.arc(x + width - radius, y + height - radius, radius, 0, Math.PI * 0.5);
+	ctx.lineTo(x + radius, y + height);
+	ctx.arc(x + radius, y + height - radius, radius, Math.PI * 0.5, Math.PI);
+	ctx.lineTo(x, y + radius);
+	ctx.arc(x + radius, y + radius, radius, Math.PI, Math.PI * 1.5);
+	ctx.closePath();
+}
+
+// 绘制单个座位
+function drawSeat(seat: ClSelectSeatItem) {
+	if (renderingContext == null) return;
+
+	// 如果是空位，不渲染但保留位置
+	if (seat.empty == true) return;
+
+	const x = seat.col * (seatSize.value + props.seatGap);
+	const y = seat.row * (seatSize.value + props.seatGap);
+
+	// 计算图标中心位置（使用整数避免亚像素渲染问题）
+	const centerX = Math.round(x + seatSize.value / 2);
+	const centerY = Math.round(y + seatSize.value / 2);
+	const fontSize = Math.round(seatSize.value * 0.6);
+
+	if (isSelected(seat.row, seat.col)) {
+		// 绘制选中背景
+		renderingContext!.fillStyle = seat.selectedBgColor ?? props.selectedBgColor;
+		drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+		renderingContext!.fill();
+
+		// 绘制选中图标
+		const { text, font } = getIcon(seat.selectedIcon ?? props.selectedIcon);
+		if (text != "") {
+			renderingContext!.fillStyle = seat.selectedColor ?? props.selectedColor;
+			renderingContext!.font = `${fontSize}px ${font}`;
+			renderingContext!.textAlign = "center";
+			renderingContext!.textBaseline = "middle";
+			renderingContext!.fillText(text, centerX, centerY);
+		}
+	} else {
+		// 绘制未选中背景
+		const bgColor = seat.bgColor ?? (isDark.value ? props.darkBgColor : props.bgColor);
+		renderingContext!.fillStyle = bgColor;
+		drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+		renderingContext!.fill();
+
+		// 绘制边框
+		renderingContext!.strokeStyle =
+			seat.borderColor ?? (isDark.value ? props.darkBorderColor : props.borderColor);
+		renderingContext!.lineWidth = props.borderWidth;
+		drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+		renderingContext!.stroke();
+
+		// 绘制默认图标
+		if (seat.icon != null) {
+			const { text, font } = getIcon(seat.icon);
+			if (text != "") {
+				renderingContext!.fillStyle =
+					seat.color ?? (isDark.value ? props.darkColor : props.color);
+				renderingContext!.font = `${fontSize}px ${font}`;
+				renderingContext!.textAlign = "center";
+				renderingContext!.textBaseline = "middle";
+				renderingContext!.fillText(text, centerX, centerY);
+			}
+		}
+	}
+}
+
+// 绘制画布
+function draw() {
+	if (renderingContext == null) return;
+
+	// 清空画布
+	renderingContext!.save();
+	renderingContext!.setTransform(1, 0, 0, 1, 0, 0);
+	renderingContext!.clearRect(
+		0,
+		0,
+		renderingContext!.canvas.width,
+		renderingContext!.canvas.height
+	);
+	renderingContext!.restore();
+
+	// 应用变换
+	renderingContext!.save();
+	renderingContext!.translate(translateX.value, translateY.value);
+	renderingContext!.scale(scale.value, scale.value);
+
+	// 绘制座位
+	seats.forEach((seat) => {
+		drawSeat(seat);
+	});
+
+	renderingContext!.restore();
+}
+
+// 转换触摸点数据
+function getTouches(touches: UniTouch[]): TouchPoint[] {
+	const result: TouchPoint[] = [];
+	for (let i = 0; i < touches.length; i++) {
+		const touch = touches[i];
+		result.push({
+			x: touch.clientX,
+			y: touch.clientY,
+			identifier: touch.identifier
+		} as TouchPoint);
+	}
+	return result;
+}
+
+// 更新画布偏移量
+function updateOffset() {
+	uni.createSelectorQuery()
+		.in(proxy)
+		.select("#seatCanvas")
+		.boundingClientRect((rect) => {
+			offsetTop = (rect as NodeInfo).top ?? 0;
+			offsetLeft = (rect as NodeInfo).left ?? 0;
+		})
+		.exec();
+}
+
+// 计算两点距离
+function getTouchDistance(p1: TouchPoint, p2: TouchPoint): number {
+	const dx = p2.x - p1.x;
+	const dy = p2.y - p1.y;
+	return Math.sqrt(dx * dx + dy * dy);
+}
+
+// 计算两点中心
+function getTouchCenter(p1: TouchPoint, p2: TouchPoint): TouchPoint {
+	return {
+		x: (p1.x + p2.x) / 2,
+		y: (p1.y + p2.y) / 2,
+		identifier: 0
+	};
+}
+
+// 根据坐标获取座位
+function getSeatAtPoint(screenX: number, screenY: number): ClSelectSeatItem | null {
+	// 转换为相对坐标
+	const relativeX = screenX - offsetLeft;
+	const relativeY = screenY - offsetTop - (isH5() ? 45 : 0);
+
+	// 转换为画布坐标
+	const canvasX = (relativeX - translateX.value) / scale.value;
+	const canvasY = (relativeY - translateY.value) / scale.value;
+
+	// 计算行列
+	const col = Math.floor(canvasX / (seatSize.value + props.seatGap));
+	const row = Math.floor(canvasY / (seatSize.value + props.seatGap));
+
+	// 检查有效性
+	if (row >= 0 && row < props.rows && col >= 0 && col < props.cols) {
+		const localX = canvasX - col * (seatSize.value + props.seatGap);
+		const localY = canvasY - row * (seatSize.value + props.seatGap);
+
+		// 检查是否在座位内（排除间隙）
+		if (localX >= 0 && localX <= seatSize.value && localY >= 0 && localY <= seatSize.value) {
+			const index = row * props.cols + col;
+			return seats[index];
+		}
+	}
+
+	return null;
+}
+
+// 设置座位
+function setSeat(row: number, col: number, data: UTSJSONObject) {
+	const index = row * props.cols + col;
+	if (index >= 0 && index < seats.length) {
+		assign(seats[index], data);
+		draw();
+	}
+}
+
+// 获取所有座位
+function getSeats(): ClSelectSeatItem[] {
+	return seats;
+}
+
+// 初始化 Canvas
+function initCanvas() {
+	uni.createCanvasContextAsync({
+		id: "seatCanvas",
+		component: proxy,
+		success: (context: CanvasContext) => {
+			renderingContext = context.getContext("2d")!;
+
+			// 适配高清屏
+			const dpr = getDevicePixelRatio();
+			renderingContext!.canvas.width = renderingContext!.canvas.offsetWidth * dpr;
+			renderingContext!.canvas.height = renderingContext!.canvas.offsetHeight * dpr;
+			renderingContext!.scale(dpr, dpr);
+
+			initSeats();
+			centerView();
+			draw();
+			updateOffset();
+		}
+	});
+}
+
+// 触摸开始
+function onTouchStart(e: UniTouchEvent) {
+	updateOffset();
+
+	touchPoints = getTouches(e.touches);
+	hasMoved = false;
+
+	// 记录起始触摸点
+	if (touchPoints.length == 1) {
+		startTouchX = touchPoints[0].x;
+		startTouchY = touchPoints[0].y;
+	}
+
+	// 记录双指初始状态
+	if (touchPoints.length == 2) {
+		hasMoved = true; // 双指操作直接标记为已移动
+		lastDistance = getTouchDistance(touchPoints[0], touchPoints[1]);
+		const center = getTouchCenter(touchPoints[0], touchPoints[1]);
+		lastCenterX = center.x;
+		lastCenterY = center.y;
+	}
+}
+
+// 触摸移动
+function onTouchMove(e: UniTouchEvent) {
+	const currentTouches = getTouches(e.touches);
+
+	// 双指缩放
+	if (currentTouches.length == 2 && touchPoints.length == 2) {
+		hasMoved = true;
+		const currentDistance = getTouchDistance(currentTouches[0], currentTouches[1]);
+		const currentCenter = getTouchCenter(currentTouches[0], currentTouches[1]);
+
+		// 计算缩放
+		const scaleChange = currentDistance / lastDistance;
+		const newScale = Math.max(
+			props.minScale,
+			Math.min(props.maxScale, scale.value * scaleChange)
+		);
+
+		// 以触摸中心为基准缩放
+		const scaleDiff = newScale - scale.value;
+		translateX.value -= (currentCenter.x - translateX.value) * (scaleDiff / scale.value);
+		translateY.value -= (currentCenter.y - translateY.value) * (scaleDiff / scale.value);
+
+		scale.value = newScale;
+		lastDistance = currentDistance;
+
+		// 计算平移
+		const dx = currentCenter.x - lastCenterX;
+		const dy = currentCenter.y - lastCenterY;
+		translateX.value += dx;
+		translateY.value += dy;
+
+		lastCenterX = currentCenter.x;
+		lastCenterY = currentCenter.y;
+	} else if (currentTouches.length == 1 && touchPoints.length == 1) {
+		// 单指拖动
+		const dx = currentTouches[0].x - touchPoints[0].x;
+		const dy = currentTouches[0].y - touchPoints[0].y;
+
+		translateX.value += dx;
+		translateY.value += dy;
+
+		// 判断是否超过拖动阈值
+		const totalDx = currentTouches[0].x - startTouchX;
+		const totalDy = currentTouches[0].y - startTouchY;
+		if (Math.abs(totalDx) > moveThreshold || Math.abs(totalDy) > moveThreshold) {
+			hasMoved = true;
+		}
+	}
+
+	// 限制平移范围
+	constrainTranslate();
+
+	// 绘制
+	draw();
+
+	// 触发移动事件
+	emit("move", {
+		translateX: translateX.value,
+		translateY: translateY.value,
+		scale: scale.value,
+		screenTranslateX: translateX.value - leftPadding + (props.width * (scale.value - 1)) / 2
+	});
+
+	// 更新触摸点
+	touchPoints = currentTouches;
+}
+
+// 触摸结束
+function onTouchEnd(e: UniTouchEvent) {
+	const changedTouches = getTouches(e.changedTouches);
+
+	// 单击选座（未发生拖动或缩放时才触发）
+	if (changedTouches.length == 1 && touchPoints.length == 1 && !hasMoved) {
+		const touch = changedTouches[0];
+		const seat = getSeatAtPoint(touch.x, touch.y);
+
+		if (seat != null && seat.disabled != true && seat.empty != true) {
+			let value: ClSelectSeatValue[] = [];
+
+			if (isSelected(seat.row, seat.col)) {
+				value = props.modelValue.filter(
+					(item) => !(item.row == seat.row && item.col == seat.col)
+				);
+			} else {
+				value = [
+					...props.modelValue,
+					{ row: seat.row, col: seat.col } as ClSelectSeatValue
+				];
+			}
+
+			emit("update:modelValue", value);
+			emit("seatClick", seat);
+		}
+	}
+
+	touchPoints = getTouches(e.touches);
+
+	// 所有手指抬起后重置状态
+	if (touchPoints.length == 0) {
+		hasMoved = false;
+	}
+}
+
+// 监听选中变化
+watch(
+	computed<ClSelectSeatValue[]>(() => props.modelValue),
+	() => {
+		draw();
+	},
+	{ deep: true }
+);
+
+// 监听暗色模式变化
+watch(
+	isDark,
+	() => {
+		draw();
+	},
+	{ deep: true }
+);
+
+// 监听座位数据变化
+watch(
+	computed<ClSelectSeatItem[]>(() => props.seats),
+	() => {
+		initSeats();
+		draw();
+	},
+	{ deep: true }
+);
+
+onMounted(() => {
+	initCanvas();
+});
+
+defineExpose({
+	setSeat,
+	getSeats,
+	draw
+});
+</script>
+
+<style lang="scss" scoped>
+.cl-select-seat {
+	@apply relative;
+
+	&__canvas {
+		@apply h-full w-full;
+	}
+
+	&__index {
+		@apply absolute top-0 left-1 z-10 rounded-xl;
+		background-color: rgba(0, 0, 0, 0.4);
+
+		&-item {
+			@apply flex flex-col items-center justify-center;
+			width: 36rpx;
+		}
+	}
+}
+</style>
