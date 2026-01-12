@@ -64,9 +64,14 @@
 				>今日 01月10日 14:20 - 16:16 国语 2D</cl-text
 			>
 
-			<scroll-view direction="horizontal" class="flex flex-row" :show-scrollbar="false">
+			<scroll-view
+				direction="horizontal"
+				class="flex flex-row h-[80rpx]"
+				:show-scrollbar="false"
+				v-if="selectedSeats.length > 0"
+			>
 				<view
-					class="flex p-3 bg-surface-100 dark:!bg-surface-800 rounded-lg mr-2 mb-2"
+					class="flex p-3 bg-surface-100 dark:!bg-surface-800 rounded-lg mr-2 mb-2 h-full items-center justify-center"
 					v-for="(item, index) in selectedSeats"
 					:key="index"
 				>
@@ -162,6 +167,8 @@ const selectedSeats = computed<string[]>(() => {
 	if (selected.value.length == 0) {
 		return [];
 	}
+
+	console.log(selected.value.map((s) => `${s.row + 1}排${s.col + 1}座`));
 
 	return selected.value.map((s) => `${s.row + 1}排${s.col + 1}座`);
 });
