@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { assign, getColor, getDevicePixelRatio, isDark, isH5 } from "@/cool";
+import { assign, getColor, getDevicePixelRatio, isDark, isH5, isMp } from "@/cool";
 import { computed, getCurrentInstance, onMounted, ref, watch } from "vue";
 import { getIcon } from "../cl-icon/utils";
 import type { PropType } from "vue";
@@ -121,6 +121,14 @@ const props = defineProps({
 		type: String,
 		default: "check-line"
 	},
+	selectedImage: {
+		type: String,
+		default: ""
+	},
+	image: {
+		type: String,
+		default: ""
+	},
 	width: {
 		type: Number,
 		default: 0
@@ -141,6 +149,7 @@ const { proxy } = getCurrentInstance()!;
 
 // 画布渲染上下文
 let renderingContext: CanvasRenderingContext2D | null = null;
+let canvasContext: CanvasContext | null = null;
 // 画布偏移顶部
 let offsetTop = 0;
 // 画布偏移左侧
@@ -150,6 +159,9 @@ let leftPadding = 0;
 
 // 座位数据
 let seats: ClSelectSeatItem[] = [];
+
+// 图片缓存
+const imageCache = new Map<string, Image>();
 
 // 画布变换参数
 const scale = ref(1);
@@ -203,7 +215,9 @@ function initSeats() {
 				selectedBgColor: e.selectedBgColor,
 				selectedColor: e.selectedColor,
 				selectedIcon: e.selectedIcon,
+				selectedImage: e.selectedImage,
 				icon: e.icon,
+				image: e.image,
 				color: e.color
 			} as ClSelectSeatItem);
 		});
@@ -217,6 +231,56 @@ function initSeats() {
 			}
 		}
 	}
+}
+
+// 加载图片
+function loadImage(src: string): Promise<Image> {
+	return new Promise((resolve, reject) => {
+		if (imageCache.has(src)) {
+			resolve(imageCache.get(src)!);
+			return;
+		}
+
+		// 创建图片
+		let img: Image;
+
+		// 微信小程序环境创建图片
+		// #ifdef MP-WEIXIN || APP-HARMONY
+		img = canvasContext!.createImage();
+		// #endif
+
+		// 其他环境创建图片
+		// #ifndef MP-WEIXIN || APP-HARMONY
+		img = new Image();
+		// #endif
+
+		img.src = src;
+		img.onload = () => {
+			imageCache.set(src, img);
+			resolve(img);
+		};
+		img.onerror = () => {
+			reject(new Error("Image load failed"));
+		};
+	});
+}
+
+// 预加载所有图片
+async function preloadImages() {
+	const imagesToLoad: string[] = [];
+
+	// 收集所有需要加载的图片
+	if (props.image != "") imagesToLoad.push(props.image);
+	if (props.selectedImage != "") imagesToLoad.push(props.selectedImage);
+
+	seats.forEach((seat) => {
+		if (seat.image != null) imagesToLoad.push(seat.image);
+		if (seat.selectedImage != null) imagesToLoad.push(seat.selectedImage);
+	});
+
+	// 去重并加载
+	const uniqueImages = [...new Set(imagesToLoad)];
+	await Promise.all(uniqueImages.map((src) => loadImage(src).catch(() => {})));
 }
 
 // 居中显示
@@ -301,44 +365,68 @@ function drawSeat(seat: ClSelectSeatItem) {
 	const fontSize = Math.round(seatSize.value * 0.6);
 
 	if (isSelected(seat.row, seat.col)) {
-		// 绘制选中背景
-		renderingContext!.fillStyle = seat.selectedBgColor ?? props.selectedBgColor;
-		drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
-		renderingContext!.fill();
+		// 优先使用图片，否则使用背景+图标
+		const selectedImageSrc = seat.selectedImage ?? props.selectedImage;
+		if (selectedImageSrc != "" && imageCache.has(selectedImageSrc)) {
+			// 使用圆角裁剪绘制图片
+			renderingContext!.save();
+			drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+			renderingContext!.clip();
+			const img = imageCache.get(selectedImageSrc)!;
+			renderingContext!.drawImage(img, x, y, seatSize.value, seatSize.value);
+			renderingContext!.restore();
+		} else {
+			// 绘制选中背景
+			renderingContext!.fillStyle = seat.selectedBgColor ?? props.selectedBgColor;
+			drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+			renderingContext!.fill();
 
-		// 绘制选中图标
-		const { text, font } = getIcon(seat.selectedIcon ?? props.selectedIcon);
-		if (text != "") {
-			renderingContext!.fillStyle = seat.selectedColor ?? props.selectedColor;
-			renderingContext!.font = `${fontSize}px ${font}`;
-			renderingContext!.textAlign = "center";
-			renderingContext!.textBaseline = "middle";
-			renderingContext!.fillText(text, centerX, centerY);
-		}
-	} else {
-		// 绘制未选中背景
-		const bgColor = seat.bgColor ?? (isDark.value ? props.darkBgColor : props.bgColor);
-		renderingContext!.fillStyle = bgColor;
-		drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
-		renderingContext!.fill();
-
-		// 绘制边框
-		renderingContext!.strokeStyle =
-			seat.borderColor ?? (isDark.value ? props.darkBorderColor : props.borderColor);
-		renderingContext!.lineWidth = props.borderWidth;
-		drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
-		renderingContext!.stroke();
-
-		// 绘制默认图标
-		if (seat.icon != null) {
-			const { text, font } = getIcon(seat.icon);
+			// 绘制选中图标
+			const { text, font } = getIcon(seat.selectedIcon ?? props.selectedIcon);
 			if (text != "") {
-				renderingContext!.fillStyle =
-					seat.color ?? (isDark.value ? props.darkColor : props.color);
+				renderingContext!.fillStyle = seat.selectedColor ?? props.selectedColor;
 				renderingContext!.font = `${fontSize}px ${font}`;
 				renderingContext!.textAlign = "center";
 				renderingContext!.textBaseline = "middle";
 				renderingContext!.fillText(text, centerX, centerY);
+			}
+		}
+	} else {
+		// 优先使用图片，否则使用背景+边框+图标
+		const imageSrc = seat.image ?? props.image;
+		if (imageSrc != "" && imageCache.has(imageSrc)) {
+			// 使用圆角裁剪绘制图片
+			renderingContext!.save();
+			drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+			renderingContext!.clip();
+			const img = imageCache.get(imageSrc)!;
+			renderingContext!.drawImage(img, x, y, seatSize.value, seatSize.value);
+			renderingContext!.restore();
+		} else {
+			// 绘制未选中背景
+			const bgColor = seat.bgColor ?? (isDark.value ? props.darkBgColor : props.bgColor);
+			renderingContext!.fillStyle = bgColor;
+			drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+			renderingContext!.fill();
+
+			// 绘制边框
+			renderingContext!.strokeStyle =
+				seat.borderColor ?? (isDark.value ? props.darkBorderColor : props.borderColor);
+			renderingContext!.lineWidth = props.borderWidth;
+			drawRoundRect(renderingContext!, x, y, seatSize.value, seatSize.value, props.borderRadius);
+			renderingContext!.stroke();
+
+			// 绘制默认图标
+			if (seat.icon != null) {
+				const { text, font } = getIcon(seat.icon);
+				if (text != "") {
+					renderingContext!.fillStyle =
+						seat.color ?? (isDark.value ? props.darkColor : props.color);
+					renderingContext!.font = `${fontSize}px ${font}`;
+					renderingContext!.textAlign = "center";
+					renderingContext!.textBaseline = "middle";
+					renderingContext!.fillText(text, centerX, centerY);
+				}
 			}
 		}
 	}
@@ -463,6 +551,7 @@ function initCanvas() {
 		id: "seatCanvas",
 		component: proxy,
 		success: (context: CanvasContext) => {
+			canvasContext = context;
 			renderingContext = context.getContext("2d")!;
 
 			// 适配高清屏
@@ -473,8 +562,12 @@ function initCanvas() {
 
 			initSeats();
 			centerView();
-			draw();
-			updateOffset();
+
+			// 预加载图片后再绘制
+			preloadImages().finally(() => {
+				draw();
+				updateOffset();
+			});
 		}
 	});
 }

@@ -294,6 +294,8 @@ export type ClSelectSeatItem = {
 	selectedColor?: string; // 选中图标颜色
 	selectedIcon?: string; // 选中图标名称
 	icon?: string; // 图标名称
+	image?: string; // 默认图片（小程序平台字体渲染兼容）
+	selectedImage?: string; // 选中图片（小程序平台字体渲染兼容）
 };
 
 // 选中座位的值

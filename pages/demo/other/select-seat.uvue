@@ -150,9 +150,14 @@ const seats = computed<ClSelectSeatItem[]>(() => {
 				seat.empty = true;
 			}
 
-			// 最佳座位
+			// 示例：最佳座位
 			if (col > 4 && col < 11 && row > 1 && row < 6) {
 				seat.borderColor = "#22c55e";
+			}
+
+			// 示例：图片
+			if (col == 5 && row == 5) {
+				seat.image = 'https://unix.cool-js.com/images/demo/avatar.jpg';
 			}
 
 			seats.push(seat);

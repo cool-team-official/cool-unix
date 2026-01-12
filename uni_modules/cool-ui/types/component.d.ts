@@ -287,6 +287,8 @@ declare type ClSelectSeatComponentPublicInstance = {
 		selectedColor?: string;
 		selectedIcon?: string;
 		icon?: string;
+		image?: string;
+		selectedImage?: string;
 	}[];
 	draw: () => void;
 };
