@@ -1,0 +1,245 @@
+<!-- components/cl-divider/cl-divider.uvue -->
+<template>
+  <!-- 水平分割线 -->
+  <view 
+    v-if="direction === 'horizontal'"
+    class="cl-divider__wrap" 
+    :class="`cl-divider--${direction}`"
+    :style="wrapStyle"
+  >
+    <view 
+      class="cl-divider__line" 
+      :class="{ 'cl-divider__line-color': !dividerColor }"
+      :style="lineStyle"
+    ></view>
+    <view 
+      class="cl-divider__text-box" 
+      :class="{ 'cl-divider__content-bg': !backgroundColor }"
+      :style="textBoxStyle"
+    >
+      <slot></slot>
+      <text 
+        v-if="text" 
+        class="cl-divider__text" 
+        :class="{ 'cl-divider__text-color': !color }"
+        :style="textStyle"
+      >{{ text }}</text>
+    </view>
+  </view>
+  
+  <!-- 垂直分割线 -->
+  <view 
+    v-else
+    class="cl-divider__wrap" 
+    :class="`cl-divider--${direction}`"
+    :style="verticalWrapStyle"
+  >
+    <view 
+      class="cl-divider__line-vertical" 
+      :class="{ 'cl-divider__line-color': !dividerColor }"
+      :style="verticalLineStyle"
+    ></view>
+    <view 
+      class="cl-divider__text-box-vertical" 
+      :class="{ 'cl-divider__content-bg': !backgroundColor }"
+      :style="verticalTextBoxStyle"
+    >
+      <slot></slot>
+      <text 
+        v-if="text" 
+        class="cl-divider__text-vertical" 
+        :class="{ 'cl-divider__text-color': !color }"
+        :style="verticalTextStyle"
+      >{{ text }}</text>
+    </view>
+  </view>
+</template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+
+interface Props {
+  /** 提示内容 */
+  text?: string
+  /** divider占据高度，单位rpx */
+  height?: number
+  /** divider宽度，参数值需要带单位 */
+  width?: string
+  /** divider颜色 */
+  dividerColor?: string
+  /** 提示文字颜色 */
+  color?: string
+  /** 提示文字大小，单位rpx */
+  size?: number
+  /** 提示文字字重，可选值：'normal'、'bold' */
+  fontWeight?: 'normal' | 'bold'
+  /** 背景颜色，和当前页面背景色保持一致 */
+  backgroundColor?: string
+  /** 分割线方向：horizontal(水平) 或 vertical(垂直) */
+  direction?: 'horizontal' | 'vertical'
+  /** 垂直分割线占据宽度，单位rpx */
+  verticalWidth?: number
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  text: '',
+  height: 100,
+  width: '400rpx',
+  dividerColor: '',
+  color: '',
+  size: 24,
+  fontWeight: 'normal',
+  backgroundColor: '',
+  direction: 'horizontal',
+  verticalWidth: 60
+})
+
+// 水平分割线容器样式
+const wrapStyle = computed(() => {
+  return {
+    height: `${props.height}rpx`
+  }
+})
+
+// 水平分割线样式
+const lineStyle = computed(() => {
+  return {
+    width: props.width,
+    background: props.dividerColor,
+    top: `${props.height / 2}rpx`
+  }
+})
+
+// 水平文字容器样式
+const textBoxStyle = computed(() => {
+  return {
+    background: props.backgroundColor
+  }
+})
+
+// 水平文字样式
+const textStyle = computed(() => {
+  return {
+    fontWeight: props.fontWeight,
+    color: props.color,
+    fontSize: `${props.size}rpx`,
+    lineHeight: `${props.size}rpx`
+  }
+})
+
+// 垂直分割线容器样式
+const verticalWrapStyle = computed(() => {
+  return {
+    width: `${props.verticalWidth}rpx`,
+    height: props.width // 使用水平分割线的width作为垂直分割线的高度
+  }
+})
+
+// 垂直分割线样式
+const verticalLineStyle = computed(() => {
+  return {
+    height: props.width, // 使用水平分割线的width作为垂直分割线的高度
+    background: props.dividerColor,
+    left: `${props.verticalWidth / 2}rpx`
+  }
+})
+
+// 垂直文字容器样式
+const verticalTextBoxStyle = computed(() => {
+  return {
+    background: props.backgroundColor
+  }
+})
+
+// 垂直文字样式
+const verticalTextStyle = computed(() => {
+  return {
+    fontWeight: props.fontWeight,
+    color: props.color,
+    fontSize: `${props.size}rpx`,
+    writingMode: 'vertical-rl',
+    textOrientation: 'mixed'
+  }
+})
+</script>
+
+<style scoped lang="scss">
+$cl-divider-line-width: 1px !default;
+$cl-divider-line-color: #CCCCCC !default;
+$cl-divider-text-color: #B2B2B2 !default;
+$cl-bg-color-grey: #F1F4FA !default;
+
+/* 通用样式 */
+.cl-divider__wrap {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+/* 水平分割线样式 */
+.cl-divider--horizontal {
+  width: 100%;
+  flex-direction: row;
+}
+
+.cl-divider__line {
+  position: absolute;
+  height: $cl-divider-line-width;
+  transform: scaleY(0.5);
+}
+
+.cl-divider__text-box {
+  position: relative;
+  padding: 0 6rpx;
+  z-index: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+
+.cl-divider__text {
+  padding: 0 12rpx;
+}
+
+/* 垂直分割线样式 */
+.cl-divider--vertical {
+  flex-direction: column;
+}
+
+.cl-divider__line-vertical {
+  position: absolute;
+  width: $cl-divider-line-width;
+  transform: scaleX(0.5);
+}
+
+.cl-divider__text-box-vertical {
+  position: relative;
+  padding: 6rpx 0;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.cl-divider__text-vertical {
+  padding: 12rpx 0;
+}
+
+/* 通用颜色类 */
+.cl-divider__line-color {
+  background: $cl-divider-line-color !important;
+}
+
+.cl-divider__content-bg {
+  background: $cl-bg-color-grey !important;
+}
+
+.cl-divider__text-color {
+  color: $cl-divider-text-color !important;
+}
+</style>
