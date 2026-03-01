@@ -1,0 +1,177 @@
+<!-- pages/test-divider/test-divider.uvue -->
+<template>
+  <cl-page>
+    <view class="container">
+      <text class="title">Divider 分割线组件测试</text>
+      
+      <!-- 水平分割线测试 -->
+      <view class="test-section">
+        <text class="section-title">水平分割线</text>
+        <view class="test-content">
+          <cl-divider />
+          <cl-divider text="分割文字" />
+          <cl-divider text="自定义颜色" color="#409EFF" dividerColor="#409EFF" />
+          <cl-divider text="大号文字" :size="32" />
+        </view>
+      </view>
+      
+      <!-- 垂直分割线测试 -->
+      <view class="test-section">
+        <text class="section-title">垂直分割线</text>
+        <view class="test-content">
+          <view class="vertical-container">
+            <text>左侧内容</text>
+            <cl-divider direction="vertical" />
+            <text>中间内容</text>
+            <cl-divider direction="vertical" text="或" />
+            <text>右侧内容</text>
+          </view>
+          
+          <view class="vertical-container custom-vertical">
+            <text>首页</text>
+            <cl-divider direction="vertical" dividerColor="red" :verticalWidth="80" />
+            <text>产品</text>
+            <cl-divider direction="vertical" text="分隔" color="blue" dividerColor="blue" />
+            <text>关于</text>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 混合使用 -->
+      <view class="test-section">
+        <text class="section-title">混合使用示例</text>
+        <view class="test-content">
+          <view class="menu-example">
+            <text class="menu-item">首页</text>
+            <cl-divider direction="vertical" :verticalWidth="40" />
+            <text class="menu-item">新闻</text>
+            <cl-divider direction="vertical" :verticalWidth="40" />
+            <text class="menu-item">产品</text>
+            <cl-divider direction="vertical" :verticalWidth="40" />
+            <text class="menu-item">关于</text>
+          </view>
+          
+          <cl-divider text="下方内容" :margin="40" />
+          
+          <view class="form-example">
+            <view class="form-item">
+              <text>用户名</text>
+              <cl-divider direction="vertical" :verticalWidth="20" />
+              <text>密码</text>
+            </view>
+          </view>
+        </view>
+      </view>
+      
+      <!-- 自定义样式 -->
+      <view class="test-section">
+        <text class="section-title">自定义样式</text>
+        <view class="test-content">
+          <cl-divider 
+            direction="vertical" 
+            text="竖排文字" 
+            dividerColor="#67C23A" 
+            color="#67C23A" 
+            :size="28"
+            fontWeight="bold"
+            :verticalWidth="100"
+          />
+        </view>
+      </view>
+    </view>
+  </cl-page>
+</template>
+
+<script setup lang="ts">
+import ClDivider from '@/components/cl-divider/cl-divider.uvue'
+</script>
+
+<style lang="scss" scoped>
+.container {
+  padding: 40rpx;
+}
+
+.title {
+  font-size: 36rpx;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 40rpx;
+  color: #333;
+}
+
+.test-section {
+  margin-bottom: 40rpx;
+  padding: 30rpx;
+  background: #ffffff;
+  border-radius: 16rpx;
+  border: 2rpx solid #f0f0f0;
+}
+
+.section-title {
+  display: block;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.test-content {
+  padding: 20rpx 0;
+}
+
+.vertical-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30rpx;
+  
+  &.custom-vertical {
+    padding: 20rpx;
+    background: #f8f9fa;
+    border-radius: 12rpx;
+  }
+  
+  text {
+    margin: 0 20rpx;
+    font-size: 26rpx;
+    color: #666;
+  }
+}
+
+.menu-example {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  background: #f5f7fa;
+  padding: 20rpx;
+  border-radius: 12rpx;
+  margin-bottom: 30rpx;
+}
+
+.menu-item {
+  font-size: 28rpx;
+  color: #606266;
+  padding: 0 20rpx;
+}
+
+.form-example {
+  background: #f8f9fa;
+  padding: 30rpx;
+  border-radius: 12rpx;
+}
+
+.form-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  
+  text {
+    font-size: 26rpx;
+    color: #909399;
+    margin: 0 15rpx;
+  }
+}
+</style>
